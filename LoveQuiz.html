@@ -112,8 +112,9 @@
                 background-color: #fff;
                 color: #000;
             }
+            /* Elements with 'no-print' class will be hidden in print */
             .no-print {
-                display: none;
+                display: none !important;
             }
             textarea {
                 border: 1px dashed #94a3b8; /* Dashed border for print to indicate fillable area */
@@ -150,7 +151,7 @@
             .bg-white, .bg-blue-50, .bg-gray-50 {
                 background-color: #fff !important;
             }
-            /* Ensure details content is always open when printing */
+            /* Ensure all details content is always open when printing */
             details[open] summary ~ * { /* General rule for all details content */
                 display: block !important;
             }
@@ -159,6 +160,10 @@
             }
             /* Specific rule to ensure the main legal details section expands on print */
             #legalTermsDetails summary ~ * {
+                display: block !important;
+            }
+            /* Ensure signature box is visible if it was displayed on screen */
+            .signature-box.hidden { /* Override the 'hidden' class only for printing */
                 display: block !important;
             }
         }
@@ -731,7 +736,7 @@
         </main>
 
         <!-- Final Legal Agreement Section -->
-        <section class="final-legal-section no-print">
+        <section class="final-legal-section"> <!-- Removed 'no-print' class here -->
             <h2 class="handwritten-guide-title">Final Agreement & Acknowledgment</h2>
             <div class="legal-content-area">
                 <!-- Collapsible Legal Terms -->
@@ -955,7 +960,7 @@
             const consentCheckboxFinal = document.getElementById('consentCheckboxFinal');
             const legalTermsDetails = document.getElementById('legalTermsDetails');
 
-            // Check if legal details are open
+            // Check if legal terms are open and acknowledged
             if (!legalTermsDetails.open) {
                  showCustomModal(`
                     <p class="text-lg font-semibold mb-4">Review Terms First!</p>

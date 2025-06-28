@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Day in Other People's Shoes - Interactive Pitch</title>
+    <title>Live One Day - Interactive Pitch</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,21 +42,44 @@
             box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.4), 0 6px 10px -6px rgba(0, 0, 0, 0.3); /* Stronger, darker shadow */
         }
         .accordion-header {
-            background-color: #2D3748; /* Darker background for headers */
-            border-bottom: 1px solid #4A5568; /* Darker border */
+            background-color: rgba(255, 215, 0, 0.1); /* Transparent golden background */
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3); /* Transparent golden border */
             cursor: pointer;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2); /* Subtle initial shadow */
+            position: relative; /* Needed for pseudo-element glitter effect */
+            overflow: hidden; /* Ensures glitter stays within bounds */
         }
         .accordion-header:hover {
-            background-color: #384357; /* Subtle hover background */
+            background-color: rgba(255, 215, 0, 0.15); /* Slightly less transparent golden hover */
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2); /* Enhanced hover shadow */
         }
+
+        /* Glittering effect on hover */
+        .accordion-header::before {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: -100%; /* Start off-screen to the left */
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent); /* White shimmer */
+            transition: left 0.5s ease; /* Animate left property */
+            pointer-events: none; /* Allows clicks to pass through */
+        }
+        .accordion-header:hover::before {
+            left: 100%; /* Move across to the right on hover */
+        }
+
         .accordion-content {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.5s ease-out; /* Slower transition */
             padding: 0 1.5rem; /* Initial padding 0 to animate correctly */
+            background-color: rgba(255, 215, 0, 0.05); /* Very transparent golden background for content */
+            border: 1px solid rgba(255, 215, 0, 0.1); /* Subtle golden border */
+            border-top: none; /* No top border to blend with header */
         }
         .accordion-content.active {
             max-height: 500px; /* Adjust based on max expected content height */
@@ -96,6 +119,70 @@
             box-shadow: 0 6px 15px rgba(147, 112, 219, 0.5);
             transform: translateY(-2px);
         }
+
+        /* Video Grid Styling */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Responsive grid for videos */
+            gap: 1rem;
+            padding-top: 1rem;
+        }
+        .video-thumbnail {
+            background-color: #384357; /* Darker background for thumbnails */
+            border-radius: 0.5rem;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            color: #E2E8F0;
+            padding-bottom: 0.5rem;
+        }
+        .video-thumbnail:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        .video-thumbnail img {
+            width: 100%;
+            height: 120px; /* Fixed height for consistent thumbnails */
+            object-fit: cover;
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+        .video-title {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .video-player-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            margin-top: 1rem;
+            background-color: #000;
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+        .video-player-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .hidden-video-player {
+            display: none;
+        }
+        /* Icon styles */
+        .icon {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            color: #FFD700; /* Golden color for icons */
+            flex-shrink: 0; /* Prevent icon from shrinking */
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -103,7 +190,7 @@
     <!-- Header & Navigation -->
     <header class="bg-gray-900/90 backdrop-blur-lg sticky top-0 z-50 shadow-lg"> <!-- Darker header -->
         <nav class="container mx-auto px-8 py-5 flex justify-between items-center">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-100">A Day in Other People's Shoes</h1> <!-- Light text -->
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-100">Live One Day</h1> <!-- Project Name Updated -->
             <div class="flex items-center space-x-6">
                 <input type="text" id="search-input" placeholder="Search insights..." class="px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#9370DB] transition-colors w-36 sm:w-56 bg-gray-800 text-gray-200 placeholder-gray-400"> <!-- Darker input, violet ring -->
                 <div class="hidden md:flex space-x-10">
@@ -158,9 +245,9 @@
                     <div class="bg-[#2D3748] p-10 rounded-2xl shadow-lg border border-[#4A5568]"> <!-- Darker background, border -->
                         <h3 class="text-3xl font-bold text-gray-50 mb-6">Who Seeks This Solution?</h3> <!-- Light text -->
                         <ul class="list-disc list-inside text-lg text-gray-300 space-y-3"> <!-- Light text -->
-                            <li>**Discerning Viewers:** Individuals (18-45) seeking genuine, unscripted cultural immersion and empathetic human narratives beyond conventional entertainment.</li>
-                            <li>**Forward-Thinking Brands:** Sponsors looking for authentic, high-impact content that fosters deep audience connection and offers meaningful, integrated product placement opportunities.</li>
-                            <li>**Local Voices:** People with compelling, untold stories lacking a global platform.</li>
+                            <li><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Discerning Viewers:</span> Individuals (18-45) seeking genuine, unscripted cultural immersion and empathetic human narratives beyond conventional entertainment.</li>
+                            <li><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 2l-5.5 9h11z"/><circle cx="12" cy="17" r="3"/><path d="M22 10l-1.5 11h-17L2 10z"/></svg> Forward-Thinking Brands:</span> Sponsors looking for authentic, high-impact content that fosters deep audience connection and offers meaningful, integrated product placement opportunities.</li>
+                            <li><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M7 10v12"/><path d="M10 10c1-1 3-2 3-2"/><path d="M13 18c-1 1-3 2-3 2"/><path d="M17 14v8"/><path d="M18 6.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/><path d="M10 2c-1 1-3 2-3 2"/></svg> Local Voices:</span> People with compelling, untold stories lacking a global platform.</li>
                         </ul>
                     </div>
                 </div>
@@ -181,7 +268,7 @@
                         </div>
                         <div class="bg-gray-800 p-8 rounded-xl shadow-md border border-gray-700 card-hover-effect">
                             <h4 class="font-bold text-xl text-gray-100 mb-2">Social Influencers</h4>
-                            <p class="text-base text-gray-300 leading-relaxed">Tend to focus on highly curated lifestyles rather than unvarnished, authentic experiences.</p>
+                            <p class="text-base text-gray-300 leading-relaxed">Tend to focus on highly curated lifestyles rather translated to: unvarnished, authentic experiences.</p>
                         </div>
                     </div>
                 </div>
@@ -192,8 +279,8 @@
         <section id="solution" class="py-24 md:py-36 bg-[#1A202C]"> <!-- Main dark background -->
             <div class="container mx-auto px-8">
                 <div class="text-center mb-20">
-                    <h2 class="text-4xl md:text-5xl font-extrabold text-gray-100">2. Our Innovative Solution: The A.D.O.P.S. Journey</h2> <!-- Light text -->
-                    <p class="mt-5 text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">"A Day in Other People's Shoes" is a groundbreaking, multi-platform episodic video series. We capture authentic, unscripted experiences with minimal intrusion, fostering empathy and understanding through genuine storytelling. The series will be produced in seasons, commencing with Europe.</p>
+                    <h2 class="text-4xl md:text-5xl font-extrabold text-gray-100">2. Our Innovative Solution: The Live One Day Journey</h2> <!-- Project Name Updated Here -->
+                    <p class="mt-5 text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">"Live One Day" is a groundbreaking, multi-platform episodic video series. We capture authentic, unscripted experiences with minimal intrusion, fostering empathy and understanding through genuine storytelling. The series will be produced in seasons, commencing with Europe.</p>
                 </div>
                 
                 <h3 class="text-3xl font-bold text-center mb-10 text-gray-100">Key Project Phases & Tailored Content</h3> <!-- Light text -->
@@ -204,10 +291,29 @@
                             Gentleman Lifestyle Vlog <span class="text-2xl leading-none transition-transform duration-300 transform rotate-0">▼</span>
                         </button>
                         <div class="accordion-content px-6 md:px-8 pb-6 md:pb-8 text-gray-300 text-lg"> <!-- Light text -->
-                            <p class="mb-3 leading-relaxed">**Purpose:** To set the aspirational tone of the journey and provide organic brand integration opportunities for premium lifestyle products.</p>
-                            <p class="mb-3 leading-relaxed">**Content:** Pre-experience vlogs meticulously documenting the host's refined travel preparations, exquisite hotel experiences, and a curated "suit" clothing routine. This segment is designed for visual appeal and subtle showcasing of high-end travel gear and accessories.</p>
-                            <p class="mb-3 leading-relaxed">**Ideal Platform:** <span class="font-bold text-[#FFD700]">Instagram (Reels, Stories), YouTube (shorter forms)</span>. The aesthetically driven nature of this content is perfectly suited for platforms emphasizing visual storytelling and aspirational lifestyle appeal.</p> <!-- Dark Gold accent -->
-                            <p class="leading-relaxed">**Sponsorship Potential:** Highly attractive for luxury travel brands (airlines, boutique hotels), discerning fashion labels (bespoke suits, artisanal accessories), premium grooming products, and sophisticated tech gadgets.</p>
+                            <p class="mb-3 leading-relaxed">Purpose: To set the aspirational tone of the journey and provide organic brand integration opportunities for premium lifestyle products.</p>
+                            <p class="mb-3 leading-relaxed">Content: Pre-experience vlogs meticulously documenting the host's refined travel preparations, exquisite hotel experiences, and a curated "suit" clothing routine. This segment is designed for visual appeal and subtle showcasing of high-end travel gear and accessories.</p>
+                            <p class="mb-3 leading-relaxed">Ideal Platform: <span class="text-[#FFD700]">Instagram (Reels, Stories), YouTube (shorter forms)</span>. The aesthetically driven nature of this content is perfectly suited for platforms emphasizing visual storytelling and aspirational lifestyle appeal.</p> <!-- Dark Gold accent -->
+                            <p class="leading-relaxed">Sponsorship Potential: Highly attractive for luxury travel brands (airlines, boutique hotels), discerning fashion labels (bespoke suits, artisanal accessories), premium grooming products, and sophisticated tech gadgets.</p>
+                            
+                            <!-- Video Integration for Gentleman Lifestyle Vlog -->
+                            <div class="video-section mt-6">
+                                <h4 class="text-xl font-semibold text-gray-100 mb-4">Sample Videos (Coming Soon to GitHub)</h4>
+                                <div class="video-grid">
+                                    <div class="video-thumbnail" data-video-id="gentleman-video-1">
+                                        <img src="https://placehold.co/320x180/ffd700/000000?text=Gentleman+Setup+1" alt="Gentleman Setup 1">
+                                        <div class="video-title">Prep & Packing</div>
+                                    </div>
+                                    <div class="video-thumbnail" data-video-id="gentleman-video-2">
+                                        <img src="https://placehold.co/320x180/ffd700/000000?text=Gentleman+Hotel+Experience" alt="Gentleman Hotel Experience">
+                                        <div class="video-title">Hotel Experience</div>
+                                    </div>
+                                    <!-- Add more video thumbnails as needed -->
+                                </div>
+                                <div id="gentleman-video-player" class="video-player-container hidden-video-player">
+                                    <!-- YouTube/Vimeo embed code will be inserted here dynamically -->
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -217,23 +323,59 @@
                             Car Ride "Interviews" <span class="text-2xl leading-none transition-transform duration-300 transform rotate-0">▼</span>
                         </button>
                         <div class="accordion-content px-6 md:px-8 pb-6 md:pb-8 text-gray-300 text-lg">
-                            <p class="mb-3 leading-relaxed">**Purpose:** To establish a profound, personal connection with the participant and sensitively unravel their unique life story and perspective in an intimate setting.</p>
-                            <p class="mb-3 leading-relaxed">**Content:** Intimate, unscripted conversations between the host and participant conducted during scenic car rides. Filmed unobtrusively with mounted cameras (Samsung S24 capturing road/interior, GoPro for passenger POV). The narrative structure is subtly guided by the **Dan Harmon Story Circle model**, ensuring a compelling, human-centric arc.</p>
-                            <p class="mb-3 leading-relaxed">**Ideal Platform:** <span class="font-bold text-[#FFD700]">TikTok (short, impactful segments), YouTube Shorts, Instagram Reels, longer cuts for Main YouTube episodes</span>. The candid, conversational nature lends itself to viral sharing and deep emotional resonance.</p> <!-- Dark Gold accent -->
-                            <p class="leading-relaxed">**Sponsorship Potential:** Excellent for automotive brands (car rental services, innovative vehicle tech), advanced communication platforms, and location-aware services.</p>
+                            <p class="mb-3 leading-relaxed">Purpose: To establish a profound, personal connection with the participant and sensitively unravel their unique life story and perspective in an intimate setting.</p>
+                            <p class="mb-3 leading-relaxed">Content: Intimate, unscripted conversations between the host and participant conducted during scenic car rides. Filmed unobtrusively with mounted cameras (Samsung S24 capturing road/interior, GoPro for passenger POV). The narrative structure is subtly guided by the Dan Harmon Story Circle model, ensuring a compelling, human-centric arc.</p>
+                            <p class="mb-3 leading-relaxed">Ideal Platform: <span class="text-[#FFD700]">TikTok (short, impactful segments), YouTube Shorts, Instagram Reels, longer cuts for Main YouTube episodes</span>. The candid, conversational nature lends itself to viral sharing and deep emotional resonance.</p> <!-- Dark Gold accent -->
+                            <p class="leading-relaxed">Sponsorship Potential: Excellent for automotive brands (car rental services, innovative vehicle tech), advanced communication platforms, and location-aware services.</p>
+
+                            <!-- Video Integration for Car Ride Interviews -->
+                            <div class="video-section mt-6">
+                                <h4 class="text-xl font-semibold text-gray-100 mb-4">Sample Videos (Coming Soon to GitHub)</h4>
+                                <div class="video-grid">
+                                    <div class="video-thumbnail" data-video-id="car-video-1">
+                                        <img src="https://placehold.co/320x180/9370DB/FFFFFF?text=Car+Interview+1" alt="Car Interview 1">
+                                        <div class="video-title">First Impressions</div>
+                                    </div>
+                                    <div class="video-thumbnail" data-video-id="car-video-2">
+                                        <img src="https://placehold.co/320x180/9370DB/FFFFFF?text=Car+Journey+2" alt="Car Journey 2">
+                                        <div class="video-title">Life's Journey</div>
+                                    </div>
+                                </div>
+                                <div id="car-video-player" class="video-player-container hidden-video-player">
+                                    <!-- YouTube/Vimeo embed code will be inserted here dynamically -->
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Accordion Item: 24 Hours Inside Their Shoes (Live The Day) -->
+                    <!-- Accordion Item: 24 Hours Inside Their Shoes (Live One Day) -->
                     <div class="border-b border-gray-700 last:border-b-0">
                         <button class="accordion-header w-full text-left p-6 md:p-8 font-semibold text-gray-100 text-xl flex justify-between items-center">
-                            24 Hours Inside Their Shoes (Live The Day) <span class="text-2xl leading-none transition-transform duration-300 transform rotate-0">▼</span>
+                            24 Hours Inside Their Shoes (Live One Day) <span class="text-2xl leading-none transition-transform duration-300 transform rotate-0">▼</span> <!-- Project Name Updated Here -->
                         </button>
                         <div class="accordion-content px-6 md:px-8 pb-6 md:pb-8 text-gray-300 text-lg">
-                            <p class="mb-3 leading-relaxed">**Purpose:** The definitive immersive experience, capturing the raw, unscripted reality of local daily life through the host's direct participation.</p>
-                            <p class="mb-3 leading-relaxed">**Content:** The host truly "lives a day" in the chosen individual's reality, abstaining from personal funds and relying solely on the participant's means and schedule. Utilizes compact, unobtrusive POV recording tools (GoPro head/chest mounted, Ray-Ban recording glasses) to ensure minimal disruption while capturing authentic moments of work, social interaction, and daily routines.</p>
-                            <p class="mb-3 leading-relaxed">**Ideal Platform:** <span class="font-bold text-[#9370DB]">YouTube (primary episodic content), Premium Streaming Services</span>. This long-form, deep-dive content is the heart of the series, designed for profound cultural understanding and sustained viewer engagement.</p> <!-- Violet accent -->
-                            <p class="leading-relaxed">**Sponsorship Potential:** Diverse opportunities with local businesses, hospitality providers, sustainable lifestyle brands, and general consumer goods naturally integrated into daily life scenarios.</p>
+                            <p class="mb-3 leading-relaxed">Purpose: The definitive immersive experience, capturing the raw, unscripted reality of local daily life through the host's direct participation.</p>
+                            <p class="mb-3 leading-relaxed">Content: The host truly "lives a day" in the chosen individual's reality, abstaining from personal funds and relying solely on the participant's means and schedule. Utilizes compact, unobtrusive POV recording tools (GoPro head/chest mounted, Ray-Ban recording glasses) to ensure minimal disruption while capturing authentic moments of work, social interaction, and daily routines.</p>
+                            <p class="mb-3 leading-relaxed">Ideal Platform: <span class="text-[#9370DB]">YouTube (primary episodic content), Premium Streaming Services</span>. This long-form, deep-dive content is the heart of the series, designed for profound cultural understanding and sustained viewer engagement.</p> <!-- Violet accent -->
+                            <p class="leading-relaxed">Sponsorship Potential: Diverse opportunities with local businesses, hospitality providers, sustainable lifestyle brands, and general consumer goods naturally integrated into daily life scenarios.</p>
+                            
+                            <!-- Video Integration for Live One Day -->
+                            <div class="video-section mt-6">
+                                <h4 class="text-xl font-semibold text-gray-100 mb-4">Sample Videos (Coming Soon to GitHub)</h4>
+                                <div class="video-grid">
+                                    <div class="video-thumbnail" data-video-id="live-video-1">
+                                        <img src="https://placehold.co/320x180/FFD700/000000?text=Live+A+Day+1" alt="Live A Day 1">
+                                        <div class="video-title">Morning Routine</div>
+                                    </div>
+                                    <div class="video-thumbnail" data-video-id="live-video-2">
+                                        <img src="https://placehold.co/320x180/FFD700/000000?text=Live+A+Day+2" alt="Live A Day 2">
+                                        <div class="video-title">Work & Community</div>
+                                    </div>
+                                </div>
+                                <div id="live-video-player" class="video-player-container hidden-video-player">
+                                    <!-- YouTube/Vimeo embed code will be inserted here dynamically -->
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -243,10 +385,28 @@
                             Post-Experience Reflections <span class="text-2xl leading-none transition-transform duration-300 transform rotate-0">▼</span>
                         </button>
                         <div class="accordion-content px-6 md:px-8 pb-6 md:pb-8 text-gray-300 text-lg">
-                            <p class="mb-3 leading-relaxed">**Purpose:** To provide crucial context and personal insights, allowing the audience to synthesize the profound experiences and cultural learnings.</p>
-                            <p class="mb-3 leading-relaxed">**Content:** Candid, on-camera interviews with the host, reflecting on the day's events, the unique perspective gained, and emotional takeaways. These segments are meticulously edited to blend seamlessly into the final episodic narrative, providing a thoughtful conclusion to each immersive journey.</p>
-                            <p class="mb-3 leading-relaxed">**Ideal Platform:** <span class="font-bold text-[#9370DB]">YouTube (integrated into main episodes), potentially standalone short-form "insight" clips for other platforms.</span> Ideal for fostering deeper contemplation and discussion.</p> <!-- Violet accent -->
-                            <p class="leading-relaxed">**Sponsorship Potential:** Integrated with the main episode sponsorships; also potential for brands in education, personal development, or mindfulness.</p>
+                            <p class="mb-3 leading-relaxed">Purpose: To provide crucial context and personal insights, allowing the audience to synthesize the profound experiences and cultural learnings.</p>
+                            <p class="mb-3 leading-relaxed">Content: Candid, on-camera interviews with the host, reflecting on the day's events, the unique perspective gained, and emotional takeaways. These segments are meticulously edited to blend seamlessly into the final episodic narrative, providing a thoughtful conclusion to each immersive journey.</p>
+                            <p class="mb-3 leading-relaxed">Ideal Platform: <span class="text-[#9370DB]">YouTube (integrated into main episodes), potentially standalone short-form "insight" clips for other platforms.</span> Ideal for fostering deeper contemplation and discussion.</p> <!-- Violet accent -->
+                            <p class="leading-relaxed">Sponsorship Potential: Integrated with the main episode sponsorships; also potential for brands in education, personal development, or mindfulness.</p>
+
+                            <!-- Video Integration for Post-Experience Reflections -->
+                            <div class="video-section mt-6">
+                                <h4 class="text-xl font-semibold text-gray-100 mb-4">Sample Videos (Coming Soon to GitHub)</h4>
+                                <div class="video-grid">
+                                    <div class="video-thumbnail" data-video-id="reflection-video-1">
+                                        <img src="https://placehold.co/320x180/9370DB/FFFFFF?text=Reflection+1" alt="Reflection 1">
+                                        <div class="video-title">Elijah's Insights</div>
+                                    </div>
+                                    <div class="video-thumbnail" data-video-id="reflection-video-2">
+                                        <img src="https://placehold.co/320x180/9370DB/FFFFFF?text=Reflection+2" alt="Reflection 2">
+                                        <div class="video-title">Lessons Learned</div>
+                                    </div>
+                                </div>
+                                <div id="reflection-video-player" class="video-player-container hidden-video-player">
+                                    <!-- YouTube/Vimeo embed code will be inserted here dynamically -->
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -256,10 +416,28 @@
                             General Travelling Vlog <span class="text-2xl leading-none transition-transform duration-300 transform rotate-0">▼</span>
                         </button>
                         <div class="accordion-content px-6 md:px-8 pb-6 md:pb-8 text-gray-300 text-lg">
-                            <p class="mb-3 leading-relaxed">**Purpose:** To capture the broader journey between immersive experiences, offering a comprehensive look at the production's global scope and flexible content for diverse platforms.</p>
-                            <p class="mb-3 leading-relaxed">**Content:** Behind-the-scenes footage, logistical challenges, and general exploration as the host navigates various cities, cultures, and transport methods between primary filming locations. Provides a sense of the series' grand scale and the personal adventure involved.</p>
-                            <p class="mb-3 leading-relaxed">**Ideal Platform:** <span class="font-bold text-[#FFD700]">YouTube, Instagram (travel snippets), TikTok (quick travel tips/moments)</span>. Highly adaptable content that can be tailored for various platform formats, including dedicated sponsorship activations.</p> <!-- Dark Gold accent -->
-                            <p class="leading-relaxed">**Sponsorship Potential:** Broad appeal for general travel brands, airlines, luggage companies, travel-tech innovations, and destination marketing boards.</p>
+                            <p class="mb-3 leading-relaxed">Purpose: To capture the broader journey between immersive experiences, offering a comprehensive look at the production's global scope and flexible content for diverse platforms.</p>
+                            <p class="mb-3 leading-relaxed">Content: Behind-the-scenes footage, logistical challenges, and general exploration as the host navigates various cities, cultures, and transport methods between primary filming locations. Provides a sense of the series' grand scale and the personal adventure involved.</p>
+                            <p class="mb-3 leading-relaxed">Ideal Platform: <span class="text-[#FFD700]">YouTube (travel snippets), TikTok (quick travel tips/moments)</span>. Highly adaptable content that can be tailored for various platform formats, including dedicated sponsorship activations.</p> <!-- Dark Gold accent -->
+                            <p class="leading-relaxed">Sponsorship Potential: Broad appeal for general travel brands, airlines, luggage companies, travel-tech innovations, and destination marketing boards.</p>
+
+                            <!-- Video Integration for General Travelling Vlog -->
+                            <div class="video-section mt-6">
+                                <h4 class="text-xl font-semibold text-gray-100 mb-4">Sample Videos (Coming Soon to GitHub)</h4>
+                                <div class="video-grid">
+                                    <div class="video-thumbnail" data-video-id="travel-video-1">
+                                        <img src="https://placehold.co/320x180/FFD700/000000?text=Travel+Vlog+1" alt="Travel Vlog 1">
+                                        <div class="video-title">Journey Highlights</div>
+                                    </div>
+                                    <div class="video-thumbnail" data-video-id="travel-video-2">
+                                        <img src="https://placehold.co/320x180/FFD700/000000?text=Travel+Vlog+2" alt="Travel Vlog 2">
+                                        <div class="video-title">Behind The Scenes</div>
+                                    </div>
+                                </div>
+                                <div id="travel-video-player" class="video-player-container hidden-video-player">
+                                    <!-- YouTube/Vimeo embed code will be inserted here dynamically -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -279,15 +457,15 @@
                         <p class="mb-8 text-lg text-gray-300 leading-relaxed">Our content resonates with a global demographic (primarily 18-45) actively seeking authentic travel, profound cultural exchange, and human-centric narratives. This creates unparalleled, integrated opportunities for discerning premium brands across travel, automotive, fashion, and technology sectors.</p> <!-- Light text -->
                          <div class="space-y-6">
                             <div class="bg-gray-800 p-6 rounded-xl shadow-md border border-gray-700"> <!-- Darker cards -->
-                                <h4 class="font-semibold text-xl text-gray-100 mb-2">📈 Preference for Authenticity</h4>
+                                <h4 class="font-semibold text-xl text-gray-100 mb-2"><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Preference for Authenticity</span></h4>
                                 <p class="text-base text-gray-300 mt-1 leading-relaxed">A growing and undeniable audience demand for raw, unscripted content that stands in stark contrast to heavily produced or artificial narratives.</p>
                             </div>
                              <div class="bg-gray-800 p-6 rounded-xl shadow-md border border-gray-700">
-                                <h4 class="font-semibold text-xl text-gray-100 mb-2">❤️ The Power of Empathy</h4>
+                                <h4 class="font-semibold text-xl text-gray-100 mb-2"><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> The Power of Empathy</span></h4>
                                 <p class="text-base text-gray-300 mt-1 leading-relaxed">Increasing societal interest in content that genuinely fosters cultural understanding, deep empathy, and connection with diverse human experiences.</p>
                             </div>
                              <div class="bg-gray-800 p-6 rounded-xl shadow-md border border-gray-700">
-                                <h4 class="font-semibold text-xl text-gray-100 mb-2">📱 Hybrid Content Consumption</h4>
+                                <h4 class="font-semibold text-xl text-gray-100 mb-2"><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Hybrid Content Consumption</span></h4>
                                 <p class="text-base text-gray-300 mt-1 leading-relaxed">Continued robust growth of both concise short-form vertical video (e.g., TikTok) for immediate engagement and rich long-form episodic content (e.g., YouTube, streaming platforms) for deeper narrative immersion.</p>
                             </div>
                         </div>
@@ -302,7 +480,7 @@
                         <div id="market-content">
                             <div id="tam-content" class="tab-content text-lg text-gray-300 leading-relaxed"> <!-- Light text -->
                                 <h4 class="font-bold text-2xl text-gray-100 mb-3">Total Addressable Market</h4> <!-- Light text -->
-                                <p>The expansive global digital content consumption market, particularly within the lifestyle, travel, and documentary genres, currently valued in the **billions of dollars** and experiencing rapid, consistent growth worldwide.</p>
+                                <p>The expansive global digital content consumption market, particularly within the lifestyle, travel, and documentary genres, currently valued in the billions of dollars and experiencing rapid, consistent growth worldwide.</p>
                             </div>
                              <div id="sam-content" class="tab-content hidden text-lg text-gray-300 leading-relaxed">
                                 <h4 class="font-bold text-2xl text-gray-100 mb-3">Serviceable Available Market</h4>
@@ -328,15 +506,15 @@
                 <div class="grid lg:grid-cols-5 gap-16">
                     <div class="lg:col-span-2 space-y-8">
                         <div>
-                           <h3 class="text-2xl font-bold text-gray-100 mb-4">Core Revenue Streams 💰</h3> <!-- Light text -->
+                           <h3 class="text-2xl font-bold text-gray-100 mb-4">Core Revenue Streams <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></span></h3> <!-- Light text -->
                            <ul class="list-disc list-inside text-lg text-gray-300 space-y-2 leading-relaxed"> <!-- Light text -->
-                               <li><span class="font-semibold">Primary:</span> Strategic Sponsorships & Integrated Brand Partnerships – the main driver of our revenue.</li>
-                               <li><span class="font-semibold">Secondary:</span> Platform Ad Revenue (e.g., YouTube AdSense, TikTok Creator Fund) – scaling with our expanding audience.</li>
-                               <li><span class="font-semibold">Future Potential:</span> Premium Licensing agreements with major streaming platforms, exclusive Merchandise sales related to the brand.</li>
+                               <li>Primary: Strategic Sponsorships & Integrated Brand Partnerships – the main driver of our revenue.</li>
+                               <li>Secondary: Platform Ad Revenue (e.g., YouTube AdSense, TikTok Creator Fund) – scaling with our expanding audience.</li>
+                               <li>Future Potential: Premium Licensing agreements with major streaming platforms, exclusive Merchandise sales related to the brand.</li>
                            </ul>
                         </div>
                          <div>
-                           <h3 class="text-2xl font-bold text-gray-100 mb-4">Optimized Cost Structure 📊</h3>
+                           <h3 class="text-2xl font-bold text-gray-100 mb-4">Optimized Cost Structure <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3 3v18h18"/><path d="M18 15V9"/><path d="M13 19V11"/><path d="M8 17v-3"/></svg></span></h3>
                            <ul class="list-disc list-inside text-lg text-gray-300 space-y-2 leading-relaxed">
                                <li>Significant Travel Expenses (flights, diverse car rentals, premium accommodation).</li>
                                <li>Specialized Equipment Purchase and Maintenance (advanced cameras, high-fidelity mics, professional editing suite).</li>
@@ -346,8 +524,8 @@
                            </ul>
                         </div>
                          <div>
-                           <h3 class="text-2xl font-bold text-gray-100 mb-4">Projected Break-even Point 📈</h3>
-                           <p class="text-lg text-gray-300 leading-relaxed">We project to achieve profitability within **18-24 months** of the full series launch, assuming successful initial funding and consistent achievement of our audience growth targets.</p>
+                           <h3 class="text-2xl font-bold text-gray-100 mb-4">Projected Break-even Point <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3 17a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM20 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM10.85 10.85l7.07 7.07"/><path d="M19 14.5L14.5 19"/><path d="M10.85 13.15L3.78 6.08"/><path d="M9.5 19l4.5-4.5"/></svg></span></h3>
+                           <p class="text-lg text-gray-300 leading-relaxed">We project to achieve profitability within 18-24 months of the full series launch, assuming successful initial funding and consistent achievement of our audience growth targets.</p>
                         </div>
                     </div>
                     <div class="lg:col-span-3 bg-gray-800 p-8 md:p-10 rounded-2xl shadow-xl border border-gray-700"> <!-- Darker panel -->
@@ -369,21 +547,21 @@
                 </div>
                 <div class="grid md:grid-cols-2 gap-16">
                     <div class="bg-[#2D3748] p-10 rounded-2xl shadow-lg border border-[#4A5568]"> <!-- Darker panel -->
-                        <h3 class="text-3xl font-bold text-gray-50 mb-6">Key Achievements To Date ✅</h3> <!-- Light text -->
+                        <h3 class="text-3xl font-bold text-gray-50 mb-6">Key Achievements To Date <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span></h3> <!-- Light text -->
                         <ul class="list-disc list-inside text-lg text-gray-300 space-y-3 leading-relaxed">
-                            <li>**Concept Refinement:** The core idea, unique storytelling format, and comprehensive production strategy have been meticulously crafted and detailed.</li>
-                            <li>**Team Assembly:** A dedicated and highly complementary core team (Host/Content Creator and Logistics/Production Manager) is fully in place.</li>
-                            <li>**Framework Definition:** Specific, cutting-edge camera gear (Samsung S24 dual, GoPro, Ray-Ban glasses, pro mic) and advanced storytelling methodology (Dan Harmon Story Circle) are fully integrated into the production plan.</li>
-                            <li>**Strategic Focus:** A decisive geographic focus has been identified for Season 1, commencing in Europe, leveraging existing knowledge and diverse cultures.</li>
+                            <li>Concept Refinement: The core idea, unique storytelling format, and comprehensive production strategy have been meticulously crafted and detailed.</li>
+                            <li>Team Assembly: A dedicated and highly complementary core team (Host/Content Creator and Logistics/Production Manager) is fully in place.</li>
+                            <li>Framework Definition: Specific, cutting-edge camera gear (Samsung S24 dual, GoPro, Ray-Ban glasses, pro mic) and advanced storytelling methodology (Dan Harmon Story Circle) are fully integrated into the production plan.</li>
+                            <li>Strategic Focus: A decisive geographic focus has been identified for Season 1, commencing in Europe, leveraging existing knowledge and diverse cultures.</li>
                         </ul>
                     </div>
                     <div class="bg-gray-800 p-10 rounded-2xl shadow-lg border border-gray-700"> <!-- Darker panel -->
-                        <h3 class="text-3xl font-bold text-gray-100 mb-6">Future Strategic Milestones 🚀</h3> <!-- Light text -->
+                        <h3 class="text-3xl font-bold text-gray-100 mb-6">Future Strategic Milestones <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 2L6 22H18L12 2Z"/></svg></span></h3> <!-- Light text -->
                         <ul class="list-disc list-inside text-lg text-gray-300 space-y-3 leading-relaxed">
-                            <li>**Q3 2025: Secure Seed Funding & Initial Sponsorship:** Close our foundational funding round to finance essential equipment, pre-production, and initial travel for pilot episodes. Simultaneously, establish the crucial local fixer network.</li>
-                            <li>**Q4 2025: Pilot Episode Production & Initial Content Launch:** Finalize specific European locations, participant profiles, film 1-2 full pilot episodes, and launch initial car ride segments on TikTok/YouTube to cultivate early audience engagement.</li>
-                            <li>**Q1 2026: Season 1 Full Production & Main Platform Launch:** Commence full-scale production of Season 1, release the first full episodes on primary platforms, and initiate comprehensive marketing campaigns.</li>
-                            <li>**Q3 2026: Accelerated Audience & Partnership Growth:** Achieve target viewership milestones and secure substantial additional key brand partnerships for future seasons, validating scalability.</li>
+                            <li>Q3 2025: Secure Seed Funding & Initial Sponsorship: Close our foundational funding round to finance essential equipment, pre-production, and initial travel for pilot episodes. Simultaneously, establish the crucial local fixer network.</li>
+                            <li>Q4 2025: Pilot Episode Production & Initial Content Launch: Finalize specific European locations, participant profiles, film 1-2 full pilot episodes, and launch initial car ride segments on TikTok/YouTube to cultivate early audience engagement.</li>
+                            <li>Q1 2026: Season 1 Full Production & Main Platform Launch: Commence full-scale production of Season 1, release the first full episodes on primary platforms, and initiate comprehensive marketing campaigns.</li>
+                            <li>Q3 2026: Accelerated Audience & Partnership Growth: Achieve target viewership milestones and secure substantial additional key brand partnerships for future seasons, validating scalability.</li>
                         </ul>
                     </div>
                 </div>
@@ -401,7 +579,7 @@
                     <div class="bg-gray-800 p-10 rounded-2xl shadow-lg border border-gray-700"> <!-- Darker panel -->
                         <h3 class="text-2xl font-bold text-gray-100 mb-4">Elijah</h3>
                         <p class="text-[#9370DB] font-semibold mb-3 text-lg">Host, Visionary & Lead Content Creator</p> <!-- Violet accent -->
-                        <p class="text-gray-300 text-base leading-relaxed">The empathetic driving force and charismatic front-person behind "A Day in Other People's Shoes." Elijah brings a unique blend of insatiable curiosity, innate charisma, and intuitive storytelling to every immersive experience. Their unwavering commitment to genuine connection and the distinctive "gentleman" persona define the series' core appeal and distinguish its brand identity.</p>
+                        <p class="text-gray-300 text-base leading-relaxed">The empathetic driving force and charismatic front-person behind "Live One Day." Elijah brings a unique blend of insatiable curiosity, innate charisma, and intuitive storytelling to every immersive experience. Their unwavering commitment to genuine connection and the distinctive "gentleman" persona define the series' core appeal and distinguish its brand identity.</p> <!-- Project Name Updated Here -->
                     </div>
                     <div class="bg-gray-800 p-10 rounded-2xl shadow-lg border border-gray-700">
                         <h3 class="text-2xl font-bold text-gray-100 mb-4">[Partner Name]</h3>
@@ -429,14 +607,14 @@
                 </div>
                 <div class="grid lg:grid-cols-2 gap-16">
                     <div>
-                        <h3 class="text-3xl font-bold text-gray-100 mb-6">What Truly Sets Us Apart 💎</h3>
+                        <h3 class="text-3xl font-bold text-gray-100 mb-6">What Truly Sets Us Apart <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12.68 12.68 17 17l-1.31 1.31A6.71 6.71 0 0 1 11.3 22H5a2 2 0 0 1-2-2v-5.69a6.7 6.7 0 0 1 1.62-4.38L8.68 6.32l4 4ZM17 17l-1.31 1.31"/><path d="M22 5l-2-2-7 7-2 2"/><path d="M15 9l2-2 7-7"/><path d="m19 14-2.5-2.5"/></svg></span></h3>
                         <ul class="list-disc list-inside text-lg text-gray-300 space-y-4 leading-relaxed">
-                            <li>**Unrivaled Immersion:** We transcend mere observation. The host genuinely "lives a day" in the participant's reality, entirely without personal money and truly at their mercy – a profound level of authentic immersion rarely, if ever, achieved in media.</li>
-                            <li>**Sophisticated Hybrid Storytelling:** A meticulously crafted blend of captivating "gentleman lifestyle" pre-experience segments, intimate in-car "Dan Harmon Story Circle" interviews, raw first-person daily immersion, and deeply reflective post-experience insights. This creates a rich, multi-layered narrative tapestry that captivates and informs.</li>
-                            <li>**Ethical Reciprocity & Impeccable Preparedness:** Our unwavering commitment to "giving back" to participants (via profit sharing or agreed-upon compensation) is foundational. This is further bolstered by our local fixer network's pre-selection process, ensuring explicit consent, full preparedness, and a truly collaborative, respectful relationship from inception.</li>
-                            <li>**Distinct Host Persona:** The "gentleman" aesthetic, characterized by elegant attire and demeanor, cultivates a unique and highly memorable brand identity. It conveys profound care, undeniable class, and a respectful, academic approach to cultural discovery.</li>
-                            <li>**Strategic Multi-Platform Content Deployment:** We masterfully leverage both short-form, high-impact vertical video (e.g., TikTok for car ride excerpts) and rich, long-form episodic content (e.g., YouTube, streaming platforms for full seasons), maximizing reach and engagement across diverse audience consumption habits.</li>
-                            <li>**Seamless Integrated Sponsorship Opportunities:** The "gentleman lifestyle" segments and the organic, authentic usage of high-quality travel gear provide natural, non-intrusive avenues for premium, high-value brand partnerships that genuinely resonate with audiences.</li>
+                            <li>Unrivaled Immersion: We transcend mere observation. The host genuinely "lives a day" in the participant's reality, entirely without personal money and truly at their mercy – a profound level of authentic immersion rarely, if ever, achieved in media.</li>
+                            <li>Sophisticated Hybrid Storytelling: A meticulously crafted blend of captivating "gentleman lifestyle" pre-experience segments, intimate in-car "Dan Harmon Story Circle" interviews, raw first-person daily immersion, and deeply reflective post-experience insights. This creates a rich, multi-layered narrative tapestry that captivates and informs.</li>
+                            <li>Ethical Reciprocity & Impeccable Preparedness: Our unwavering commitment to "giving back" to participants (via profit sharing or agreed-upon compensation) is foundational. This is further bolstered by our local fixer network's pre-selection process, ensuring explicit consent, full preparedness, and a truly collaborative, respectful relationship from inception.</li>
+                            <li>Distinct Host Persona: The "gentleman" aesthetic, characterized by elegant attire and demeanor, cultivates a unique and highly memorable brand identity. It conveys profound care, undeniable class, and a respectful, academic approach to cultural discovery.</li>
+                            <li>Strategic Multi-Platform Content Deployment: We masterfully leverage both short-form, high-impact vertical video (e.g., TikTok for car ride excerpts) and rich, long-form episodic content (e.g., YouTube, streaming platforms for full seasons), maximizing reach and engagement across diverse audience consumption habits.</li>
+                            <li>Seamless Integrated Sponsorship Opportunities: The "gentleman" lifestyle segments and the organic, authentic usage of high-quality travel gear provide natural, non-intrusive avenues for premium, high-value brand partnerships that genuinely resonate with audiences.</li>
                         </ul>
                     </div>
                     <div class="bg-[#2D3748] p-10 rounded-2xl shadow-xl border border-[#4A5568] flex flex-col items-center justify-center text-center"> <!-- Darker panel -->
@@ -445,9 +623,9 @@
                             <p class="text-lg text-gray-300 mb-6 leading-relaxed">We distinctively position ourselves by prioritizing profound genuine immersion and ethically driven storytelling over superficiality and manufactured drama.</p>
                             <p class="text-xl font-bold text-gray-100 mb-3">A Conceptual Spectrum of Content:</p>
                             <div class="bg-gray-800 p-4 rounded-lg shadow-inner border border-gray-700"> <!-- Darker inner box -->
-                                <p class="text-base text-gray-400 italic leading-relaxed">**(Low Authenticity / High Production Value) ------- [Traditional Competitors] ------- (High Authenticity / High Storytelling Depth)**</p>
+                                <p class="text-base text-gray-400 italic leading-relaxed">Low Authenticity / High Production Value) ------- [Traditional Competitors] ------- (High Authenticity / High Storytelling Depth)</p>
                             </div>
-                            <p class="text-3xl font-extrabold text-[#9370DB] mt-8 tracking-wide drop-shadow-sm">"A Day in Other People's Shoes"</p> <!-- Violet accent -->
+                            <p class="text-3xl font-extrabold text-[#9370DB] mt-8 tracking-wide drop-shadow-sm">"Live One Day"</p> <!-- Project Name Updated Here -->
                             <p class="text-lg text-gray-300 mt-4 leading-relaxed">Our series stands at the pinnacle: a fusion of deep human connection, unparalleled narrative richness, and unyielding ethical production standards. We don't just show a culture; we immerse, we share, we elevate.</p>
                         </div>
                     </div>
@@ -489,10 +667,10 @@
                  <div class="grid lg:grid-cols-2 gap-16 items-center">
                     <div>
                         <h3 class="text-3xl font-bold text-gray-100 mb-6">The Investment Opportunity</h3>
-                        <p class="text-xl text-gray-300 mb-4 leading-relaxed">We are actively seeking Seed/Angel Investment of <span class="font-bold bg-[#A67C00] px-3 py-1 rounded-lg text-gray-900">[X,000,000]</span> to officially launch "A Day in Other People's Shoes" and secure foundational Strategic Partnerships that will define our trajectory.</p> <!-- Dark Gold accent for highlight -->
-                        <p class="text-lg text-gray-300 mb-8 leading-relaxed">This vital initial investment will be meticulously and strategically allocated to: **Production & Travel (60%)**, encompassing all Season 1 filming, international logistics, and essential equipment upgrades; **Post-Production & Team Expansion (25%)**, covering expert editing, sound design, and bringing on additional support including our invaluable local fixer network; and **Marketing & Audience Growth (15%)**, for targeted campaigns to build our global presence and attract further elite brand collaborations.</p>
-                        <p class="text-xl font-bold text-gray-100 mt-8 leading-relaxed">Expected Outcomes: A Legacy of Impact 🌐</p>
-                        <p class="text-lg text-gray-300 leading-relaxed">With this pivotal support, we will not only deliver a highly engaging, uniquely compelling, and ethically produced content series that resonates deeply with a global, discerning audience, but also firmly establish "A Day in Other People's Shoes" as a leading voice in authentic cultural storytelling. This venture promises exceptional, measurable value to our brand partners and will prove a highly scalable model for empathetic digital media, creating both significant financial return and profound cultural impact.</p>
+                        <p class="text-xl text-gray-300 mb-4 leading-relaxed">We are actively seeking Seed/Angel Investment of <span class="bg-[#A67C00] px-3 py-1 rounded-lg text-gray-900">[X,000,000]</span> to officially launch "Live One Day" and secure foundational Strategic Partnerships that will define our trajectory.</p> <!-- Project Name Updated Here -->
+                        <p class="text-lg text-gray-300 mb-8 leading-relaxed">This vital initial investment will be meticulously and strategically allocated to: Production & Travel (60%), encompassing all Season 1 filming, international logistics, and essential equipment upgrades; Post-Production & Team Expansion (25%), covering expert editing, sound design, and bringing on additional support including our invaluable local fixer network; and Marketing & Audience Growth (15%), for targeted campaigns to build our global presence and attract further elite brand collaborations.</p>
+                        <p class="text-xl font-bold text-gray-100 mt-8 leading-relaxed">Expected Outcomes: A Legacy of Impact <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/><path d="M12 2v20"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10c0 1.95-0.78 3.8-2 5.1"/><path d="M12 2a15.3 15.3 0 0 0-4 10c0 1.95 0.78 3.8 2 5.1"/><path d="M22 12a15.3 15.3 0 0 0-10-4"/><path d="M22 12a15.3 15.3 0 0 1-10 4"/></svg></span></p>
+                        <p class="text-lg text-gray-300 leading-relaxed">With this pivotal support, we will not only deliver a highly engaging, uniquely compelling, and ethically produced content series that resonates deeply with a global, discerning audience, but also firmly establish "Live One Day" as a leading voice in authentic cultural storytelling. This venture promises exceptional, measurable value to our brand partners and will prove a highly scalable model for empathetic digital media, creating both significant financial return and profound cultural impact.</p> <!-- Project Name Updated Here -->
                     </div>
                      <div class="bg-gray-800 p-10 rounded-2xl shadow-xl border border-gray-700 text-center"> <!-- Darker panel -->
                         <h3 class="text-3xl font-bold text-gray-100 mb-8">Connect With Us</h3>
@@ -547,13 +725,61 @@
                         content.classList.remove('active');
                         icon.classList.remove('rotate-180');
                         icon.textContent = '▼';
+                        // When opening, potentially load videos (conceptual)
+                        const videoPlayerContainer = content.querySelector('.video-player-container');
+                        if (videoPlayerContainer) {
+                            // Example: A function to load actual video embeds could go here
+                            // For now, it will just show the video thumbnails grid
+                            console.log('Accordion opened. Video content area is ready.');
+                        }
                     } else {
                         content.classList.add('active');
                         icon.classList.add('rotate-180');
                         icon.textContent = '▲';
+                        // When closing, potentially clear videos (conceptual)
+                        const videoPlayerContainer = content.querySelector('.video-player-container');
+                        if (videoPlayerContainer) {
+                             videoPlayerContainer.classList.add('hidden-video-player');
+                             videoPlayerContainer.innerHTML = ''; // Clear loaded video
+                        }
                     }
                 });
             });
+
+            // Video Thumbnail Click Functionality
+            document.querySelectorAll('.video-thumbnail').forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    const videoId = this.dataset.videoId; // Get the unique video ID
+                    // Determine which player container to use based on the parent accordion
+                    const parentAccordionContent = this.closest('.accordion-content');
+                    const videoPlayerContainer = parentAccordionContent.querySelector('.video-player-container');
+
+                    if (videoPlayerContainer) {
+                        // In a real application, you'd fetch video data from GitHub/API
+                        // For now, we'll use a placeholder YouTube embed
+                        const youtubeEmbedUrl = `https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0`; // Example YouTube embed
+                        
+                        // Clear any previously loaded video
+                        videoPlayerContainer.innerHTML = ''; 
+
+                        // Insert new video embed
+                        videoPlayerContainer.innerHTML = `
+                            <iframe 
+                                width="560" 
+                                height="315" 
+                                src="${youtubeEmbedUrl}" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        `;
+                        videoPlayerContainer.classList.remove('hidden-video-player'); // Show the player
+                        // In a real app, you'd use videoId to load the *correct* video
+                        console.log(`Loading video for: ${videoId}. (Placeholder URL used)`);
+                    }
+                });
+            });
+
 
             // Market Section Tabs
             const tabButtons = document.querySelectorAll('.tab-btn');
@@ -688,8 +914,8 @@
                                 backgroundColor: '#F8FAFC' /* Light tooltip background */
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
 
             // Global Search Functionality
@@ -731,6 +957,12 @@
                                 otherContent.classList.remove('active');
                                 otherContent.previousElementSibling.querySelector('span').classList.remove('rotate-180');
                                 otherContent.previousElementSibling.querySelector('span').textContent = '▼';
+                                // When closing others, also hide their video players
+                                const otherVideoPlayer = otherContent.querySelector('.video-player-container');
+                                if (otherVideoPlayer) {
+                                    otherVideoPlayer.classList.add('hidden-video-player');
+                                    otherVideoPlayer.innerHTML = ''; // Clear loaded video
+                                }
                             }
                         });
 
@@ -738,10 +970,51 @@
                             content.classList.remove('active');
                             icon.classList.remove('rotate-180');
                             icon.textContent = '▼';
+                             // When opening, potentially load videos (conceptual)
+                            const videoPlayerContainer = content.querySelector('.video-player-container');
+                            if (videoPlayerContainer) {
+                                console.log('Accordion opened. Video content area is ready.');
+                            }
                         } else {
                             content.classList.add('active');
                             icon.classList.add('rotate-180');
                             icon.textContent = '▲';
+                            // When closing, potentially clear videos (conceptual)
+                            const videoPlayerContainer = content.querySelector('.video-player-container');
+                            if (videoPlayerContainer) {
+                                videoPlayerContainer.classList.add('hidden-video-player');
+                                videoPlayerContainer.innerHTML = ''; // Clear loaded video
+                            }
+                        }
+                    });
+                });
+
+                // Re-bind video thumbnail click listeners
+                document.querySelectorAll('.video-thumbnail').forEach(thumbnail => {
+                    thumbnail.removeEventListener('click', null); // Remove old listener
+                    thumbnail.addEventListener('click', function() {
+                        const videoId = this.dataset.videoId; // Get the unique video ID
+                        const parentAccordionContent = this.closest('.accordion-content');
+                        const videoPlayerContainer = parentAccordionContent.querySelector('.video-player-container');
+
+                        if (videoPlayerContainer) {
+                            // In a real application, you'd fetch video data from GitHub/API based on videoId
+                            // For now, we'll use a placeholder YouTube embed
+                            const youtubeEmbedUrl = `https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0`; // Example YouTube embed
+                            
+                            videoPlayerContainer.innerHTML = ''; // Clear any previously loaded video
+                            videoPlayerContainer.innerHTML = `
+                                <iframe 
+                                    width="560" 
+                                    height="315" 
+                                    src="${youtubeEmbedUrl}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                            `;
+                            videoPlayerContainer.classList.remove('hidden-video-player'); // Show the player
+                            console.log(`Loading video for: ${videoId}. (Placeholder URL used)`);
                         }
                     });
                 });

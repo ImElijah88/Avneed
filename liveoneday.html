@@ -194,6 +194,9 @@
             width: 90%;
             position: relative; /* For absolute positioning of labels and marker */
             margin-top: 2rem;
+            height: 4rem; /* Give more space for labels above */
+            display: flex;
+            align-items: center; /* Vertically center the bar itself */
         }
         .spectrum-bar {
             width: 100%;
@@ -204,19 +207,22 @@
         }
         .spectrum-label-left, .spectrum-label-right {
             position: absolute;
-            bottom: 2rem; /* Position above the bar */
-            font-size: 0.95rem; /* Slightly larger for readability */
-            color: #A0AEC0; /* Light gray text */
+            top: 0; /* Position at the top of the wrapper */
+            font-size: 0.95rem;
+            color: #A0AEC0;
             white-space: nowrap;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Add text shadow for clarity */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            line-height: 1.2; /* Ensure lines don't get too close */
         }
         .spectrum-label-left {
             left: 0;
-            transform: translateX(-20%); /* Adjust to prevent overlap */
+            transform: translateX(-50%); /* Center based on its own width at 0 */
+            text-align: left;
         }
         .spectrum-label-right {
             right: 0;
-            transform: translateX(20%); /* Adjust to prevent overlap */
+            transform: translateX(50%); /* Center based on its own width at 100% */
+            text-align: right;
         }
         .live-one-day-marker {
             position: absolute;
@@ -271,11 +277,9 @@
             color: #E2E8F0;
         }
 
-        /* New Pulsing Decoration */
+        /* Pulsing Decoration */
         .pulsing-decoration {
             position: absolute;
-            width: 20px;
-            height: 20px;
             background-color: rgba(147, 112, 219, 0.3); /* Transparent violet */
             border-radius: 50%;
             animation: pulse-light 3s infinite ease-in-out;
@@ -283,23 +287,97 @@
             pointer-events: none; /* Allow clicks to pass through */
         }
         /* Different scales for variety */
+        .pulsing-decoration.scale-xs {
+            width: 10px;
+            height: 10px;
+            background-color: rgba(255, 215, 0, 0.1); /* Very light, faint gold */
+            animation-duration: 4s;
+            animation-delay: 0.5s;
+        }
+        .pulsing-decoration.scale-sm {
+            width: 15px;
+            height: 15px;
+            background-color: rgba(147, 112, 219, 0.2); /* Slightly transparent violet */
+            animation-duration: 3.8s;
+            animation-delay: 0.2s;
+        }
         .pulsing-decoration.scale-md {
-            width: 25px;
-            height: 25px;
-            background-color: rgba(255, 215, 0, 0.2); /* Transparent gold */
+            width: 20px;
+            height: 20px;
+            background-color: rgba(255, 215, 0, 0.25); /* More transparent gold */
             animation-duration: 3.5s;
+            animation-delay: 0.7s;
         }
         .pulsing-decoration.scale-lg {
+            width: 25px;
+            height: 25px;
+            background-color: rgba(147, 112, 219, 0.35); /* More transparent violet */
+            animation-duration: 3.2s;
+            animation-delay: 0.4s;
+        }
+        .pulsing-decoration.scale-xl {
             width: 30px;
             height: 30px;
-            background-color: rgba(147, 112, 219, 0.4);
-            animation-duration: 2.8s;
+            background-color: rgba(255, 215, 0, 0.4); /* Less transparent gold */
+            box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.8), 0 0 30px 10px rgba(255, 215, 0, 0.5); /* Stronger golden glow */
+            animation-duration: 2.5s;
+            animation-delay: 1s;
         }
-        /* Custom animation for lighter pulse */
+        /* Custom animation for lighter pulse - now default for .pulsing-decoration */
         @keyframes pulse-light {
-            0% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.2); opacity: 0.9; }
-            100% { transform: scale(1); opacity: 0.6; }
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.5; }
+        }
+
+        /* Animation for the Key Project Phases title */
+        .animated-title {
+            animation: letter-spacing-pulse 2s infinite alternate; /* Apply animation */
+        }
+
+        @keyframes letter-spacing-pulse {
+            0% { letter-spacing: -0.01em; }
+            100% { letter-spacing: 0.05em; }
+        }
+        /* Styles for the new logo */
+        .logo-svg {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+            width: 2.5rem; /* Adjust size as needed */
+            height: 2.5rem;
+            color: #FFD700; /* Golden color */
+            animation: rotate-logo 10s linear infinite; /* Subtle rotation */
+        }
+
+        @keyframes rotate-logo {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Audio Player Styling */
+        .audio-player-fixed {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000; /* Ensure it's on top of other content */
+            background-color: #2D3748; /* Darker background for player */
+            border-radius: 1rem; /* More rounded */
+            padding: 0.5rem 1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: auto; /* Allow content to dictate width */
+            max-width: calc(100% - 40px); /* Max width for mobile responsiveness */
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Hide default audio controls on small screens, provide play/pause button if needed */
+        @media (max-width: 640px) {
+            .audio-player-fixed audio {
+                width: 100%; /* Full width on small screens */
+            }
         }
     </style>
 </head>
@@ -308,7 +386,15 @@
     <!-- Header & Navigation -->
     <header class="bg-gray-900/90 backdrop-blur-lg sticky top-0 z-50 shadow-lg"> <!-- Darker header -->
         <nav class="container mx-auto px-8 py-5 flex justify-between items-center">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-100">Live One Day</h1> <!-- Project Name Updated -->
+            <div class="flex items-center">
+                <!-- Golden Logo SVG -->
+                <svg class="logo-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 2V6M12 18V22M2 12H6M18 12H22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="12" cy="12" r="3" fill="currentColor"/>
+                </svg>
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-100">Live One Day</h1> <!-- Project Name Updated -->
+            </div>
             <div class="flex items-center space-x-6">
                 <input type="text" id="search-input" placeholder="Search insights..." class="px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-[#9370DB] transition-colors w-36 sm:w-56 bg-gray-800 text-gray-200 placeholder-gray-400"> <!-- Darker input, violet ring -->
                 <div class="hidden md:flex space-x-10">
@@ -338,6 +424,29 @@
 
     <!-- Main Content -->
     <main>
+        <!-- Pulsing decorations for the overall body/background -->
+        <div class="pulsing-decoration scale-xs" style="top: 2%; left: 8%;"></div>
+        <div class="pulsing-decoration scale-sm" style="top: 5%; right: 12%;"></div>
+        <div class="pulsing-decoration scale-md" style="top: 10%; left: 20%;"></div>
+        <div class="pulsing-decoration scale-lg" style="top: 18%; right: 5%;"></div>
+        <div class="pulsing-decoration scale-xl" style="top: 25%; left: 15%;"></div>
+        <div class="pulsing-decoration scale-xs" style="top: 30%; right: 2%;"></div>
+        <div class="pulsing-decoration scale-sm" style="top: 35%; left: 5%;"></div>
+        <div class="pulsing-decoration scale-md" style="top: 40%; right: 18%;"></div>
+        <div class="pulsing-decoration scale-lg" style="top: 45%; left: 25%;"></div>
+        <div class="pulsing-decoration scale-xl" style="top: 50%; right: 10%;"></div>
+        <div class="pulsing-decoration scale-xs" style="top: 55%; left: 8%;"></div>
+        <div class="pulsing-decoration scale-sm" style="top: 60%; right: 20%;"></div>
+        <div class="pulsing-decoration scale-md" style="top: 65%; left: 12%;"></div>
+        <div class="pulsing-decoration scale-lg" style="top: 70%; right: 25%;"></div>
+        <div class="pulsing-decoration scale-xl" style="top: 75%; left: 3%;"></div>
+        <div class="pulsing-decoration scale-xs" style="top: 80%; right: 1%;"></div>
+        <div class="pulsing-decoration scale-sm" style="top: 85%; left: 18%;"></div>
+        <div class="pulsing-decoration scale-md" style="top: 90%; right: 13%;"></div>
+        <div class="pulsing-decoration scale-lg" style="top: 95%; left: 30%;"></div>
+        <div class="pulsing-decoration scale-xl" style="top: 98%; right: 22%;"></div>
+
+
         <!-- Hero Section -->
         <section class="min-h-[70vh] flex items-center justify-center text-center py-24 px-6 relative overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-br from-[#1A202C] to-[#2D3748] opacity-90 z-0"></div> <!-- Darker gradient -->
@@ -346,13 +455,10 @@
                 <p class="mt-6 text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">A groundbreaking series fostering authentic human connection and empathetic understanding, one genuine journey at a time.</p> <!-- Light text -->
                 <a href="#solution" class="cta-button mt-12 inline-block">Explore Our Unique Approach ✨</a>
             </div>
-            <!-- Pulsing Decorations in Hero -->
-            <div class="pulsing-decoration" style="top: 15%; left: 10%;"></div>
-            <div class="pulsing-decoration scale-md" style="bottom: 10%; right: 15%;"></div>
         </section>
 
         <!-- 1. The Problem We're Solving -->
-        <section id="vision" class="py-24 md:py-36">
+        <section id="vision" class="py-24 md:py-36 relative overflow-hidden">
             <div class="container mx-auto px-8">
                 <div class="text-center mb-20">
                     <h2 class="text-4xl md:text-5xl font-extrabold text-gray-100">1. The Problem We're Solving</h2> <!-- Light text -->
@@ -401,14 +507,14 @@
         </section>
 
         <!-- 2. Our Innovative Solution -->
-        <section id="solution" class="py-24 md:py-36 bg-[#1A202C]"> <!-- Main dark background -->
+        <section id="solution" class="py-24 md:py-36 bg-[#1A202C] relative overflow-hidden"> <!-- Main dark background -->
             <div class="container mx-auto px-8">
                 <div class="text-center mb-20">
                     <h2 class="text-4xl md:text-5xl font-extrabold text-gray-100">2. Our Innovative Solution: The Live One Day Journey</h2> <!-- Project Name Updated Here -->
                     <p class="mt-5 text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">"Live One Day" is a groundbreaking, multi-platform episodic video series. We capture authentic, unscripted experiences with minimal intrusion, fostering empathy and understanding through genuine storytelling. The series will be produced in seasons, commencing with Europe.</p>
                 </div>
                 
-                <h3 class="text-3xl font-bold text-center mb-10 text-gray-100">Key Project Phases & Tailored Content</h3> <!-- Light text -->
+                <h3 class="text-3xl font-bold text-center mb-10 text-gray-100 animated-title">Key Project Phases & Tailored Content</h3> <!-- Added animated-title class -->
                 <div class="max-w-5xl mx-auto bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-2"> <!-- Darker panel -->
                     <!-- Accordion Item: Gentleman Lifestyle -->
                     <div class="border-b border-gray-700 last:border-b-0">
@@ -543,7 +649,7 @@
                         <div class="accordion-content px-6 md:px-8 pb-6 md:pb-8 text-gray-300 text-lg">
                             <p class="mb-3 leading-relaxed">Purpose: To capture the broader journey between immersive experiences, offering a comprehensive look at the production's global scope and flexible content for diverse platforms.</p>
                             <p class="mb-3 leading-relaxed">Content: Behind-the-scenes footage, logistical challenges, and general exploration as the host navigates various cities, cultures, and transport methods between primary filming locations. Provides a sense of the series' grand scale and the personal adventure involved.</p>
-                            <p class="mb-3 leading-relaxed">Ideal Platform: <span class="text-[#FFD700]">YouTube (travel snippets), TikTok (quick travel tips/moments)</span>. Highly adaptable content that can be tailored for various platform formats, including dedicated sponsorship activations.</p> <!-- Dark Gold accent -->
+                            <p class="mb-3 leading-relaxed">Ideal Platform: <span class="text-[#FFD700]">Instagram (Reels, Stories), YouTube (shorter forms)</span>. Highly adaptable content that can be tailored for various platform formats, including dedicated sponsorship activations.</p> <!-- Dark Gold accent -->
                             <p class="leading-relaxed">Sponsorship Potential: Broad appeal for general travel brands, airlines, luggage companies, travel-tech innovations, and destination marketing boards.</p>
 
                             <!-- Video Integration for General Travelling Vlog -->
@@ -570,7 +676,7 @@
         </section>
 
         <!-- 3. Market Opportunity -->
-        <section id="market" class="py-24 md:py-36">
+        <section id="market" class="py-24 md:py-36 relative overflow-hidden">
             <div class="container mx-auto px-8">
                 <div class="text-center mb-20">
                     <h2 class="text-4xl md:text-5xl font-extrabold text-gray-100">3. Market Opportunity</h2> <!-- Light text -->
@@ -622,7 +728,7 @@
         </section>
 
         <!-- 4. Business Model & Financials -->
-        <section id="model" class="py-24 md:py-36 bg-[#1A202C]"> <!-- Main dark background -->
+        <section id="model" class="py-24 md:py-36 bg-[#1A202C] relative overflow-hidden"> <!-- Main dark background -->
             <div class="container mx-auto px-8">
                 <div class="text-center mb-20">
                     <h2 class="text-4xl md:text-5xl font-extrabold text-gray-100">4. Business Model & Financial Projections</h2> <!-- Light text -->
@@ -664,7 +770,7 @@
         </section>
 
         <!-- 5. Traction & Milestones -->
-        <section id="traction" class="py-24 md:py-36">
+        <section id="traction" class="py-24 md:py-36 relative overflow-hidden">
             <div class="container mx-auto px-8">
                 <div class="text-center mb-20">
                     <h2 class="text-4xl md:text-5xl font-extrabold text-gray-100">5. Traction & Strategic Milestones</h2>
@@ -694,7 +800,7 @@
         </section>
 
         <!-- 6. Our Team -->
-        <section id="team" class="py-24 md:py-36 bg-[#1A202C]"> <!-- Main dark background -->
+        <section id="team" class="py-24 md:py-36 bg-[#1A202C] relative overflow-hidden"> <!-- Main dark background -->
             <div class="container mx-auto px-8">
                 <div class="text-center mb-20">
                     <h2 class="text-4xl md:text-5xl font-extrabold text-gray-100">6. Our Esteemed Team</h2>
@@ -704,7 +810,7 @@
                     <div class="bg-gray-800 p-10 rounded-2xl shadow-lg border border-gray-700"> <!-- Darker panel -->
                         <h3 class="text-2xl text-gray-100 mb-4">Elijah</h3>
                         <p class="text-[#9370DB] font-semibold mb-3 text-lg">Host, Visionary & Lead Content Creator</p> <!-- Violet accent -->
-                        <p class="text-gray-300 text-base leading-relaxed">The empathetic driving force and charismatic front-person behind "Live One Day." Elijah brings a unique blend of insatiable curiosity, innate charisma, and intuitive storytelling to every immersive experience. Their unwavering commitment to genuine connection and the distinctive "gentleman" persona define the series' core appeal and distinguish its brand identity.</p> <!-- Project Name Updated Here -->
+                        <p class="text-gray-300 text-base leading-relaxed">The empathetic driving force and charismatic front-person behind "Live One Day." Elijah brings a unique blend of insatiable curiosity, innate charisma, and intuitive storytelling to every immersive experience. Their unwavering commitment to genuine connection and the distinctive "gentleman" persona define the series' core appeal and and distinguish its brand identity.</p> <!-- Project Name Updated Here -->
                     </div>
                     <div class="bg-gray-800 p-10 rounded-2xl shadow-lg border border-gray-700">
                         <h3 class="text-2xl text-gray-100 mb-4">[Partner Name]</h3>
@@ -724,7 +830,7 @@
         </section>
 
         <!-- 7. Competitive Advantage -->
-        <section id="advantage" class="py-24 md:py-36">
+        <section id="advantage" class="py-24 md:py-36 relative overflow-hidden">
             <div class="container mx-auto px-8">
                 <div class="text-center mb-20">
                     <h2 class="text-4xl md:text-5xl font-extrabold text-gray-100">7. Our Unparalleled Competitive Advantage</h2>
@@ -751,8 +857,8 @@
                             <div class="spectrum-container">
                                 <h4 class="text-xl text-gray-100 mb-6">A Conceptual Spectrum of Content:</h4>
                                 <div class="spectrum-bar-wrapper">
-                                    <span class="spectrum-label-left">Low Authenticity / High Production Value</span>
-                                    <span class="spectrum-label-right">High Authenticity / High Storytelling Depth</span>
+                                    <span class="spectrum-label-left">Low Authenticity /<br>High Production Value</span>
+                                    <span class="spectrum-label-right">High Authenticity /<br>High Storytelling Depth</span>
                                     <div class="spectrum-bar"></div>
                                     <div class="live-one-day-marker">Live One Day</div>
                                 </div>
@@ -767,7 +873,7 @@
         </section>
 
         <!-- 8. Financial Projections (High-Level Overview) -->
-        <section id="financials" class="py-24 md:py-36 bg-[#1A202C]"> <!-- Main dark background -->
+        <section id="financials" class="py-24 md:py-36 bg-[#1A202C] relative overflow-hidden"> <!-- Main dark background -->
             <div class="container mx-auto px-8">
                 <div class="text-center mb-20">
                     <h2 class="text-4xl md:text-5xl font-extrabold text-gray-100">8. Financial Projections (High-Level Overview)</h2> <!-- Light text -->
@@ -777,7 +883,7 @@
                     <div class="bg-gray-800 p-8 md:p-10 rounded-2xl shadow-xl border border-gray-700"> <!-- Darker panel -->
                          <h3 class="text-2xl text-center text-gray-100 mb-8">Illustrative Revenue Projections</h3>
                          <div class="chart-container">
-                            <canvas id="revenueChart"></canvas>
+                            <canvas id="revenueChart2"></canvas> <!-- Changed ID to revenueChart2 -->
                          </div>
                     </div>
                      <div class="bg-gray-800 p-8 md:p-10 rounded-2xl shadow-xl border border-gray-700"> <!-- Darker panel -->
@@ -791,7 +897,7 @@
         </section>
 
         <!-- 9. The Ask / Call to Action & 10. Contact Information -->
-        <section id="ask" class="py-24 md:py-36">
+        <section id="ask" class="py-24 md:py-36 relative overflow-hidden">
             <div class="container mx-auto px-8">
                  <div class="text-center mb-20">
                     <h2 class="text-4xl md:text-5xl font-extrabold text-gray-100">9. The Ask & 10. Contact Information</h2>
@@ -822,6 +928,16 @@
             </div>
         </section>
     </main>
+
+    <!-- Fixed Audio Player -->
+    <div class="audio-player-fixed">
+        <p class="text-gray-300 text-sm mr-2 whitespace-nowrap hidden sm:block">Background Audio:</p>
+        <audio controls loop>
+            <!-- Updated src to use the provided GitHub raw audio file -->
+            <source src="https://raw.githubusercontent.com/ImElijah88/Quiz/main/live1day.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -916,7 +1032,7 @@
                     const activeButton = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
                     if (activeButton) {
                         activeButton.classList.add('active-tab', 'text-gray-100', 'border-[#9370DB]');
-                        activeButton.classList.remove('text-gray-400', 'border-transparent', 'hover:border-gray-600');
+                        activeButton.classList.remove('text-gray-400', 'border-transparent', 'hover:border-600');
                     }
 
                     tabContents.forEach(content => {
@@ -1020,6 +1136,84 @@
                     });
                 }
             }
+
+            // New function for the second revenue chart
+            function createRevenueChart2() {
+                const revenueCtx2 = document.getElementById('revenueChart2'); // Use the new ID
+                if(revenueCtx2) {
+                    if (revenueCtx2.chart) {
+                        revenueCtx2.chart.destroy();
+                    }
+                    revenueCtx2.chart = new Chart(revenueCtx2, {
+                        type: 'line',
+                        data: {
+                            labels: ['Year 1', 'Year 3', 'Year 5'],
+                            datasets: [{
+                                label: 'Low-End Projection ($)',
+                                data: [100000, 500000, 2000000],
+                                borderColor: '#FFD700',
+                                backgroundColor: 'rgba(255, 215, 0, 0.2)',
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 5,
+                                pointBackgroundColor: '#FFD700',
+                                pointBorderColor: '#1A202C',
+                                pointHoverRadius: 7
+                            }, {
+                                label: 'High-End Projection ($)',
+                                data: [250000, 1500000, 5000000],
+                                borderColor: '#9370DB',
+                                backgroundColor: 'rgba(147, 112, 219, 0.2)',
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 5,
+                                pointBackgroundColor: '#9370DB',
+                                pointBorderColor: '#1A202C',
+                                pointHoverRadius: 7
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value, index, values) {
+                                            return '$' + (value / 1000000) + 'M';
+                                        },
+                                        color: chartFontColor
+                                    },
+                                    grid: {
+                                        color: '#4A5568'
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        color: chartFontColor
+                                    },
+                                    grid: {
+                                        color: '#4A5568'
+                                    }
+                                }
+                            },
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        color: chartFontColor
+                                    }
+                                },
+                                tooltip: {
+                                    titleColor: '#1A202C',
+                                    bodyColor: '#1A202C',
+                                    backgroundColor: '#F8FAFC'
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
 
             function createFundingChart() {
                 const fundingCtx = document.getElementById('fundingChart');
@@ -1179,9 +1373,11 @@
 
                 initializeMarketTabs();
 
+                // Call both chart functions
                 setTimeout(() => {
                     createRevenueChart();
                     createFundingChart();
+                    createRevenueChart2(); // Call the new chart function
                 }, 100); 
             }
 
@@ -1189,6 +1385,7 @@
             setTimeout(() => {
                 createRevenueChart();
                 createFundingChart();
+                createRevenueChart2(); // Call the new chart function on initial load
             }, 100);
         });
     </script>

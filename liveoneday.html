@@ -10,18 +10,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
     <!-- Chosen Palette: Deep Charcoals & Greys with Distinct Dark Gold (#FFD700) & Sophisticated Violet (#9370DB) Accents for Dark Theme -->
-    <!-- Application Structure Plan: A single-page, scrolling "interactive pitch deck" designed to mirror the original business proposal's 10 sections (The Vision, The Journey, The Market, The Model, The Ask, etc.). A sticky top navigation allows quick jumps between these major sections. Within "The Vision" section, specific "Project Phases & Content Types" (Gentleman Lifestyle, Car Ride Interview, etc.) are presented as interactive accordion panels, each detailing its purpose, ideal platform, and sponsorship relevance. Financial data is visualized with dynamic charts. This structure ensures comprehensive content coverage, intuitive navigation, and interactive exploration of key project elements, enhancing user understanding and engagement. -->
-    <!-- Visualization & Content Choices:
-        - Report Info: Overall Business Proposal Sections -> Goal: Inform/Organize -> Viz: Scrollable sections with sticky nav. Interaction: Smooth scroll to anchors. Justification: Standard for pitch decks, allows linear and non-linear exploration. Library: HTML/CSS/JS.
-        - Report Info: Problem & Solution (High-Level) -> Goal: Inform/Contrast -> Viz: Paired text blocks. Justification: Clear and concise.
-        - Report Info: Key Project Phases (Gentleman Lifestyle, Car Ride, Live The Day, Reflections, Travelling Vlog) -> Goal: Explain Process/Highlight Differentiators -> Viz: Interactive Accordion Panels. Interaction: Click to expand/collapse. Justification: Allows detailed explanations for each phase, including platform relevance, without overwhelming the main view. Enhances engagement. Library: Tailwind/JS.
-        - Report Info: Financial Projections -> Goal: Show Change/Growth -> Viz: Line Chart. Interaction: Hover tooltips. Justification: Effective for visualizing multi-year trends. Library: Chart.js.
-        - Report Info: Fund Allocation -> Goal: Show Proportions -> Viz: Doughnut Chart. Interaction: Hover tooltips. Justification: Clear breakdown of resource distribution. Library: Chart.js.
-        - Report Info: Market Size (TAM/SAM/SOM) -> Goal: Inform/Organize -> Viz: Tabbed content area. Interaction: Click to switch views. Justification: Efficiently presents layered information. Library: Tailwind/JS.
-        - Report Info: Local Fixer role -> Goal: Emphasize key resource -> Viz: Integrated text within relevant sections (Team, Solution). Justification: Highlights crucial operational aspect.
-        - Search Functionality: Goal: Allow discovery -> Viz: Global search input. Interaction: Highlights matching text across all sections (conceptual). Justification: Aids quick content lookup in a single-page document. Library: JS.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -183,6 +171,136 @@
             color: #FFD700; /* Golden color for icons */
             flex-shrink: 0; /* Prevent icon from shrinking */
         }
+        .tab-btn.active-tab { /* New class for active tab */
+            border-bottom-color: #9370DB;
+            color: #E2E8F0;
+        }
+
+        /* Styles for the new Animated Spectrum Graphic */
+        .spectrum-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+            background-color: #2D3748; /* Darker background */
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        .spectrum-bar-wrapper {
+            width: 90%;
+            position: relative; /* For absolute positioning of labels and marker */
+            margin-top: 2rem;
+        }
+        .spectrum-bar {
+            width: 100%;
+            height: 1.5rem;
+            background: linear-gradient(to right, #4B5563, #9370DB); /* Gradient from gray to violet */
+            border-radius: 0.75rem;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .spectrum-label-left, .spectrum-label-right {
+            position: absolute;
+            bottom: 2rem; /* Position above the bar */
+            font-size: 0.95rem; /* Slightly larger for readability */
+            color: #A0AEC0; /* Light gray text */
+            white-space: nowrap;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Add text shadow for clarity */
+        }
+        .spectrum-label-left {
+            left: 0;
+            transform: translateX(-20%); /* Adjust to prevent overlap */
+        }
+        .spectrum-label-right {
+            right: 0;
+            transform: translateX(20%); /* Adjust to prevent overlap */
+        }
+        .live-one-day-marker {
+            position: absolute;
+            top: 50%;
+            left: 85%; /* Position towards high authenticity/storytelling */
+            transform: translate(-50%, -50%);
+            width: 3.5rem; /* Slightly larger marker */
+            height: 3.5rem;
+            background-color: #FFD700; /* Dark Gold */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #1A202C; /* Dark text */
+            font-size: 0.85rem; /* Slightly larger text inside marker */
+            text-align: center;
+            line-height: 1;
+            box-shadow: 0 0 0 5px rgba(255, 215, 0, 0.3), 0 0 15px rgba(255, 215, 0, 0.7); /* Golden glow */
+            animation: pulse 2s infinite ease-in-out;
+            cursor: pointer;
+            z-index: 10; /* Ensure it's above other elements */
+            padding: 0.2rem; /* Add padding for text inside */
+        }
+
+        .live-one-day-marker::before {
+            content: "";
+            position: absolute;
+            top: -1rem; /* Position above the marker */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid #FFD700; /* Pointing triangle */
+        }
+        .live-one-day-marker:hover {
+             transform: translate(-50%, -50%) scale(1.05); /* Slight grow on hover */
+        }
+
+        /* Marker pulse animation - already defined, ensure it's here */
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 5px rgba(255, 215, 0, 0.3), 0 0 15px rgba(255, 215, 0, 0.7); }
+            50% { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 0 0 8px rgba(255, 215, 0, 0.5), 0 0 25px rgba(255, 215, 0, 1); }
+            100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 5px rgba(255, 215, 0, 0.3), 0 0 15px rgba(255, 215, 0, 0.7); }
+        }
+
+        .spectrum-info {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #E2E8F0;
+        }
+
+        /* New Pulsing Decoration */
+        .pulsing-decoration {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(147, 112, 219, 0.3); /* Transparent violet */
+            border-radius: 50%;
+            animation: pulse-light 3s infinite ease-in-out;
+            z-index: 0; /* Keep it in the background */
+            pointer-events: none; /* Allow clicks to pass through */
+        }
+        /* Different scales for variety */
+        .pulsing-decoration.scale-md {
+            width: 25px;
+            height: 25px;
+            background-color: rgba(255, 215, 0, 0.2); /* Transparent gold */
+            animation-duration: 3.5s;
+        }
+        .pulsing-decoration.scale-lg {
+            width: 30px;
+            height: 30px;
+            background-color: rgba(147, 112, 219, 0.4);
+            animation-duration: 2.8s;
+        }
+        /* Custom animation for lighter pulse */
+        @keyframes pulse-light {
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 0.6; }
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -228,6 +346,9 @@
                 <p class="mt-6 text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto leading-relaxed">A groundbreaking series fostering authentic human connection and empathetic understanding, one genuine journey at a time.</p> <!-- Light text -->
                 <a href="#solution" class="cta-button mt-12 inline-block">Explore Our Unique Approach ✨</a>
             </div>
+            <!-- Pulsing Decorations in Hero -->
+            <div class="pulsing-decoration" style="top: 15%; left: 10%;"></div>
+            <div class="pulsing-decoration scale-md" style="bottom: 10%; right: 15%;"></div>
         </section>
 
         <!-- 1. The Problem We're Solving -->
@@ -244,31 +365,35 @@
                     </div>
                     <div class="bg-[#2D3748] p-10 rounded-2xl shadow-lg border border-[#4A5568]"> <!-- Darker background, border -->
                         <h3 class="text-3xl font-bold text-gray-50 mb-6">Who Seeks This Solution?</h3> <!-- Light text -->
-                        <ul class="list-disc list-inside text-lg text-gray-300 space-y-3"> <!-- Light text -->
-                            <li><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Discerning Viewers:</span> Individuals (18-45) seeking genuine, unscripted cultural immersion and empathetic human narratives beyond conventional entertainment.</li>
-                            <li><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 2l-5.5 9h11z"/><circle cx="12" cy="17" r="3"/><path d="M22 10l-1.5 11h-17L2 10z"/></svg> Forward-Thinking Brands:</span> Sponsors looking for authentic, high-impact content that fosters deep audience connection and offers meaningful, integrated product placement opportunities.</li>
-                            <li><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M7 10v12"/><path d="M10 10c1-1 3-2 3-2"/><path d="M13 18c-1 1-3 2-3 2"/><path d="M17 14v8"/><path d="M18 6.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/><path d="M10 2c-1 1-3 2-3 2"/></svg> Local Voices:</span> People with compelling, untold stories lacking a global platform.</li>
-                        </ul>
+                        <p class="text-lg text-gray-300 leading-relaxed mb-4">
+                            <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Discerning Viewers:</span> Individuals (18-45) are actively seeking genuine, unscripted cultural immersion and empathetic human narratives beyond conventional entertainment.
+                        </p>
+                        <p class="text-lg text-gray-300 leading-relaxed mb-4">
+                            <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 2l-5.5 9h11z"/><circle cx="12" cy="17" r="3"/><path d="M22 10l-1.5 11h-17L2 10z"/></svg> Forward-Thinking Brands:</span> Sponsors are looking for authentic, high-impact content that fosters deep audience connection and offers meaningful, integrated product placement opportunities.
+                        </p>
+                        <p class="text-lg text-gray-300 leading-relaxed">
+                            <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M7 10v12"/><path d="M10 10c1-1 3-2 3-2"/><path d="M13 18c-1 1-3 2-3 2"/><path d="M17 14v8"/><path d="M18 6.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/><path d="M10 2c-1 1-3 2-3 2"/></svg> Local Voices:</span> We aim to provide a global platform for people with compelling, untold stories who currently lack broad visibility.
+                        </p>
                     </div>
                 </div>
                 <div class="mt-20">
                     <h3 class="text-3xl font-bold text-center mb-10 text-gray-100">Limitations of Existing Approaches</h3> <!-- Light text -->
                     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
                         <div class="bg-gray-800 p-8 rounded-xl shadow-md border border-gray-700 card-hover-effect"> <!-- Darker cards -->
-                            <h4 class="font-bold text-xl text-gray-100 mb-2">Traditional Vlogs</h4> <!-- Light text -->
+                            <h4 class="text-xl text-gray-100 mb-2">Traditional Vlogs</h4> <!-- Light text -->
                             <p class="text-base text-gray-300 leading-relaxed">Prioritize aesthetics over deep dives into local daily life and genuine human interaction.</p> <!-- Light text -->
                         </div>
                         <div class="bg-gray-800 p-8 rounded-xl shadow-md border border-gray-700 card-hover-effect">
-                            <h4 class="font-bold text-xl text-gray-100 mb-2">Documentaries</h4>
+                            <h4 class="text-xl text-gray-100 mb-2">Documentaries</h4>
                             <p class="text-base text-gray-300 leading-relaxed">Often too formal and less spontaneous, missing a true "first-person, immersive" feel.</p>
                         </div>
                         <div class="bg-gray-800 p-8 rounded-xl shadow-md border border-gray-700 card-hover-effect">
-                            <h4 class="font-bold text-xl text-gray-100 mb-2">Reality TV</h4>
+                            <h4 class="text-xl text-gray-100 mb-2">Reality TV</h4>
                             <p class="text-base text-gray-300 leading-relaxed">Frequently scripted or dramatized, compromising authenticity for manufactured entertainment value.</p>
                         </div>
                         <div class="bg-gray-800 p-8 rounded-xl shadow-md border border-gray-700 card-hover-effect">
-                            <h4 class="font-bold text-xl text-gray-100 mb-2">Social Influencers</h4>
-                            <p class="text-base text-gray-300 leading-relaxed">Tend to focus on highly curated lifestyles rather translated to: unvarnished, authentic experiences.</p>
+                            <h4 class="text-xl text-gray-100 mb-2">Social Influencers</h4>
+                            <p class="text-base text-gray-300 leading-relaxed">Tend to focus on highly curated lifestyles rather than unvarnished, authentic experiences.</p>
                         </div>
                     </div>
                 </div>
@@ -457,15 +582,15 @@
                         <p class="mb-8 text-lg text-gray-300 leading-relaxed">Our content resonates with a global demographic (primarily 18-45) actively seeking authentic travel, profound cultural exchange, and human-centric narratives. This creates unparalleled, integrated opportunities for discerning premium brands across travel, automotive, fashion, and technology sectors.</p> <!-- Light text -->
                          <div class="space-y-6">
                             <div class="bg-gray-800 p-6 rounded-xl shadow-md border border-gray-700"> <!-- Darker cards -->
-                                <h4 class="font-semibold text-xl text-gray-100 mb-2"><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Preference for Authenticity</span></h4>
+                                <h4 class="text-xl text-gray-100 mb-2"><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Preference for Authenticity</span></h4>
                                 <p class="text-base text-gray-300 mt-1 leading-relaxed">A growing and undeniable audience demand for raw, unscripted content that stands in stark contrast to heavily produced or artificial narratives.</p>
                             </div>
                              <div class="bg-gray-800 p-6 rounded-xl shadow-md border border-gray-700">
-                                <h4 class="font-semibold text-xl text-gray-100 mb-2"><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> The Power of Empathy</span></h4>
+                                <h4 class="text-xl text-gray-100 mb-2"><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg> The Power of Empathy</span></h4>
                                 <p class="text-base text-gray-300 mt-1 leading-relaxed">Increasing societal interest in content that genuinely fosters cultural understanding, deep empathy, and connection with diverse human experiences.</p>
                             </div>
                              <div class="bg-gray-800 p-6 rounded-xl shadow-md border border-gray-700">
-                                <h4 class="font-semibold text-xl text-gray-100 mb-2"><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Hybrid Content Consumption</span></h4>
+                                <h4 class="text-xl text-gray-100 mb-2"><span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> Hybrid Content Consumption</span></h4>
                                 <p class="text-base text-gray-300 mt-1 leading-relaxed">Continued robust growth of both concise short-form vertical video (e.g., TikTok) for immediate engagement and rich long-form episodic content (e.g., YouTube, streaming platforms) for deeper narrative immersion.</p>
                             </div>
                         </div>
@@ -473,21 +598,21 @@
                     <div class="bg-gray-800 p-10 rounded-2xl shadow-xl border border-gray-700"> <!-- Darker panel -->
                         <h3 class="text-3xl font-bold text-gray-100 mb-8 text-center">Defining Our Market Reach</h3> <!-- Light text -->
                         <div class="flex border-b border-gray-600 mb-6"> <!-- Darker border -->
-                            <button data-tab="tam" class="tab-btn flex-1 py-4 px-2 text-xl font-medium text-gray-100 border-b-4 border-[#9370DB] transition-all duration-300">TAM</button> <!-- Light text, Violet accent -->
+                            <button data-tab="tam" class="tab-btn flex-1 py-4 px-2 text-xl font-medium text-gray-400 border-b-4 border-transparent hover:border-gray-600 transition-all duration-300">TAM</button> <!-- Light text, Violet accent -->
                             <button data-tab="sam" class="tab-btn flex-1 py-4 px-2 text-xl font-medium text-gray-400 border-b-4 border-transparent hover:border-gray-600 transition-all duration-300">SAM</button> <!-- Lighter text for inactive -->
                             <button data-tab="som" class="tab-btn flex-1 py-4 px-2 text-xl font-medium text-gray-400 border-b-4 border-transparent hover:border-gray-600 transition-all duration-300">SOM</button>
                         </div>
                         <div id="market-content">
                             <div id="tam-content" class="tab-content text-lg text-gray-300 leading-relaxed"> <!-- Light text -->
-                                <h4 class="font-bold text-2xl text-gray-100 mb-3">Total Addressable Market</h4> <!-- Light text -->
+                                <h4 class="text-2xl text-gray-100 mb-3">Total Addressable Market</h4> <!-- Light text -->
                                 <p>The expansive global digital content consumption market, particularly within the lifestyle, travel, and documentary genres, currently valued in the billions of dollars and experiencing rapid, consistent growth worldwide.</p>
                             </div>
                              <div id="sam-content" class="tab-content hidden text-lg text-gray-300 leading-relaxed">
-                                <h4 class="font-bold text-2xl text-gray-100 mb-3">Serviceable Available Market</h4>
+                                <h4 class="text-2xl text-gray-100 mb-3">Serviceable Available Market</h4>
                                 <p>The substantial segment of this market specifically seeking authentic, human-story-driven, and truly immersive content, alongside discerning brands actively investing in integrated, high-impact marketing strategies.</p>
                             </div>
                              <div id="som-content" class="tab-content hidden text-lg text-gray-300 leading-relaxed">
-                                <h4 class="font-bold text-2xl text-gray-100 mb-3">Serviceable Obtainable Market</h4>
+                                <h4 class="text-2xl text-gray-100 mb-3">Serviceable Obtainable Market</h4>
                                 <p>Our meticulously targeted initial segment for the first season, strategically focusing on the diverse European market. This approach leverages geographic advantage and rich cultural tapestries, aiming to secure a significant early share of both viewership and foundational brand partnerships.</p>
                             </div>
                         </div>
@@ -506,7 +631,7 @@
                 <div class="grid lg:grid-cols-5 gap-16">
                     <div class="lg:col-span-2 space-y-8">
                         <div>
-                           <h3 class="text-2xl font-bold text-gray-100 mb-4">Core Revenue Streams <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></span></h3> <!-- Light text -->
+                           <h3 class="text-2xl text-gray-100 mb-4">Core Revenue Streams <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></span></h3> <!-- Light text -->
                            <ul class="list-disc list-inside text-lg text-gray-300 space-y-2 leading-relaxed"> <!-- Light text -->
                                <li>Primary: Strategic Sponsorships & Integrated Brand Partnerships – the main driver of our revenue.</li>
                                <li>Secondary: Platform Ad Revenue (e.g., YouTube AdSense, TikTok Creator Fund) – scaling with our expanding audience.</li>
@@ -514,7 +639,7 @@
                            </ul>
                         </div>
                          <div>
-                           <h3 class="text-2xl font-bold text-gray-100 mb-4">Optimized Cost Structure <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3 3v18h18"/><path d="M18 15V9"/><path d="M13 19V11"/><path d="M8 17v-3"/></svg></span></h3>
+                           <h3 class="text-2xl text-gray-100 mb-4">Optimized Cost Structure <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3 3v18h18"/><path d="M18 15V9"/><path d="M13 19V11"/><path d="M8 17v-3"/></svg></span></h3>
                            <ul class="list-disc list-inside text-lg text-gray-300 space-y-2 leading-relaxed">
                                <li>Significant Travel Expenses (flights, diverse car rentals, premium accommodation).</li>
                                <li>Specialized Equipment Purchase and Maintenance (advanced cameras, high-fidelity mics, professional editing suite).</li>
@@ -524,12 +649,12 @@
                            </ul>
                         </div>
                          <div>
-                           <h3 class="text-2xl font-bold text-gray-100 mb-4">Projected Break-even Point <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3 17a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM20 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM10.85 10.85l7.07 7.07"/><path d="M19 14.5L14.5 19"/><path d="M10.85 13.15L3.78 6.08"/><path d="M9.5 19l4.5-4.5"/></svg></span></h3>
+                           <h3 class="text-2xl text-gray-100 mb-4">Projected Break-even Point <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M3 17a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM20 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM10.85 10.85l7.07 7.07"/><path d="M19 14.5L14.5 19"/><path d="M10.85 13.15L3.78 6.08"/><path d="M9.5 19l4.5-4.5"/></svg></span></h3>
                            <p class="text-lg text-gray-300 leading-relaxed">We project to achieve profitability within 18-24 months of the full series launch, assuming successful initial funding and consistent achievement of our audience growth targets.</p>
                         </div>
                     </div>
                     <div class="lg:col-span-3 bg-gray-800 p-8 md:p-10 rounded-2xl shadow-xl border border-gray-700"> <!-- Darker panel -->
-                         <h3 class="2xl font-bold text-center text-gray-100 mb-8">Illustrative Revenue Projections</h3>
+                         <h3 class="text-2xl text-center text-gray-100 mb-8">Illustrative Revenue Projections</h3>
                          <div class="chart-container">
                             <canvas id="revenueChart"></canvas>
                          </div>
@@ -547,7 +672,7 @@
                 </div>
                 <div class="grid md:grid-cols-2 gap-16">
                     <div class="bg-[#2D3748] p-10 rounded-2xl shadow-lg border border-[#4A5568]"> <!-- Darker panel -->
-                        <h3 class="text-3xl font-bold text-gray-50 mb-6">Key Achievements To Date <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span></h3> <!-- Light text -->
+                        <h3 class="text-3xl text-gray-50 mb-6">Key Achievements To Date <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span></h3> <!-- Light text -->
                         <ul class="list-disc list-inside text-lg text-gray-300 space-y-3 leading-relaxed">
                             <li>Concept Refinement: The core idea, unique storytelling format, and comprehensive production strategy have been meticulously crafted and detailed.</li>
                             <li>Team Assembly: A dedicated and highly complementary core team (Host/Content Creator and Logistics/Production Manager) is fully in place.</li>
@@ -556,7 +681,7 @@
                         </ul>
                     </div>
                     <div class="bg-gray-800 p-10 rounded-2xl shadow-lg border border-gray-700"> <!-- Darker panel -->
-                        <h3 class="text-3xl font-bold text-gray-100 mb-6">Future Strategic Milestones <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 2L6 22H18L12 2Z"/></svg></span></h3> <!-- Light text -->
+                        <h3 class="text-3xl text-gray-100 mb-6">Future Strategic Milestones <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 2L6 22H18L12 2Z"/></svg></span></h3> <!-- Light text -->
                         <ul class="list-disc list-inside text-lg text-gray-300 space-y-3 leading-relaxed">
                             <li>Q3 2025: Secure Seed Funding & Initial Sponsorship: Close our foundational funding round to finance essential equipment, pre-production, and initial travel for pilot episodes. Simultaneously, establish the crucial local fixer network.</li>
                             <li>Q4 2025: Pilot Episode Production & Initial Content Launch: Finalize specific European locations, participant profiles, film 1-2 full pilot episodes, and launch initial car ride segments on TikTok/YouTube to cultivate early audience engagement.</li>
@@ -577,17 +702,17 @@
                 </div>
                 <div class="grid lg:grid-cols-3 gap-10">
                     <div class="bg-gray-800 p-10 rounded-2xl shadow-lg border border-gray-700"> <!-- Darker panel -->
-                        <h3 class="text-2xl font-bold text-gray-100 mb-4">Elijah</h3>
+                        <h3 class="text-2xl text-gray-100 mb-4">Elijah</h3>
                         <p class="text-[#9370DB] font-semibold mb-3 text-lg">Host, Visionary & Lead Content Creator</p> <!-- Violet accent -->
                         <p class="text-gray-300 text-base leading-relaxed">The empathetic driving force and charismatic front-person behind "Live One Day." Elijah brings a unique blend of insatiable curiosity, innate charisma, and intuitive storytelling to every immersive experience. Their unwavering commitment to genuine connection and the distinctive "gentleman" persona define the series' core appeal and distinguish its brand identity.</p> <!-- Project Name Updated Here -->
                     </div>
                     <div class="bg-gray-800 p-10 rounded-2xl shadow-lg border border-gray-700">
-                        <h3 class="text-2xl font-bold text-gray-100 mb-4">[Partner Name]</h3>
+                        <h3 class="text-2xl text-gray-100 mb-4">[Partner Name]</h3>
                         <p class="text-[#9370DB] font-semibold mb-3 text-lg">Logistics & Production Manager</p> <!-- Violet accent -->
                         <p class="text-gray-300 text-base leading-relaxed">The indispensable operational backbone of the entire endeavor. This individual meticulously manages all vital logistics—from intricate international travel arrangements, diverse luxury car rentals, and essential documentation, to comprehensive video editing and sophisticated post-production. Their expertise ensures the seamless execution of each global journey and the delivery of the highest quality final output, upholding the series' premium standards.</p>
                     </div>
                     <div class="bg-gray-800 p-10 rounded-2xl shadow-lg border border-gray-700">
-                        <h3 class="text-2xl font-bold text-gray-100 mb-4">Local Fixer Network</h3>
+                        <h3 class="text-2xl text-gray-100 mb-4">Local Fixer Network</h3>
                         <p class="text-[#9370DB] font-semibold mb-3 text-lg">In-Country Experts & Production Facilitators</p> <!-- Violet accent -->
                         <p class="text-gray-300 text-base leading-relaxed">A crucial and trusted extension of our core team. This network comprises highly knowledgeable individuals in each target region who are responsible for ethically pre-identifying compelling local stories, meticulously vetting potential participants, facilitating all necessary legal agreements, and ensuring complete logistical readiness prior to the host's arrival. Their invaluable local expertise is paramount for authentic, respectful, and highly efficient on-the-ground production.</p>
                     </div>
@@ -607,7 +732,7 @@
                 </div>
                 <div class="grid lg:grid-cols-2 gap-16">
                     <div>
-                        <h3 class="text-3xl font-bold text-gray-100 mb-6">What Truly Sets Us Apart <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12.68 12.68 17 17l-1.31 1.31A6.71 6.71 0 0 1 11.3 22H5a2 2 0 0 1-2-2v-5.69a6.7 6.7 0 0 1 1.62-4.38L8.68 6.32l4 4ZM17 17l-1.31 1.31"/><path d="M22 5l-2-2-7 7-2 2"/><path d="M15 9l2-2 7-7"/><path d="m19 14-2.5-2.5"/></svg></span></h3>
+                        <h3 class="text-3xl text-gray-100 mb-6">What Truly Sets Us Apart <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12.68 12.68 17 17l-1.31 1.31A6.71 6.71 0 0 1 11.3 22H5a2 2 0 0 1-2-2v-5.69a6.7 6.7 0 0 1 1.62-4.38L8.68 6.32l4 4ZM17 17l-1.31 1.31"/><path d="M22 5l-2-2-7 7-2 2"/><path d="M15 9l2-2 7-7"/><path d="m19 14-2.5-2.5"/></svg></span></h3>
                         <ul class="list-disc list-inside text-lg text-gray-300 space-y-4 leading-relaxed">
                             <li>Unrivaled Immersion: We transcend mere observation. The host genuinely "lives a day" in the participant's reality, entirely without personal money and truly at their mercy – a profound level of authentic immersion rarely, if ever, achieved in media.</li>
                             <li>Sophisticated Hybrid Storytelling: A meticulously crafted blend of captivating "gentleman lifestyle" pre-experience segments, intimate in-car "Dan Harmon Story Circle" interviews, raw first-person daily immersion, and deeply reflective post-experience insights. This creates a rich, multi-layered narrative tapestry that captivates and informs.</li>
@@ -619,14 +744,22 @@
                     </div>
                     <div class="bg-[#2D3748] p-10 rounded-2xl shadow-xl border border-[#4A5568] flex flex-col items-center justify-center text-center"> <!-- Darker panel -->
                         <div>
-                            <h3 class="text-3xl font-bold text-gray-50 mb-6">Our Position in the Competitive Landscape</h3>
+                            <h3 class="text-3xl text-gray-50 mb-6">Our Position in the Competitive Landscape</h3>
                             <p class="text-lg text-gray-300 mb-6 leading-relaxed">We distinctively position ourselves by prioritizing profound genuine immersion and ethically driven storytelling over superficiality and manufactured drama.</p>
-                            <p class="text-xl font-bold text-gray-100 mb-3">A Conceptual Spectrum of Content:</p>
-                            <div class="bg-gray-800 p-4 rounded-lg shadow-inner border border-gray-700"> <!-- Darker inner box -->
-                                <p class="text-base text-gray-400 italic leading-relaxed">Low Authenticity / High Production Value) ------- [Traditional Competitors] ------- (High Authenticity / High Storytelling Depth)</p>
+                            
+                            <!-- New Animated Spectrum Graphic -->
+                            <div class="spectrum-container">
+                                <h4 class="text-xl text-gray-100 mb-6">A Conceptual Spectrum of Content:</h4>
+                                <div class="spectrum-bar-wrapper">
+                                    <span class="spectrum-label-left">Low Authenticity / High Production Value</span>
+                                    <span class="spectrum-label-right">High Authenticity / High Storytelling Depth</span>
+                                    <div class="spectrum-bar"></div>
+                                    <div class="live-one-day-marker">Live One Day</div>
+                                </div>
+                                <p class="spectrum-info mt-8 text-base text-gray-400 italic">
+                                    Our unique approach positions "Live One Day" at the forefront of authentic, deeply engaging cultural narratives.
+                                </p>
                             </div>
-                            <p class="text-3xl font-extrabold text-[#9370DB] mt-8 tracking-wide drop-shadow-sm">"Live One Day"</p> <!-- Project Name Updated Here -->
-                            <p class="text-lg text-gray-300 mt-4 leading-relaxed">Our series stands at the pinnacle: a fusion of deep human connection, unparalleled narrative richness, and unyielding ethical production standards. We don't just show a culture; we immerse, we share, we elevate.</p>
                         </div>
                     </div>
                 </div>
@@ -642,13 +775,13 @@
                 </div>
                 <div class="grid lg:grid-cols-2 gap-16">
                     <div class="bg-gray-800 p-8 md:p-10 rounded-2xl shadow-xl border border-gray-700"> <!-- Darker panel -->
-                         <h3 class="2xl font-bold text-center text-gray-100 mb-8">Illustrative Revenue Projections</h3>
+                         <h3 class="text-2xl text-center text-gray-100 mb-8">Illustrative Revenue Projections</h3>
                          <div class="chart-container">
                             <canvas id="revenueChart"></canvas>
                          </div>
                     </div>
                      <div class="bg-gray-800 p-8 md:p-10 rounded-2xl shadow-xl border border-gray-700"> <!-- Darker panel -->
-                         <h3 class="2xl font-bold text-center text-gray-100 mb-8">Funding Allocation (Illustrative)</h3>
+                         <h3 class="text-2xl text-center text-gray-100 mb-8">Funding Allocation (Illustrative)</h3>
                          <div class="chart-container">
                              <canvas id="fundingChart"></canvas>
                          </div>
@@ -666,14 +799,14 @@
                 </div>
                  <div class="grid lg:grid-cols-2 gap-16 items-center">
                     <div>
-                        <h3 class="text-3xl font-bold text-gray-100 mb-6">The Investment Opportunity</h3>
-                        <p class="text-xl text-gray-300 mb-4 leading-relaxed">We are actively seeking Seed/Angel Investment of <span class="bg-[#A67C00] px-3 py-1 rounded-lg text-gray-900">[X,000,000]</span> to officially launch "Live One Day" and secure foundational Strategic Partnerships that will define our trajectory.</p> <!-- Project Name Updated Here -->
+                        <h3 class="text-3xl text-gray-100 mb-6">The Investment Opportunity</h3>
+                        <p class="text-xl text-gray-300 mb-4 leading-relaxed">We are actively seeking Seed/Angel Investment to officially launch "Live One Day" and secure foundational Strategic Partnerships that will define our trajectory.</p> <!-- Project Name Updated Here -->
                         <p class="text-lg text-gray-300 mb-8 leading-relaxed">This vital initial investment will be meticulously and strategically allocated to: Production & Travel (60%), encompassing all Season 1 filming, international logistics, and essential equipment upgrades; Post-Production & Team Expansion (25%), covering expert editing, sound design, and bringing on additional support including our invaluable local fixer network; and Marketing & Audience Growth (15%), for targeted campaigns to build our global presence and attract further elite brand collaborations.</p>
-                        <p class="text-xl font-bold text-gray-100 mt-8 leading-relaxed">Expected Outcomes: A Legacy of Impact <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/><path d="M12 2v20"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10c0 1.95-0.78 3.8-2 5.1"/><path d="M12 2a15.3 15.3 0 0 0-4 10c0 1.95 0.78 3.8 2 5.1"/><path d="M22 12a15.3 15.3 0 0 0-10-4"/><path d="M22 12a15.3 15.3 0 0 1-10 4"/></svg></span></p>
+                        <p class="text-xl text-gray-100 mt-8 leading-relaxed">Expected Outcomes: A Legacy of Impact <span class="inline-flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"/><path d="M12 2v20"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10c0 1.95-0.78 3.8-2 5.1"/><path d="M12 2a15.3 15.3 0 0 0-4 10c0 1.95 0.78 3.8 2 5.1"/><path d="M22 12a15.3 15.3 0 0 0-10-4"/><path d="M22 12a15.3 15.3 0 0 1-10 4"/></svg></span></p>
                         <p class="text-lg text-gray-300 leading-relaxed">With this pivotal support, we will not only deliver a highly engaging, uniquely compelling, and ethically produced content series that resonates deeply with a global, discerning audience, but also firmly establish "Live One Day" as a leading voice in authentic cultural storytelling. This venture promises exceptional, measurable value to our brand partners and will prove a highly scalable model for empathetic digital media, creating both significant financial return and profound cultural impact.</p> <!-- Project Name Updated Here -->
                     </div>
                      <div class="bg-gray-800 p-10 rounded-2xl shadow-xl border border-gray-700 text-center"> <!-- Darker panel -->
-                        <h3 class="text-3xl font-bold text-gray-100 mb-8">Connect With Us</h3>
+                        <h3 class="text-3xl text-gray-100 mb-8">Connect With Us</h3>
                         <p class="font-semibold text-xl text-gray-300 mb-3">Elijah</p>
                         <p class="mt-3 text-lg">Email: <a href="mailto:[Your Email Address]" class="text-[#9370DB] hover:text-[#7B68EE] transition-colors">[Your Email Address]</a></p> <!-- Violet accent -->
                         <p class="mt-2 text-lg">Phone: <a href="tel:[Your Phone Number]" class="text-[#9370DB] hover:text-[#7B68EE] transition-colors">[Your Phone Number]</a></p> <!-- Violet accent -->
@@ -725,22 +858,18 @@
                         content.classList.remove('active');
                         icon.classList.remove('rotate-180');
                         icon.textContent = '▼';
-                        // When opening, potentially load videos (conceptual)
                         const videoPlayerContainer = content.querySelector('.video-player-container');
                         if (videoPlayerContainer) {
-                            // Example: A function to load actual video embeds could go here
-                            // For now, it will just show the video thumbnails grid
                             console.log('Accordion opened. Video content area is ready.');
                         }
                     } else {
                         content.classList.add('active');
                         icon.classList.add('rotate-180');
                         icon.textContent = '▲';
-                        // When closing, potentially clear videos (conceptual)
                         const videoPlayerContainer = content.querySelector('.video-player-container');
                         if (videoPlayerContainer) {
                              videoPlayerContainer.classList.add('hidden-video-player');
-                             videoPlayerContainer.innerHTML = ''; // Clear loaded video
+                             videoPlayerContainer.innerHTML = '';
                         }
                     }
                 });
@@ -749,20 +878,14 @@
             // Video Thumbnail Click Functionality
             document.querySelectorAll('.video-thumbnail').forEach(thumbnail => {
                 thumbnail.addEventListener('click', function() {
-                    const videoId = this.dataset.videoId; // Get the unique video ID
-                    // Determine which player container to use based on the parent accordion
+                    const videoId = this.dataset.videoId;
                     const parentAccordionContent = this.closest('.accordion-content');
                     const videoPlayerContainer = parentAccordionContent.querySelector('.video-player-container');
 
                     if (videoPlayerContainer) {
-                        // In a real application, you'd fetch video data from GitHub/API
-                        // For now, we'll use a placeholder YouTube embed
-                        const youtubeEmbedUrl = `https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0`; // Example YouTube embed
+                        const youtubeEmbedUrl = `https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0`;
                         
-                        // Clear any previously loaded video
                         videoPlayerContainer.innerHTML = ''; 
-
-                        // Insert new video embed
                         videoPlayerContainer.innerHTML = `
                             <iframe 
                                 width="560" 
@@ -773,8 +896,7 @@
                                 allowfullscreen>
                             </iframe>
                         `;
-                        videoPlayerContainer.classList.remove('hidden-video-player'); // Show the player
-                        // In a real app, you'd use videoId to load the *correct* video
+                        videoPlayerContainer.classList.remove('hidden-video-player');
                         console.log(`Loading video for: ${videoId}. (Placeholder URL used)`);
                     }
                 });
@@ -782,276 +904,54 @@
 
 
             // Market Section Tabs
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
+            function initializeMarketTabs() {
+                const tabButtons = document.querySelectorAll('.tab-btn');
+                const tabContents = document.querySelectorAll('.tab-content');
+
+                function activateTab(tabId) {
                     tabButtons.forEach(btn => {
-                        btn.classList.remove('text-gray-100', 'border-[#9370DB]'); /* Violet border, light text */
-                        btn.classList.add('text-gray-400', 'border-transparent', 'hover:border-gray-600'); /* Lighter inactive, darker hover */
+                        btn.classList.remove('active-tab', 'text-gray-100', 'border-[#9370DB]');
+                        btn.classList.add('text-gray-400', 'border-transparent', 'hover:border-gray-600');
                     });
-                    button.classList.add('text-gray-100', 'border-[#9370DB]'); /* Violet border, light text */
-                    button.classList.remove('text-gray-400', 'border-transparent', 'hover:border-gray-600');
+                    const activeButton = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+                    if (activeButton) {
+                        activeButton.classList.add('active-tab', 'text-gray-100', 'border-[#9370DB]');
+                        activeButton.classList.remove('text-gray-400', 'border-transparent', 'hover:border-gray-600');
+                    }
 
                     tabContents.forEach(content => {
                         content.classList.add('hidden');
                     });
-                    document.getElementById(button.dataset.tab + '-content').classList.remove('hidden');
+                    const activeContent = document.getElementById(tabId + '-content');
+                    if (activeContent) {
+                        activeContent.classList.remove('hidden');
+                    }
+                }
+
+                tabButtons.forEach(button => {
+                    button.removeEventListener('click', tabClickHandler); 
+                    button.addEventListener('click', tabClickHandler);
                 });
-            });
+
+                function tabClickHandler() {
+                    activateTab(this.dataset.tab);
+                }
+
+                activateTab('tam');
+            }
 
             // Chart.js Implementations
-            const chartFontColor = '#E2E8F0'; /* Light slate for charts */
+            const chartFontColor = '#E2E8F0';
             Chart.defaults.font.family = "'Inter', sans-serif";
             Chart.defaults.color = chartFontColor;
 
-            // Revenue Chart
-            const revenueCtx = document.getElementById('revenueChart');
-            if(revenueCtx) {
-                new Chart(revenueCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Year 1', 'Year 3', 'Year 5'],
-                        datasets: [{
-                            label: 'Low-End Projection ($)',
-                            data: [100000, 500000, 2000000],
-                            borderColor: '#FFD700', /* Dark Gold */
-                            backgroundColor: 'rgba(255, 215, 0, 0.2)', /* Slightly more transparent fill */
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 5,
-                            pointBackgroundColor: '#FFD700',
-                            pointBorderColor: '#1A202C', /* Dark border for points */
-                            pointHoverRadius: 7
-                        }, {
-                            label: 'High-End Projection ($)',
-                            data: [250000, 1500000, 5000000],
-                            borderColor: '#9370DB', /* Violet */
-                            backgroundColor: 'rgba(147, 112, 219, 0.2)', /* Slightly more transparent fill */
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 5,
-                            pointBackgroundColor: '#9370DB',
-                            pointBorderColor: '#1A202C', /* Dark border for points */
-                            pointHoverRadius: 7
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: function(value, index, values) {
-                                        return '$' + (value / 1000000) + 'M';
-                                    },
-                                    color: chartFontColor
-                                },
-                                grid: {
-                                    color: '#4A5568' /* Darker grid lines */
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    color: chartFontColor
-                                },
-                                grid: {
-                                    color: '#4A5568' /* Darker grid lines */
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: chartFontColor
-                                }
-                            },
-                            tooltip: {
-                                titleColor: '#1A202C', /* Dark tooltip title */
-                                bodyColor: '#1A202C', /* Dark tooltip body */
-                                backgroundColor: '#F8FAFC' /* Light tooltip background */
-                            }
-                        }
+            function createRevenueChart() {
+                const revenueCtx = document.getElementById('revenueChart');
+                if(revenueCtx) {
+                    if (revenueCtx.chart) {
+                        revenueCtx.chart.destroy();
                     }
-                });
-            }
-
-            // Funding Allocation Chart
-            const fundingCtx = document.getElementById('fundingChart');
-            if(fundingCtx) {
-                new Chart(fundingCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Production & Travel (60%)', 'Post-Production & Team (25%)', 'Marketing & Growth (15%)'],
-                        datasets: [{
-                            label: 'Fund Allocation',
-                            data: [60, 25, 15],
-                            backgroundColor: [
-                                '#9370DB',  /* Violet */
-                                '#4B5563',  /* Slate Gray */
-                                '#FFD700'   /* Dark Gold */
-                            ],
-                            borderColor: '#1A202C', /* Dark border for segments */
-                            borderWidth: 2
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    boxWidth: 20,
-                                    padding: 20,
-                                    color: chartFontColor
-                                }
-                            },
-                            tooltip: {
-                                titleColor: '#1A202C', /* Dark tooltip title */
-                                bodyColor: '#1A202C', /* Dark tooltip body */
-                                backgroundColor: '#F8FAFC' /* Light tooltip background */
-                            }
-                        }
-                    });
-                }
-            }
-
-            // Global Search Functionality
-            const searchInput = document.getElementById('search-input');
-            let originalMainContent = document.querySelector('main').innerHTML; // Store original HTML of main content
-
-            function applyHighlighting(query) {
-                const mainContentElement = document.querySelector('main');
-                mainContentElement.innerHTML = originalMainContent; // Reset content
-
-                if (query.length > 2) {
-                    const regex = new RegExp(`(${query})`, 'gi');
-                    let newContent = mainContentElement.innerHTML;
-                    // Only highlight text nodes and attributes that are meant to be displayed
-                    // This simple replace is effective for the current content structure
-                    newContent = newContent.replace(regex, '<span class="highlight">$&</span>');
-                    mainContentElement.innerHTML = newContent;
-                }
-                rebindEventListeners(); // Re-bind listeners after content modification
-            }
-
-            searchInput.addEventListener('input', function() {
-                const query = this.value.toLowerCase().trim();
-                applyHighlighting(query);
-            });
-
-            // Function to re-bind all event listeners for interactive elements
-            function rebindEventListeners() {
-                // Re-bind accordion listeners
-                document.querySelectorAll('.accordion-header').forEach(header => {
-                    header.removeEventListener('click', null); // Remove old listener to prevent duplicates
-                    header.addEventListener('click', () => {
-                        const content = header.nextElementSibling;
-                        const isActive = content.classList.contains('active');
-                        const icon = header.querySelector('span');
-
-                        document.querySelectorAll('.accordion-content').forEach(otherContent => {
-                            if (otherContent !== content && otherContent.classList.contains('active')) {
-                                otherContent.classList.remove('active');
-                                otherContent.previousElementSibling.querySelector('span').classList.remove('rotate-180');
-                                otherContent.previousElementSibling.querySelector('span').textContent = '▼';
-                                // When closing others, also hide their video players
-                                const otherVideoPlayer = otherContent.querySelector('.video-player-container');
-                                if (otherVideoPlayer) {
-                                    otherVideoPlayer.classList.add('hidden-video-player');
-                                    otherVideoPlayer.innerHTML = ''; // Clear loaded video
-                                }
-                            }
-                        });
-
-                        if (isActive) {
-                            content.classList.remove('active');
-                            icon.classList.remove('rotate-180');
-                            icon.textContent = '▼';
-                             // When opening, potentially load videos (conceptual)
-                            const videoPlayerContainer = content.querySelector('.video-player-container');
-                            if (videoPlayerContainer) {
-                                console.log('Accordion opened. Video content area is ready.');
-                            }
-                        } else {
-                            content.classList.add('active');
-                            icon.classList.add('rotate-180');
-                            icon.textContent = '▲';
-                            // When closing, potentially clear videos (conceptual)
-                            const videoPlayerContainer = content.querySelector('.video-player-container');
-                            if (videoPlayerContainer) {
-                                videoPlayerContainer.classList.add('hidden-video-player');
-                                videoPlayerContainer.innerHTML = ''; // Clear loaded video
-                            }
-                        }
-                    });
-                });
-
-                // Re-bind video thumbnail click listeners
-                document.querySelectorAll('.video-thumbnail').forEach(thumbnail => {
-                    thumbnail.removeEventListener('click', null); // Remove old listener
-                    thumbnail.addEventListener('click', function() {
-                        const videoId = this.dataset.videoId; // Get the unique video ID
-                        const parentAccordionContent = this.closest('.accordion-content');
-                        const videoPlayerContainer = parentAccordionContent.querySelector('.video-player-container');
-
-                        if (videoPlayerContainer) {
-                            // In a real application, you'd fetch video data from GitHub/API based on videoId
-                            // For now, we'll use a placeholder YouTube embed
-                            const youtubeEmbedUrl = `https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0`; // Example YouTube embed
-                            
-                            videoPlayerContainer.innerHTML = ''; // Clear any previously loaded video
-                            videoPlayerContainer.innerHTML = `
-                                <iframe 
-                                    width="560" 
-                                    height="315" 
-                                    src="${youtubeEmbedUrl}" 
-                                    frameborder="0" 
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                    allowfullscreen>
-                                </iframe>
-                            `;
-                            videoPlayerContainer.classList.remove('hidden-video-player'); // Show the player
-                            console.log(`Loading video for: ${videoId}. (Placeholder URL used)`);
-                        }
-                    });
-                });
-
-                // Re-bind market tab listeners
-                const rebindTabButtons = document.querySelectorAll('.tab-btn');
-                const rebindTabContents = document.querySelectorAll('.tab-content');
-                rebindTabButtons.forEach(button => {
-                    button.removeEventListener('click', null); // Remove old listener
-                    button.addEventListener('click', () => {
-                        rebindTabButtons.forEach(btn => {
-                            btn.classList.remove('text-gray-100', 'border-[#9370DB]');
-                            btn.classList.add('text-gray-400', 'border-transparent', 'hover:border-gray-600');
-                        });
-                        button.classList.add('text-gray-100', 'border-[#9370DB]');
-                        button.classList.remove('text-gray-400', 'border-transparent', 'hover:border-gray-600');
-
-                        rebindTabContents.forEach(content => {
-                            content.classList.add('hidden');
-                        });
-                        document.getElementById(button.dataset.tab + '-content').classList.remove('hidden');
-                    });
-                });
-
-                // Re-bind mobile menu link listeners
-                document.querySelectorAll('#mobile-menu a').forEach(link => {
-                    link.removeEventListener('click', null); // Remove old listener
-                    link.addEventListener('click', () => {
-                        mobileMenu.classList.add('hidden');
-                    });
-                });
-
-                // Re-initialize Chart.js charts
-                const rebindRevenueCtx = document.getElementById('revenueChart');
-                if (rebindRevenueCtx) {
-                    if (rebindRevenueCtx.chart) rebindRevenueCtx.chart.destroy(); // Destroy existing chart instance
-                    new Chart(rebindRevenueCtx, {
+                    revenueCtx.chart = new Chart(revenueCtx, {
                         type: 'line',
                         data: {
                             labels: ['Year 1', 'Year 3', 'Year 5'],
@@ -1086,50 +986,29 @@
                                 y: {
                                     beginAtZero: true,
                                     ticks: {
-                                        callback: function(value, index, values) { return '$' + (value / 1000000) + 'M'; },
+                                        callback: function(value, index, values) {
+                                            return '$' + (value / 1000000) + 'M';
+                                        },
                                         color: chartFontColor
                                     },
-                                    grid: { color: '#4A5568' }
+                                    grid: {
+                                        color: '#4A5568'
+                                    }
                                 },
                                 x: {
-                                    ticks: { color: chartFontColor },
-                                    grid: { color: '#4A5568' }
+                                    ticks: {
+                                        color: chartFontColor
+                                    },
+                                    grid: {
+                                        color: '#4A5568'
+                                    }
                                 }
                             },
                             plugins: {
-                                legend: { labels: { color: chartFontColor } },
-                                tooltip: {
-                                    titleColor: '#1A202C',
-                                    bodyColor: '#1A202C',
-                                    backgroundColor: '#F8FAFC'
-                                }
-                            }
-                        }
-                    });
-                }
-
-                const rebindFundingCtx = document.getElementById('fundingChart');
-                if (rebindFundingCtx) {
-                    if (rebindFundingCtx.chart) rebindFundingCtx.chart.destroy(); // Destroy existing chart instance
-                    new Chart(rebindFundingCtx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['Production & Travel (60%)', 'Post-Production & Team (25%)', 'Marketing & Growth (15%)'],
-                            datasets: [{
-                                label: 'Fund Allocation',
-                                data: [60, 25, 15],
-                                backgroundColor: ['#9370DB', '#4B5563', '#FFD700'],
-                                borderColor: '#1A202C',
-                                borderWidth: 2
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
                                 legend: {
-                                    position: 'bottom',
-                                    labels: { boxWidth: 20, padding: 20, color: chartFontColor }
+                                    labels: {
+                                        color: chartFontColor
+                                    }
                                 },
                                 tooltip: {
                                     titleColor: '#1A202C',
@@ -1141,8 +1020,176 @@
                     });
                 }
             }
-            // Initial binding of event listeners
-            rebindEventListeners();
+
+            function createFundingChart() {
+                const fundingCtx = document.getElementById('fundingChart');
+                if(fundingCtx) {
+                    if (fundingCtx.chart) {
+                        fundingCtx.chart.destroy();
+                    }
+                    fundingCtx.chart = new Chart(fundingCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Production & Travel (60%)', 'Post-Production & Team (25%)', 'Marketing & Growth (15%)'],
+                            datasets: [{
+                                label: 'Fund Allocation',
+                                data: [60, 25, 15],
+                                backgroundColor: [
+                                    '#9370DB',
+                                    '#4B5563',
+                                    '#FFD700'
+                                ],
+                                borderColor: '#1A202C',
+                                borderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        boxWidth: 20,
+                                        padding: 20,
+                                        color: chartFontColor
+                                    }
+                                },
+                                tooltip: {
+                                    titleColor: '#1A202C',
+                                    bodyColor: '#1A202C',
+                                    backgroundColor: '#F8FAFC'
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Global Search Functionality
+            const searchInput = document.getElementById('search-input');
+            let originalMainContent = document.querySelector('main').innerHTML; 
+
+            function applyHighlighting(query) {
+                const mainContentElement = document.querySelector('main');
+                mainContentElement.innerHTML = originalMainContent; 
+                
+                if (query.length > 2) {
+                    const regex = new RegExp(`(${query})`, 'gi');
+                    let newContent = mainContentElement.innerHTML;
+                    newContent = newContent.replace(/(<(?![^>]*class="highlight")[^>]*>|[^<>]*)(\b[a-zA-Z0-9]+\b)([^<>]*(<\/[^>]*>|$))/gi, (match, p1, p2, p3) => {
+                        if (p2.toLowerCase().includes(query.toLowerCase()) && !p1.includes('class="highlight"') && !p3.includes('class="highlight"')) {
+                            return p1 + `<span class="highlight">${p2}</span>` + p3;
+                        }
+                        return match;
+                    });
+                    mainContentElement.innerHTML = newContent;
+                }
+                rebindEventListeners(); 
+            }
+
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                applyHighlighting(query);
+            });
+
+            function rebindEventListeners() {
+                const currentMenuBtn = document.getElementById('menu-btn');
+                const currentMobileMenu = document.getElementById('mobile-menu');
+                if (currentMenuBtn && currentMobileMenu) {
+                    currentMenuBtn.removeEventListener('click', mobileMenuToggleHandler);
+                    currentMenuBtn.addEventListener('click', mobileMenuToggleHandler);
+                }
+
+                function mobileMenuToggleHandler() {
+                    currentMobileMenu.classList.toggle('hidden');
+                }
+
+                document.querySelectorAll('#mobile-menu a').forEach(link => {
+                    link.removeEventListener('click', mobileMenuItemClickHandler);
+                    link.addEventListener('click', mobileMenuItemClickHandler);
+                });
+                function mobileMenuItemClickHandler() {
+                    mobileMenu.classList.add('hidden');
+                }
+
+                document.querySelectorAll('.accordion-header').forEach(header => {
+                    const newHeader = header.cloneNode(true);
+                    header.parentNode.replaceChild(newHeader, header);
+                    newHeader.addEventListener('click', () => {
+                        const content = newHeader.nextElementSibling;
+                        const isActive = content.classList.contains('active');
+                        const icon = newHeader.querySelector('span');
+
+                        document.querySelectorAll('.accordion-content').forEach(otherContent => {
+                            if (otherContent !== content && otherContent.classList.contains('active')) {
+                                otherContent.classList.remove('active');
+                                otherContent.previousElementSibling.querySelector('span').classList.remove('rotate-180');
+                                otherContent.previousElementSibling.querySelector('span').textContent = '▼';
+                                const otherVideoPlayer = otherContent.querySelector('.video-player-container');
+                                if (otherVideoPlayer) {
+                                    otherVideoPlayer.classList.add('hidden-video-player');
+                                    otherVideoPlayer.innerHTML = '';
+                                }
+                            }
+                        });
+
+                        if (isActive) {
+                            content.classList.remove('active');
+                            icon.classList.remove('rotate-180');
+                            icon.textContent = '▼';
+                            const videoPlayerContainer = content.querySelector('.video-player-container');
+                            if (videoPlayerContainer) {
+                                console.log('Accordion opened. Video content area is ready.');
+                            }
+                        } else {
+                            content.classList.add('active');
+                            icon.classList.add('rotate-180');
+                            icon.textContent = '▲';
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.video-thumbnail').forEach(thumbnail => {
+                    const newThumbnail = thumbnail.cloneNode(true);
+                    thumbnail.parentNode.replaceChild(newThumbnail, thumbnail);
+                    newThumbnail.addEventListener('click', function() {
+                        const videoId = this.dataset.videoId;
+                        const parentAccordionContent = this.closest('.accordion-content');
+                        const videoPlayerContainer = parentAccordionContent.querySelector('.video-player-container');
+
+                        if (videoPlayerContainer) {
+                            const youtubeEmbedUrl = `https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&rel=0`;
+                            videoPlayerContainer.innerHTML = ''; 
+                            videoPlayerContainer.innerHTML = `
+                                <iframe 
+                                    width="560" 
+                                    height="315" 
+                                    src="${youtubeEmbedUrl}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                            `;
+                            videoPlayerContainer.classList.remove('hidden-video-player');
+                            console.log(`Loading video for: ${videoId}. (Placeholder URL used)`);
+                        }
+                    });
+                });
+
+                initializeMarketTabs();
+
+                setTimeout(() => {
+                    createRevenueChart();
+                    createFundingChart();
+                }, 100); 
+            }
+
+            initializeMarketTabs();
+            setTimeout(() => {
+                createRevenueChart();
+                createFundingChart();
+            }, 100);
         });
     </script>
 </body>

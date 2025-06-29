@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live One Day Project - Interactive Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Earthy & Serene. This palette is grounded in warm neutrals for a calm background, complemented by subtle, integrated colors for components and accents. This choice supports the project's tone of genuine connection and professionalism without being overwhelming. -->
+    <!-- Application Structure Plan: This single-page application is structured as a vertical, scrollable narrative. It begins with a clear introduction to the project's mission, followed by a dedicated section on the "Gentleman" persona. The core "Episode Journey" is presented as an interactive timeline, allowing users to click and reveal details for each phase. Key Resources and Financials are visualized with charts for quick understanding. Legal considerations are presented clearly, and a concluding section provides contact information. This structure is chosen to tell a coherent story, guide the user logically, and offer interactive elements for deeper exploration of complex processes and data points. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: Project Overview (Mission & USPs) -> Goal: Inform, Convey Core Message -> Viz/Presentation Method: Large headings, introductory text, and a grid of styled cards for each USP. Interaction: None. Justification: Provides an immediate, impactful overview. Library/Method: HTML/CSS (Tailwind).
+        - Report Info: The 'Live One Day' Gentleman (Definition & Pillars) -> Goal: Inform, Define Core Concept -> Viz/Presentation Method: Section title, introductory text, and a grid of cards for each pillar with Unicode icons. Interaction: None. Justification: Clearly explains the nuanced 'gentleman' persona central to the brand. Library/Method: HTML/CSS (Tailwind), Unicode characters.
+        - Report Info: Episode Structure & Content Flow (7 Phases) -> Goal: Organize, Show Process/Change over Time -> Viz/Presentation Method: Custom vertical timeline/flow with clickable steps. Interaction: Clicking each timeline item dynamically updates a detailed descriptive text area. Justification: Visually represents the complex, sequential production process, making it highly interactive and easy to follow. Library/Method: HTML/CSS (Tailwind), JavaScript for interaction.
+        - Report Info: Key Resources & Equipment -> Goal: Inform, Organize -> Viz/Presentation Method: Categorized lists using bullet points and Unicode icons. Interaction: None. Justification: Provides a clear, scannable summary of essential operational elements. Library/Method: HTML/CSS (Tailwind), Unicode characters.
+        - Report Info: Cost Estimation Summary (CapEx) -> Goal: Inform, Show Composition -> Viz/Presentation Method: Doughnut Chart. Interaction: Hover tooltips for detailed values. Justification: Effectively breaks down the initial investment into proportional categories. Library/Method: Chart.js (Canvas).
+        - Report Info: Cost Estimation Summary (OpEx) -> Goal: Inform, Compare -> Viz/Presentation Method: Horizontal Bar Chart. Interaction: Hover tooltips for detailed values. Justification: Clearly compares recurring costs per episode. Library/Method: Chart.js (Canvas).
+        - Report Info: Legal & Contractual Framework -> Goal: Inform, Organize -> Viz/Presentation Method: Two-column layout with bullet points for Key Contracts and Key Considerations. Interaction: None. Justification: Presents crucial legal information clearly and concisely. Library/Method: HTML/CSS (Tailwind).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8; /* A very light, warm off-white */
+            color: #334155; /* slate-700 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 600px;
+            height: 320px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #1e293b; /* slate-800 */
+        }
+        .card-hover-effect {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .timeline-container {
+            position: relative;
+            padding-left: 2.5rem;
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2.5rem;
+        }
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 0.25rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            background-color: #14B8A6; /* teal-500 */
+            border-radius: 9999px;
+            border: 4px solid #FDFBF8;
+            z-index: 10;
+        }
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 1.5rem;
+            bottom: 0;
+            width: 2px;
+            background-color: #cbd5e1; /* slate-300 */
+        }
+        .timeline-item:last-child::after {
+            display: none;
+        }
+        .timeline-item-card {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border: 2px solid transparent;
+        }
+        .timeline-item-card.active {
+            border-color: #14B8A6; /* teal-500 */
+            transform: scale(1.02);
+        }
+        .detail-box {
+            background-color: #f8fafc; /* slate-50 */
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold text-slate-800">Live One Day Project</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#overview" class="nav-link text-slate-600 font-medium">Overview</a>
+                <a href="#gentleman" class="nav-link text-slate-600 font-medium">The Gentleman</a>
+                <a href="#journey" class="nav-link text-slate-600 font-medium">Episode Journey</a>
+                <a href="#resources" class="nav-link text-slate-600 font-medium">Resources</a>
+                <a href="#finances" class="nav-link text-slate-600 font-medium">Finances</a>
+                <a href="#legal" class="nav-link text-slate-600 font-medium">Legal</a>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-btn" class="text-slate-700 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#overview" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-100">Overview</a>
+            <a href="#gentleman" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-100">The Gentleman</a>
+            <a href="#journey" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-100">Episode Journey</a>
+            <a href="#resources" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-100">Resources</a>
+            <a href="#finances" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-100">Finances</a>
+            <a href="#legal" class="block py-2 px-4 text-sm text-slate-600 hover:bg-slate-100">Legal</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="min-h-[70vh] flex items-center justify-center text-center bg-amber-50 py-20 px-4">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl md:text-6xl font-extrabold text-slate-800 leading-tight">Live One Day: Experience Life, Discover Cultures.</h2>
+                <p class="mt-4 text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">A groundbreaking multi-platform video series fostering authentic human connection and empathetic cultural understanding, inspiring viewers to better themselves.</p>
+                <a href="#overview" class="mt-8 inline-block bg-slate-800 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-slate-900 transition-colors">Explore the Project</a>
+            </div>
+        </section>
+
+        <!-- Project Overview Section -->
+        <section id="overview" class="py-20 md:py-32">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-800">Project Overview & Unique Proposition</h2>
+                    <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">"Live One Day" transcends typical travel content by capturing unscripted, genuine experiences and fostering deep connections. Learn what makes our approach truly unique.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect">
+                        <h3 class="font-bold text-xl mb-2 text-slate-800">Unrivaled Immersion ✨</h3>
+                        <p class="text-slate-600">The host genuinely "lives a day" in a local's reality, entirely without personal funds and at their mercy, offering a profound level of authentic engagement.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect">
+                        <h3 class="font-bold text-xl mb-2 text-slate-800">Sophisticated Hybrid Storytelling 🎥</h3>
+                        <p class="text-slate-600">Blends aspirational "gentleman lifestyle" segments, intimate in-car interviews, raw first-person daily immersion, and deeply reflective post-experience insights.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect">
+                        <h3 class="font-bold text-xl mb-2 text-slate-800">Ethical Reciprocity ❤️</h3>
+                        <p class="text-slate-600">Commitment to ethically compensate or benefit participants, ensuring a respectful and collaborative relationship from day one.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect">
+                        <h3 class="font-bold text-xl mb-2 text-slate-800">Distinct Host Persona 🤵</h3>
+                        <p class="text-slate-600">The "gentleman" aesthetic, defined by intentional living and profound respect, sets a unique, memorable, and globally appealing brand identity.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect">
+                        <h3 class="font-bold text-xl mb-2 text-slate-800">Multi-Platform Content 📱</h3>
+                        <p class="text-slate-600">Strategic use of both short-form (TikTok, Instagram Reels) and long-form (YouTube, streaming services) content to maximize reach and engagement.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect">
+                        <h3 class="font-bold text-xl mb-2 text-slate-800">Seamless Integrated Sponsorships 💼</h3>
+                        <p class="text-slate-600">Organic product placements that resonate naturally within the content, providing high-value opportunities for aligned brands.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Gentleman Persona Section -->
+        <section id="gentleman" class="py-20 md:py-32 bg-slate-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-800">The 'Live One Day' Gentleman</h2>
+                    <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">More than just attire, our gentleman is defined by discipline, intention, and profound respect woven into his daily life and interactions.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect">
+                        <h3 class="font-bold text-xl mb-2 text-amber-600">Intentionality in Preparation 🧳</h3>
+                        <ul class="list-none text-slate-600 space-y-2">
+                            <li>Meticulous grooming rituals (e.g., Mont Blanc Explorer cologne).</li>
+                            <li>Curated travel gear and luxury luggage for seamless experience.</li>
+                            <li>Adopting locally-appropriate attire for genuine cultural immersion.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect">
+                        <h3 class="font-bold text-xl mb-2 text-amber-600">Respectful Adaptation & Engagement 🌍</h3>
+                        <ul class="list-none text-slate-600 space-y-2">
+                            <li>Embracing local customs, food, and daily routines without personal resources.</li>
+                            <li>Active listening during interviews (Dan Harmon Story Circle).</li>
+                            <li>Maintaining a gracious, engaged presence in every environment.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect">
+                        <h3 class="font-bold text-xl mb-2 text-amber-600">Discipline in Action ⚙️</h3>
+                        <ul class="list-none text-slate-600 space-y-2">
+                            <li>Dedication to high-quality content (clean audio with mics, proper lighting).</li>
+                            <li>Rigorous organization (cloud storage, laptops) for efficient global management.</li>
+                            <li>Consistent effort throughout the journey, transforming challenges into insights.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Episode Journey Section -->
+        <section id="journey" class="py-20 md:py-32">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-800">The 7-Phase Episode Journey</h2>
+                    <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Each "Live One Day" episode follows a meticulously designed process, ensuring authentic storytelling and high-quality production. Click on any phase to learn more.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div class="timeline-container">
+                        <div class="timeline-item">
+                            <div class="timeline-item-card" data-phase="1">
+                                <h3 class="font-bold text-lg text-slate-800">Phase 1: Pre-Production & Planning</h3>
+                                <p class="text-sm text-slate-600 mt-1">Pre-travel setup: guide, host, itinerary, questions.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-item-card" data-phase="2">
+                                <h3 class="font-bold text-lg text-slate-800">Phase 2: Arrival & Gentleman Lifestyle Vlog</h3>
+                                <p class="text-sm text-slate-600 mt-1">Arrival, hotel base, grooming, and dressing routines.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-item-card" data-phase="3">
+                                <h3 class="font-bold text-lg text-slate-800">Phase 3: Car Ride Interviews</h3>
+                                <p class="text-sm text-slate-600 mt-1">Mobile studio, Dan Harmon Story Circle, translation tech.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-item-card" data-phase="4">
+                                <h3 class="font-bold text-lg text-slate-800">Phase 4: 24 Hours Inside Their Shoes (Immersion)</h3>
+                                <p class="text-sm text-slate-600 mt-1">Core experience: no resources, minimal gear, authentic life.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-item-card" data-phase="5">
+                                <h3 class="font-bold text-lg text-slate-800">Phase 5: Post-Immersion Interview & Debrief</h3>
+                                <p class="text-sm text-slate-600 mt-1">Immediate reflections, emotional takeaways, host gratitude.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-item-card" data-phase="6">
+                                <h3 class="font-bold text-lg text-slate-800">Phase 6: Post-Production & Workflow</h3>
+                                <p class="text-sm text-slate-600 mt-1">Cloud upload, remote editing, preparing for platforms.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-item-card" data-phase="7">
+                                <h3 class="font-bold text-lg text-slate-800">Phase 7: Departure & Ongoing Guide Relationship</h3>
+                                <p class="text-sm text-slate-600 mt-1">Concluding visit, travel logistics, strengthening guide bonds.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="journey-detail-display" class="detail-box flex flex-col justify-center">
+                        <h3 id="detail-title" class="text-2xl font-bold text-slate-800 mb-4">Select a Phase to Explore</h3>
+                        <p id="detail-description" class="text-slate-700">Click on any of the 7 phases on the left to discover its purpose and key activities in detail. Each step is crucial for delivering an authentic "Live One Day" episode.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Resources & Equipment Section -->
+        <section id="resources" class="py-20 md:py-32 bg-slate-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-800">Key Resources & Essential Equipment</h2>
+                    <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">A summary of the critical gear and human resources that power the "Live One Day" experience.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect">
+                        <h3 class="font-bold text-xl mb-4 text-slate-800">Travel & Personal Essentials ✈️</h3>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2">
+                            <li>Flights & Hotel Accommodation (Booking.com)</li>
+                            <li>Car Rentals, Luxury & Gear Luggage</li>
+                            <li>High-quality Suits & Clothing, Luxury Watches</li>
+                            <li>Mont Blanc Explorer Cologne, Premium Grooming Products</li>
+                            <li>Quality Footwear, Bare Minimum Hygiene Kit, Sleepwear</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect">
+                        <h3 class="font-bold text-xl mb-4 text-slate-800">Filming & Production Tech 🎥</h3>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2">
+                            <li>Smartphone, Ray-Ban Recording Glasses</li>
+                            <li>GoPro (with chest mount & tripod), Professional Mics</li>
+                            <li>Small & Big Portable Lights, Chargers & Power Banks (with flashlight)</li>
+                            <li>Two Suction Mounts, Dashboard Display, Walkie-Talkie System</li>
+                            <li>High-Performance Laptop (for partner), Cloud Storage (Google Drive, Dropbox)</li>
+                            <li>Video Editing Software (CapCut), Professional Editing Headphones</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect md:col-span-2">
+                        <h3 class="font-bold text-xl mb-4 text-slate-800">Human Resources & Software 🤝</h3>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2 grid md:grid-cols-2">
+                            <li>Local Guide/Fixer, Immersion Host, Your Wife (as Production/Editing Partner)</li>
+                            <li>Google Maps, Translation Apps, YouTube, TikTok, Instagram</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Financial Snapshot Section -->
+        <section id="finances" class="py-20 md:py-32">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-800">Financial Snapshot: Investment & Operations</h2>
+                    <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Understand the estimated costs to launch and sustain "Live One Day" and how funds will be strategically allocated.</p>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold text-center mb-6 text-slate-800">Estimated Initial Setup (CapEx)</h3>
+                        <p class="text-center text-slate-600 mb-6">Allocation of one-time capital expenditures to get the project off the ground.</p>
+                        <div class="chart-container">
+                            <canvas id="capexChart"></canvas>
+                        </div>
+                        <p class="text-center text-slate-700 mt-4 text-lg">Total Estimated Initial CapEx: <span class="font-bold text-orange-700">$7,200 - $22,500+</span></p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-md">
+                        <h3 class="text-xl font-bold text-center mb-6 text-slate-800">Per-Episode Operating Costs (OpEx)</h3>
+                        <p class="text-center text-slate-600 mb-6">An overview of major recurring expenses for producing a single episode.</p>
+                        <div class="chart-container">
+                            <canvas id="opexChart"></canvas>
+                        </div>
+                        <p class="text-center text-slate-700 mt-4 text-lg">Total Estimated Per-Episode OpEx: <span class="font-bold text-teal-700">$2,545 - $11,180+</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Legal & Contractual Framework Section -->
+        <section id="legal" class="py-20 md:py-32 bg-slate-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-800">Legal & Contractual Framework</h2>
+                    <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Ensuring ethical practices, intellectual property protection, and smooth operations through comprehensive legal agreements.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect">
+                        <h3 class="font-bold text-xl mb-4 text-slate-800">Key Contracts 📝</h3>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2">
+                            <li>Participant/Immersion Host Agreement & Release Form</li>
+                            <li>Local Fixer/Guide Agreement</li>
+                            <li>Team Member Agreements (e.g., for wife)</li>
+                            <li>Sponsorship/Brand Partnership Agreement</li>
+                            <li>Location Release Forms</li>
+                            <li>Music Licensing Agreements</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm card-hover-effect">
+                        <h3 class="font-bold text-xl mb-4 text-slate-800">Key Legal Considerations ⚖️</h3>
+                        <ul class="list-disc list-inside text-slate-600 space-y-2">
+                            <li>Intellectual Property Rights & Ownership of Footage</li>
+                            <li>Consent and Release for all individuals, including minors</li>
+                            <li>Confidentiality & Data Privacy adherence (e.g., GDPR)</li>
+                            <li>Local Laws & Regulations (filming permits, visas, cultural sensitivity)</li>
+                            <li>Production & Travel Insurance coverage</li>
+                        </ul>
+                        <p class="text-sm text-slate-500 italic mt-4">Recommendation: Strongly advised to consult with a legal professional specializing in media law.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-300 py-12">
+        <div class="container mx-auto px-6 text-center">
+            <h3 class="text-2xl font-bold text-white">Let's Turn This Vision Into Reality.</h3>
+            <p class="mt-2 max-w-xl mx-auto">Connect with us to discuss partnership opportunities and join the journey of authentic cultural storytelling.</p>
+            <div class="mt-6">
+                <p class="font-semibold text-white">Elijah</p>
+                <a href="mailto:[Your Email Address]" class="text-amber-300 hover:text-amber-200 transition-colors">[Your Email Address]</a>
+                <span class="mx-2">|</span>
+                <a href="tel:[Your Phone Number]" class="text-amber-300 hover:text-amber-200 transition-colors">[Your Phone Number]</a>
+            </div>
+            <div class="mt-4 flex justify-center space-x-6">
+                 <a href="#" class="hover:text-white">Website</a>
+                 <a href="#" class="hover:text-white">LinkedIn</a>
+                 <a href="#" class="hover:text-white">YouTube</a>
+                 <a href="#" class="hover:text-white">TikTok</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile Menu Toggle
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // Episode Journey Details
+            const phaseDetails = {
+                '1': {
+                    title: 'Phase 1: Pre-Production & Planning',
+                    description: 'This foundational phase involves meticulous planning before travel. It includes engaging a local guide/fixer to identify and vet the immersion host, finalize the host agreement, prepare a detailed itinerary, and craft interview questions for the car ride segment. The local guide also prepares the culturally appropriate attire for the host\'s immersion and a thoughtful gift for the host family.'
+                },
+                '2': {
+                    title: 'Phase 2: Arrival & Gentleman Lifestyle Vlog',
+                    description: 'Upon arrival, the host and partner establish their base at the hotel. This phase captures the "gentleman lifestyle" aspects, including airport transfers, car rental pickup, and the host\'s disciplined grooming and dressing routines. It showcases luxury travel elements and provides prime opportunities for product placements, setting an aspirational tone for the journey.'
+                },
+                '3': {
+                    title: 'Phase 3: Car Ride Interviews',
+                    description: 'The car is transformed into a mobile studio for an intimate interview with the participant en route to their home. Pre-prepared questions (based on the Dan Harmon Story Circle) are displayed on a dashboard monitor for both parties. High-quality microphones, GoPro, and Ray-Ban recording glasses capture the conversation. Translation apps and headphones ensure comfortable communication, allowing the participant to speak in their native language.'
+                },
+                '4': {
+                    title: 'Phase 4: 24 Hours Inside Their Shoes (Immersion)',
+                    description: 'This is the core immersion. After an introduction, the guide departs, and the host lives a day without personal funds, relying solely on the participant\'s resources and schedule. The host wears only the locally-prepared attire, carrying bare minimum hygiene essentials and sleepwear. The rental car is returned to the wife. Communication with the wife is via walkie-talkie. Filming uses minimal, unobtrusive gear (phone, Ray-Ban glasses, GoPro), capturing authentic daily life.'
+                },
+                '5': {
+                    title: 'Phase 5: Post-Immersion Interview & Debrief',
+                    description: 'After the 24-hour immersion, the guide returns to pick up the host. The host returns to the hotel for a "fresh out of the oven" interview, capturing raw, immediate reflections and emotional takeaways from the experience. Professional microphones and lighting ensure a high-quality debrief. A pre-prepared gift is presented to the host family, concluding the immersion respectfully.'
+                },
+                '6': {
+                    title: 'Phase 6: Post-Production & Workflow',
+                    description: 'Efficiency is key. The host uploads all video content to cloud storage (e.g., Google Drive, Dropbox) via high-speed hotel internet. The partner (wife) then utilizes a high-performance laptop and editing software (e.g., CapCut) to edit, select "best bits," add subtitles/voice-overs, and prepare the polished content for various platforms (YouTube, TikTok, Instagram). This highlights the seamless remote collaboration.'
+                },
+                '7': {
+                    title: 'Phase 7: Departure & Ongoing Guide Relationship',
+                    description: 'This phase concludes the visit to the current location and prepares for the next. It involves returning the rental car and coordinating flights for the onward journey. Crucially, emphasis is placed on strengthening bonds with the local guide, who may travel with the team to the next destination, fostering deeper connections and ensuring continuity for future experiences.'
+                }
+            };
+
+            const detailTitle = document.getElementById('detail-title');
+            const detailDescription = document.getElementById('detail-description');
+
+            document.querySelectorAll('.timeline-item-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('.timeline-item-card').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    const phase = this.dataset.phase;
+                    detailTitle.textContent = phaseDetails[phase].title;
+                    detailDescription.textContent = phaseDetails[phase].description;
+                });
+            });
+
+            // Chart.js Implementations
+            const chartFontColor = '#334155'; // slate-700
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = chartFontColor;
+
+            const wrapText = (text) => {
+                const words = text.split(' ');
+                const lines = [];
+                let currentLine = '';
+                words.forEach(word => {
+                    if ((currentLine + word).length > 16 && currentLine.length > 0) {
+                        lines.push(currentLine.trim());
+                        currentLine = '';
+                    }
+                    currentLine += word + ' ';
+                });
+                if (currentLine.length > 0) {
+                    lines.push(currentLine.trim());
+                }
+                return lines;
+            };
+
+            const commonChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: chartFontColor,
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const item = tooltipItems[0];
+                                let label = item.chart.data.labels[item.dataIndex];
+                                if (Array.isArray(label)) {
+                                  return label.join(' ');
+                                } else {
+                                  return label;
+                                }
+                            },
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== undefined) { // For bar chart
+                                    label += '$' + context.parsed.y.toLocaleString();
+                                } else if (context.parsed !== undefined && context.dataset.data.length === 1) { // For doughnut
+                                     label += context.parsed.toLocaleString() + '%';
+                                } else if (context.parsed.x !== undefined) { // For doughnut if needed
+                                     label += context.parsed.x.toLocaleString() + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            };
+            
+            // CapEx Chart
+            const capexCtx = document.getElementById('capexChart');
+            if(capexCtx) {
+                new Chart(capexCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: [wrapText('Personal & Luxury Items'), wrapText('Core Filming & Mobile Studio Gear'), wrapText('Post-Production Setup')],
+                        datasets: [{
+                            label: 'Initial Setup Cost Breakdown',
+                            data: [55, 25, 20], // Proportional representation based on estimated ranges
+                            backgroundColor: ['#C2410C', '#14B8A6', '#F59E0B'], /* orange-700, teal-500, amber-500 */
+                            borderColor: '#FDFBF8',
+                            borderWidth: 4,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {...commonChartOptions}
+                });
+            }
+
+            // OpEx Chart
+            const opexCtx = document.getElementById('opexChart');
+            if(opexCtx) {
+                 new Chart(opexCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [wrapText('Guide & Host Fees'), wrapText('Travel & Accommodation'), wrapText('Car Rental'), wrapText('Connectivity & Software')],
+                        datasets: [{
+                            label: 'Estimated Cost (USD)',
+                            data: [3500, 6500, 800, 350], // Using high-end estimates for illustration
+                             backgroundColor: [
+                                'rgba(194, 65, 12, 0.7)', /* orange-700 translucent */
+                                'rgba(20, 184, 166, 0.7)', /* teal-500 translucent */
+                                'rgba(245, 158, 11, 0.7)', /* amber-500 translucent */
+                                'rgba(71, 85, 105, 0.7)' /* slate-600 translucent */
+                            ],
+                            borderColor: [
+                                '#C2410C',
+                                '#14B8A6',
+                                '#F59E0B',
+                                '#475569'
+                            ],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        ...commonChartOptions,
+                        indexAxis: 'y', // Make it a horizontal bar chart
+                         scales: {
+                            y: {
+                                ticks: {
+                                    color: chartFontColor,
+                                    font: { size: 12 }
+                                },
+                                grid: {
+                                    color: 'rgba(203, 213, 225, 0.2)' /* slate-300 translucent */
+                                }
+                            },
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: chartFontColor,
+                                    callback: function(value) {
+                                        return '$' + value.toLocaleString();
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(203, 213, 225, 0.2)' /* slate-300 translucent */
+                                }
+                            }
+                        },
+                        plugins: {
+                           ...commonChartOptions.plugins,
+                           legend: {
+                               display: false // Hide legend for single dataset bar chart
+                           }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

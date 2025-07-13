@@ -83,7 +83,9 @@
         <h1 class="text-2xl font-bold mb-4">Firebase Notes Tester</h1>
         
         <div class="flex flex-col mb-4">
-            <button id="loginBtn" class="button">Log In (GitHub)</button>
+            <button id="loginGuestBtn" class="button">Log In as Guest</button>
+            <button id="loginGithubBtn" class="button">Log In (GitHub)</button>
+            <button id="loginGoogleBtn" class="button">Log In (Google)</button>
             <button id="logoutBtn" class="button hidden">Log Out</button>
         </div>
 
@@ -99,7 +101,7 @@
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInWithPopup, GithubAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, signInWithPopup, GithubAuthProvider, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // IMPORTANT: PASTE YOUR FIREBASE CONFIG OBJECT HERE!
@@ -130,7 +132,9 @@
         console.log("Firebase Config Loaded:", firebaseConfig);
 
         // DOM Elements
-        const loginBtn = document.getElementById('loginBtn');
+        const loginGuestBtn = document.getElementById('loginGuestBtn');
+        const loginGithubBtn = document.getElementById('loginGithubBtn');
+        const loginGoogleBtn = document.getElementById('loginGoogleBtn');
         const logoutBtn = document.getElementById('logoutBtn');
         const userNotesInput = document.getElementById('userNotesInput');
         const saveNotesBtn = document.getElementById('saveNotesBtn');
@@ -145,8 +149,6 @@
                 db = getFirestore(app);
                 auth = getAuth(app);
 
-                // For direct deployment, we don't rely on initialAuthToken.
-                // The user will explicitly click "Log In (GitHub)".
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         userId = user.uid;
@@ -163,7 +165,9 @@
                 });
             } else {
                 console.warn("Firebase config not found or invalid. Firebase features will be disabled.");
-                loginBtn.disabled = true;
+                loginGuestBtn.disabled = true;
+                loginGithubBtn.disabled = true;
+                loginGoogleBtn.disabled = true;
                 logoutBtn.disabled = true;
                 saveNotesBtn.disabled = true;
                 userNotesInput.disabled = true;
@@ -171,15 +175,35 @@
             }
         });
 
-        loginBtn.addEventListener('click', async () => {
+        loginGuestBtn.addEventListener('click', async () => {
+            try {
+                await signInAnonymously(auth);
+                console.log("Signed in anonymously!");
+            } catch (error) {
+                console.error("Error signing in anonymously:", error);
+                userNotesStatus.textContent = `Guest Login Error: ${error.message}.`;
+            }
+        });
+
+        loginGithubBtn.addEventListener('click', async () => {
             const provider = new GithubAuthProvider();
             try {
-                // This is where the GitHub login pop-up will appear
                 await signInWithPopup(auth, provider);
                 console.log("Signed in with GitHub!");
             } catch (error) {
                 console.error("Error signing in with GitHub:", error);
-                userNotesStatus.textContent = `Login Error: ${error.message}. Check console for details.`;
+                userNotesStatus.textContent = `GitHub Login Error: ${error.message}. Check console for details.`;
+            }
+        });
+
+        loginGoogleBtn.addEventListener('click', async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+                console.log("Signed in with Google!");
+            } catch (error) {
+                console.error("Error signing in with Google:", error);
+                userNotesStatus.textContent = `Google Login Error: ${error.message}. Check console for details.`;
             }
         });
 
@@ -213,7 +237,6 @@
             saveNotesBtn.style.borderColor = '#4a5568';
 
             const userNotes = userNotesInput.value;
-            // Notes will be saved under /artifacts/firebase-test-app-id/users/{userId}/private/notes
             const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/private`, 'notes');
 
             try {
@@ -267,13 +290,17 @@
 
         function updateLoginButtons(isLoggedIn) {
             if (isLoggedIn) {
-                loginBtn.classList.add('hidden');
+                loginGuestBtn.classList.add('hidden');
+                loginGithubBtn.classList.add('hidden');
+                loginGoogleBtn.classList.add('hidden');
                 logoutBtn.classList.remove('hidden');
                 userNotesInput.disabled = false;
                 saveNotesBtn.disabled = false;
                 notesLoginPrompt.classList.add('hidden');
             } else {
-                loginBtn.classList.remove('hidden');
+                loginGuestBtn.classList.remove('hidden');
+                loginGithubBtn.classList.remove('hidden');
+                loginGoogleBtn.classList.remove('hidden');
                 logoutBtn.classList.add('hidden');
                 userNotesInput.disabled = true;
                 saveNotesBtn.disabled = true;

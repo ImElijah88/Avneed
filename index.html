@@ -5,51 +5,111 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avneed - Your Personal AI Assistant</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/pmrem/PMREMGenerator.js"></script>
     <style>
+        :root {
+            --bg-primary: #333333;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #121212;
+            --text-primary: #e2e8f0;
+            --text-secondary: #cbd5e1;
+            --text-light-gray: #a0aec0;
+            --border-color: #4a5568;
+            --input-bg: #1a1a1a;
+            --gradient-start: #0f172a;
+            --gradient-mid: #1e293b;
+            --gradient-end: #334155;
+            --color-neon-blue: #00FFFF;
+            --color-accent-yellow: #ffd700;
+        }
+
+        body.light-theme {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #ffffff;
+            --bg-card: #e2e8f0;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-light-gray: #718096;
+            --border-color: #cbd5e1;
+            --input-bg: #ffffff;
+            --gradient-start: #e0e7ff;
+            --gradient-mid: #c3dafe;
+            --gradient-end: #a7c5ff;
+            --color-neon-blue: #007bff;
+            --color-accent-yellow: #ff9800;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0d1117;
-            color: #e2e8f0;
+            font-family: 'Orbitron', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
-        @layer base {
-            :root {
-                --color-neon-blue: #00FFFF;
-            }
-        }
+        
         .text-neon-blue {
             color: var(--color-neon-blue);
         }
         .gradient-bg {
-            background: linear-gradient(to right top, #0f172a, #1e293b, #334155);
+            background: linear-gradient(to right top, var(--gradient-start), var(--gradient-mid), var(--gradient-end));
         }
-        .btn-primary, .ai-button {
+        .btn-primary {
             @apply px-10 py-4 rounded-full text-white font-bold text-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105;
             background: #2d3748;
-            border: 2px solid #4a5568;
+            border: 2px solid var(--border-color);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
         }
-        .btn-primary:hover, .ai-button:hover {
+        .btn-primary:hover {
             background: #374151;
             box-shadow: 0 0 25px 8px rgba(255, 215, 0, 0.7), 0 0 10px 2px rgba(255, 215, 0, 0.4);
-            border-color: #ffd700;
+            border-color: var(--color-accent-yellow);
         }
+
+        .ai-button {
+            @apply px-6 py-3 rounded-full text-white font-bold text-base shadow-lg transition duration-300 ease-in-out transform hover:scale-105;
+            background: #2d3748;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        .ai-button:hover {
+            background: #374151;
+            box-shadow: 0 0 25px 8px rgba(255, 215, 0, 0.7), 0 0 10px 2px rgba(255, 215, 0, 0.4);
+            border-color: var(--color-accent-yellow);
+        }
+
+        .ai-button.selected-button {
+            background: var(--color-neon-blue);
+            color: var(--bg-primary);
+            border-color: var(--color-neon-blue);
+            box-shadow: 0 0 20px var(--color-neon-blue), 0 0 30px var(--color-neon-blue);
+            transform: scale(1.02);
+        }
+        .ai-button.selected-button:hover {
+            background: var(--color-neon-blue);
+            color: var(--bg-primary);
+            box-shadow: 0 0 25px var(--color-neon-blue), 0 0 40px var(--color-neon-blue);
+            border-color: var(--color-neon-blue);
+        }
+
+
         .card {
-            @apply bg-gray-800 p-8 rounded-[2.5rem] shadow-xl transition duration-300 ease-in-out hover:shadow-2xl hover:translate-y-[-5px];
+            background-color: var(--bg-card);
+            @apply p-8 rounded-[2.5rem] shadow-xl transition duration-300 ease-in-out hover:shadow-2xl hover:translate-y-[-5px];
             border: 1px solid rgba(74, 85, 104, 0.3);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
         .input-field {
-            @apply p-4 rounded-2xl border border-gray-700 text-white focus:outline-none focus:ring-4 focus:ring-purple-600 transition duration-200 ease-in-out;
-            background-color: #1a1a1a;
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            @apply p-4 rounded-2xl border border-gray-700 focus:outline-none focus:ring-4 focus:ring-purple-600 transition duration-200 ease-in-out;
+            border-color: var(--border-color);
         }
         .loading-spinner {
             border: 4px solid rgba(255, 255, 255, 0.2);
-            border-top: 4px solid #ffd700;
+            border-top: 4px solid var(--color-accent-yellow);
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -62,16 +122,20 @@
             100% { transform: rotate(360deg); }
         }
 
-        .text-gray-800 { @apply text-gray-200; }
-        .text-gray-900 { @apply text-gray-100; }
-        .text-gray-700 { @apply text-gray-300; }
-        .text-gray-500 { @apply text-gray-400; }
-        .text-purple-700, .text-purple-800 { @apply text-yellow-400; }
-        .file\:text-purple-700 { @apply file:text-yellow-400; }
-        .file\:bg-purple-50 { @apply file:bg-gray-700; }
-        .hover\:file\:bg-purple-100 { @apply hover:file:bg-gray-600; }
+        .text-gray-100 { color: var(--text-primary); }
+        .text-gray-200 { color: var(--text-secondary); }
+        .text-gray-300 { color: var(--text-light-gray); }
+        .text-gray-400 { color: var(--text-light-gray); }
+        .text-gray-500 { color: var(--text-light-gray); }
+        .text-gray-700 { border-color: var(--border-color); }
+        .bg-gray-800 { background-color: var(--bg-card); }
+        .bg-gray-900 { background-color: var(--bg-secondary); }
+        .bg-gray-950 { background-color: var(--bg-card); }
+        .bg-[#1a1a1a] { background-color: var(--input-bg); }
 
-        /* General model container styling */
+        .text-yellow-400 { color: var(--color-accent-yellow); }
+
+
         .model-viewer-container {
             position: relative;
             width: 100%;
@@ -96,13 +160,12 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            color: #ffd700;
+            color: var(--color-accent-yellow);
             font-size: 1.25rem;
             font-weight: 600;
             text-align: center;
             z-index: 10;
         }
-        /* Styling for the new plus sign button */
         .model-file-input-label {
             position: absolute;
             top: 1.5rem;
@@ -110,13 +173,13 @@
             width: 50px;
             height: 50px;
             background: #2d3748;
-            border: 2px solid #4a5568;
+            border: 2px solid var(--border-color);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 2.5rem;
-            color: #e2e8f0;
+            color: var(--text-primary);
             cursor: pointer;
             z-index: 15;
             transition: all 0.3s ease-in-out;
@@ -129,7 +192,6 @@
             border-color: var(--color-neon-blue);
             transform: scale(1.1);
         }
-        /* Robustly hide all actual file inputs */
         .hidden-file-input {
             display: none !important;
             width: 0;
@@ -140,7 +202,6 @@
             pointer-events: none;
         }
 
-        /* Styles for the resize handle */
         .resize-handle {
             position: absolute;
             bottom: 0;
@@ -153,55 +214,441 @@
             z-index: 20;
         }
 
-        /* Specific adjustments for the contact section layout */
         .contact-content-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 2.5rem; /* Space between elements */
+            gap: 2.5rem;
             align-items: center;
         }
 
-        @media (min-width: 1024px) { /* On large screens, arrange side-by-side */
+        @media (min-width: 1024px) {
             .contact-content-wrapper {
                 flex-direction: row;
                 justify-content: center;
-                align-items: flex-start; /* Align items to the top */
+                align-items: flex-start;
             }
             .contact-form-container {
-                flex: 1; /* Allow form to take available space */
-                max-width: 45%; /* Limit form width */
+                flex: 1;
+                max-width: 45%;
             }
             .new-model-viewer-area {
-                flex: 1; /* Allow new viewer to take available space */
-                max-width: 45%; /* Limit new viewer width */
+                flex: 1;
+                max-width: 45%;
             }
         }
+
+        .model-controls {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            z-index: 15;
+            background: rgba(45, 55, 72, 0.7);
+            padding: 0.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(74, 85, 104, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .model-control-button {
+            @apply px-1 py-0.5 rounded-md text-white font-bold text-xs transition duration-300 ease-in-out transform hover:scale-105;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .model-control-button:hover {
+            background: #374151;
+            color: var(--color-neon-blue);
+            box-shadow: 0 0 10px 3px rgba(var(--color-neon-blue), 0.5);
+            border-color: var(--color-neon-blue);
+        }
+        .model-controls .grid-cols-3 .model-control-button {
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+        }
+        .model-control-button.toggle-lock {
+            width: 100%;
+        }
+
+        .upload-menu {
+            position: absolute;
+            top: 65px;
+            right: 1.5rem;
+            background: rgba(45, 55, 72, 0.9);
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            border: 1px solid rgba(74, 85, 104, 0.3);
+        }
+
+        .upload-menu-button {
+            @apply px-4 py-2 rounded-md text-white font-bold text-sm transition duration-300 ease-in-out transform hover:scale-105;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            cursor: pointer;
+        }
+        .upload-menu-button:hover {
+            background: #374151;
+            color: var(--color-neon-blue);
+            box-shadow: 0 0 10px 3px rgba(var(--color-neon-blue), 0.5);
+            border-color: var(--color-neon-blue);
+        }
+
+        .audio-controls {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            width: 50px;
+            height: 50px;
+            background: #2d3748;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            z-index: 15;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        .audio-controls:hover {
+            background: #374151;
+            color: var(--color-neon-blue);
+            box-shadow: 0 0 25px 8px rgba(var(--color-neon-blue), 0.7), 0 0 10px 2px rgba(var(--color-neon-blue), 0.4);
+            border-color: var(--color-neon-blue);
+            transform: scale(1.1);
+        }
+        .audio-play-pause-button {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: inherit;
+            cursor: inherit;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+        }
+
+        #settingsBtn {
+            @apply text-3xl cursor-pointer transition duration-300 ease-in-out transform hover:rotate-90 hover:text-yellow-300;
+        }
+
+        .settings-menu {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: rgba(45, 55, 72, 0.95);
+            padding: 1rem;
+            border-radius: 1rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            border: 1px solid rgba(74, 85, 104, 0.5);
+        }
+
+        .settings-menu-button {
+            @apply px-4 py-2 rounded-md text-white font-bold text-sm transition duration-300 ease-in-out transform hover:scale-105;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+        .settings-menu-button:hover {
+            background: #374151;
+            color: var(--color-neon-blue);
+            box-shadow: 0 0 10px 3px rgba(var(--color-neon-blue), 0.5);
+            border-color: var(--color-neon-blue);
+        }
+
+        #chatHistory p {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            max-width: 75%;
+        }
+
+        #chatHistory p.user-message {
+            margin-left: auto;
+            background-color: var(--color-neon-blue);
+            color: var(--bg-primary);
+            font-weight: 600;
+            border-bottom-right-radius: 0.25rem;
+        }
+        #chatHistory p.ai-message {
+            margin-right: auto;
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border-bottom-left-radius: 0.25rem;
+        }
+
+        #aiInputText, #imagePromptInput {
+            min-height: 2.5rem;
+            max-height: 152px;
+            overflow-y: hidden;
+            box-sizing: border-box;
+        }
+
+        .glitch-text {
+            animation: glitch 0.8s linear infinite alternate, neon-pulse 0.8s ease-in-out forwards;
+        }
+
+        @keyframes glitch {
+            0% {
+                text-shadow: 0.05em 0 0 var(--color-neon-blue), -0.05em -0.025em 0 var(--color-accent-yellow), -0.025em 0.05em 0 var(--color-neon-blue);
+                transform: translate(0.01em, 0.01em);
+            }
+            15% {
+                text-shadow: 0.025em 0.05em 0 var(--color-accent-yellow), -0.025em -0.01em 0 var(--color-neon-blue), 0.05em -0.025em 0 var(--color-accent-yellow);
+                transform: translate(-0.01em, -0.02em);
+            }
+            30% {
+                text-shadow: -0.025em -0.05em 0 var(--color-neon-blue), 0.05em 0.025em 0 var(--color-accent-yellow), 0.01em 0.01em 0 var(--color-neon-blue);
+                transform: translate(0.02em, 0.01em);
+            }
+            45% {
+                text-shadow: 0.05em 0.01em 0 var(--color-accent-yellow), -0.01em -0.05em 0 var(--color-neon-blue), -0.05em 0.025em 0 var(--color-accent-yellow);
+                transform: translate(-0.01em, -0.01em);
+            }
+            60% {
+                text-shadow: -0.01em -0.025em 0 var(--color-neon-blue), 0.025em 0.05em 0 var(--color-accent-yellow), 0.05em -0.01em 0 var(--color-neon-blue);
+                transform: translate(0.01em, 0.02em);
+            }
+            75% {
+                text-shadow: 0.025em 0.01em 0 var(--color-accent-yellow), -0.05em -0.025em 0 var(--color-neon-blue), -0.01em 0.05em 0 var(--color-accent-yellow);
+                transform: translate(-0.02em, 0.01em);
+            }
+            100% {
+                color: var(--text-primary);
+                text-shadow: none;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes neon-pulse {
+            0% {
+                color: var(--text-primary);
+                text-shadow: none;
+                transform: scale(1);
+            }
+            50% {
+                color: var(--color-neon-blue);
+                text-shadow: 0 0 10px var(--color-neon-blue), 0 0 20px var(--color-neon-blue), 0 0 30px var(--color-neon-blue);
+                transform: scale(1.02);
+            }
+            100% {
+                color: var(--text-primary);
+                text-shadow: none;
+                transform: scale(1);
+            }
+        }
+
+        .audio-play-toggle-btn {
+            @apply w-16 h-16 rounded-full flex items-center justify-center text-3xl transition duration-300 ease-in-out transform hover:scale-110;
+            background: #2d3748;
+            border: 2px solid var(--border-color);
+            color: var(--color-neon-blue);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+        }
+        .audio-play-toggle-btn:hover {
+            background: #374151;
+            box-shadow: 0 0 25px 8px rgba(var(--color-neon-blue), 0.7), 0 0 10px 2px rgba(var(--color-neon-blue), 0.4);
+            border-color: var(--color-neon-blue);
+        }
+
+        .image-frame-container {
+            background-color: var(--bg-card);
+            border: 5px solid var(--color-neon-blue);
+            border-radius: 1.5rem;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6),
+                        0 0 30px rgba(0, 255, 255, 0.4) inset,
+                        0 15px 30px rgba(0, 0, 0, 0.7);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease-in-out;
+            transform: rotateZ(-1deg);
+            max-width: 100%;
+            margin: 0 auto;
+            animation: neon-pulse-frame 2s infinite alternate;
+        }
+
+        @keyframes neon-pulse-frame {
+            0% {
+                box-shadow: 0 0 15px rgba(0, 255, 255, 0.6),
+                            0 0 30px rgba(0, 255, 255, 0.4) inset,
+                            0 15px 30px rgba(0, 0, 0, 0.7);
+            }
+            100% {
+                box-shadow: 0 0 25px rgba(0, 255, 255, 0.9),
+                            0 0 40px rgba(0, 255, 255, 0.6) inset,
+                            0 15px 30px rgba(0, 0, 0, 0.9);
+            }
+        }
+
+        .image-frame-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: repeating-linear-gradient(0deg, rgba(0, 255, 255, 0.05) 0px, rgba(0, 255, 255, 0.05) 1px, transparent 1px, transparent 20px),
+                              repeating-linear-gradient(90deg, rgba(0, 255, 255, 0.05) 0px, rgba(0, 255, 255, 0.05) 1px, transparent 1px, transparent 20px);
+            pointer-events: none;
+            z-index: 1;
+            border-radius: 1rem;
+        }
+
+        .generated-image {
+            position: relative;
+            z-index: 2;
+        }
+
+        .image-frame-container.aspect-1-1 {
+            width: 400px;
+            height: 400px;
+        }
+
+        .image-frame-container.aspect-16-9 {
+            width: 640px;
+            height: 360px;
+        }
+
+        .image-frame-container.aspect-4-3 {
+            width: 500px;
+            height: 375px;
+        }
+        .image-frame-container.aspect-9-16 {
+            width: 360px;
+            height: 640px;
+        }
+
+        @media (max-width: 768px) {
+            .image-frame-container.aspect-1-1 {
+                width: 300px;
+                height: 300px;
+            }
+            .image-frame-container.aspect-16-9 {
+                width: 90%;
+                height: calc(90vw * 9 / 16);
+                max-height: 300px;
+            }
+            .image-frame-container.aspect-4-3 {
+                width: 90%;
+                height: calc(90vw * 3 / 4);
+                max-height: 300px;
+            }
+            .image-frame-container.aspect-9-16 {
+                width: calc(90vw * 9 / 16);
+                height: 90vw;
+                max-width: 200px;
+                max-height: 350px;
+            }
+        }
+
+        .generated-image {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5) inset;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .image-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 1rem;
+            z-index: 10;
+        }
+
+        .image-loading-spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid var(--color-neon-blue);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
     </style>
 </head>
 <body>
     <header class="gradient-bg text-white py-6 shadow-lg">
         <div class="container mx-auto flex justify-between items-center px-6">
             <h1 class="text-4xl font-extrabold tracking-tight text-neon-blue">Avneed</h1>
-            <nav>
-                <ul class="flex space-x-8 text-lg font-semibold">
+            <nav class="flex items-center space-x-8 text-lg font-semibold">
+                <ul class="flex space-x-8">
                     <li><a href="#vision" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">Vision</a></li>
                     <li><a href="#capabilities" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">Capabilities</a></li>
                     <li><a href="#ai-demo" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">AI Demo</a></li>
+                    <li><a href="#image-generator" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">Image Generator</a></li>
                     <li><a href="#contact" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">Contact</a></li>
                 </ul>
+                <button id="settingsBtn" class="ml-4">⚙️</button>
             </nav>
+        </div>
+        <div id="settingsMenu" class="settings-menu hidden">
+            <button class="settings-menu-button" data-theme="dark">Dark Theme</button>
+            <button class="settings-menu-button" data-theme="light">Light Theme</button>
+            <div class="border-t border-gray-600 my-2"></div>
+            <p class="text-gray-400 text-sm px-2" id="languageSettingLabel">Language</p>
+            <button class="settings-menu-button" data-lang="en">English</button>
+            <button class="settings-menu-button" data-lang="es">Español</button>
+            <div class="border-t border-gray-600 my-2"></div>
+            <button class="settings-menu-button" id="loginBtn">Log In</button>
+            <button class="settings-menu-button hidden" id="logoutBtn">Log Out</button>
         </div>
     </header>
 
     <section class="gradient-bg text-white py-24 px-6 text-center overflow-hidden relative">
         <div class="container mx-auto relative z-10">
-            <h2 class="text-6xl font-extrabold leading-tight mb-8 drop-shadow-lg">
+            <h2 id="heroHeading" class="text-6xl font-extrabold leading-tight mb-8 drop-shadow-lg">
                 Empower Your Workflow with <span class="text-neon-blue">Avneed</span>
             </h2>
-            <p class="text-2xl mb-12 max-w-4xl mx-auto opacity-90">
+            <p id="heroSubheading" class="text-2xl mb-12 max-w-4xl mx-auto opacity-90">
                 The proactive, omnipresent AI assistant designed to seamlessly integrate with your digital life, providing intelligent support across all your devices.
             </p>
-            <button class="btn-primary">Discover <span class="text-neon-blue">Avneed</span></button>
+            <button class="btn-primary" id="discoverAvneedBtn">Discover <span class="text-neon-blue">Avneed</span></button>
+            
+            <div id="mainAudioPlayerContainer" class="hidden mt-8">
+                <button id="mainAudioPlayToggle" class="audio-play-toggle-btn">▶</button>
+            </div>
+            <audio id="mainHeroAudio" src="https://imelijah88.github.io/Avneed/live1day.mp3" preload="auto"></audio>
+
         </div>
         <div class="absolute inset-0 z-0 opacity-20">
             <div class="absolute top-1/4 left-1/4 w-48 h-48 bg-gray-700 rounded-full mix-blend-overlay animate-pulse-slow"></div>
@@ -211,7 +658,7 @@
 
     <section id="vision" class="py-20 px-6 bg-[#1a1a2e] shadow-inner">
         <div class="container mx-auto text-center">
-            <h3 class="text-5xl font-bold mb-16 text-gray-100 leading-tight">Our Vision: A Transformative Companion</h3>
+            <h3 id="visionTitle" class="text-5xl font-bold mb-16 text-gray-100 leading-tight">Our Vision: A Transformative Companion</h3>
             <div class="flex flex-col lg:flex-row items-center justify-center lg:space-x-16">
                 <div class="lg:w-1/2 mb-12 lg:mb-0">
                     <div id="modelContainer" class="model-viewer-container">
@@ -222,7 +669,40 @@
                         </div>
                         <label for="modelFileInput" id="modelFileInputLabel" class="model-file-input-label">+</label>
                         <input type="file" id="modelFileInput" accept=".gltf, .glb" class="hidden-file-input">
+                        <input type="file" id="audioFileInput" accept=".mp3" class="hidden-file-input">
+
+                        <div id="uploadMenu" class="upload-menu hidden">
+                            <button class="upload-menu-button" data-type="model">Upload 3D Model</button>
+                            <button class="upload-menu-button" data-type="audio">Upload MP3</button>
+                        </div>
+
+                        <div id="audioControls" class="audio-controls hidden">
+                            <button class="audio-play-pause-button" data-action="play-pause">▶</button>
+                        </div>
+                        <audio id="primaryAudioPlayer" class="hidden"></audio>
+
+
                         <div id="resizeHandle" class="resize-handle"></div>
+                        <div id="modelControls" class="model-controls hidden">
+                            <div class="grid grid-cols-3 gap-1">
+                                <div></div>
+                                <button class="model-control-button" data-action="move-up">↑</button>
+                                <div></div>
+                                <button class="model-control-button" data-action="move-left">←</button>
+                                <button class="model-control-button" data-action="move-down">↓</button>
+                                <button class="model-control-button" data-action="move-right">→</button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-1">
+                                <button class="model-control-button toggle-lock" data-action="toggle-lock">Lock Cam</button>
+                                <button class="model-control-button" data-action="reset-view">Reset</button>
+                                <button class="model-control-button" data-action="toggle-rotation">Auto-Rotate</button>
+                                <button class="model-control-button" data-action="toggle-background">Toggle BG</button>
+                                <button class="model-control-button" data-action="toggle-wireframe">Wireframe</button>
+                                <button class="model-control-button" data-action="screenshot">Screenshot</button>
+                                <button class="model-control-button" data-action="scale-up">Scale +</button>
+                                <button class="model-control-button" data-action="scale-down">Scale -</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="lg:w-1/2 text-left">
@@ -237,42 +717,42 @@
         </div>
     </section>
 
-    <section id="capabilities" class="py-20 px-6 bg-[#121212]">
+    <section id="capabilities" class="py-20 px-6 bg-[#121212] shadow-inner">
         <div class="container mx-auto text-center">
-            <h3 class="text-5xl font-bold mb-16 text-gray-100 leading-tight">Unleash Your Potential with <span class="text-neon-blue">Avneed</span>'s Core Capabilities</h3>
+            <h3 id="capabilitiesTitle" class="text-5xl font-bold mb-16 text-gray-100 leading-tight">Unleash Your Potential with <span class="text-neon-blue">Avneed</span>'s Core Capabilities</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 <div class="card">
-                    <h4 class="text-3xl font-bold mb-4 text-yellow-400">Persistent Desktop Presence</h4>
+                    <h4 id="persistentPresence" class="text-3xl font-bold mb-4 text-yellow-400">Persistent Desktop Presence</h4>
                     <p class="text-gray-300 leading-relaxed">
                         Imagine a floating, interactive 3D animated model that seamlessly integrates into your desktop, always visible and on top of other applications, transforming your workspace into a personalized hub.
                     </p>
                 </div>
                 <div class="card">
-                    <h4 class="text-3xl font-bold mb-4 text-yellow-400">Dynamic Interaction</h4>
+                    <h4 id="dynamicInteraction" class="text-3xl font-bold mb-4 text-yellow-400">Dynamic Interaction</h4>
                     <p class="text-gray-300 leading-relaxed">
                         Engage with the 3D model to unveil a comprehensive interactive interface, complete with informative pop-ups and captivating animations that enrich your experience and foster deeper understanding.
                     </p>
                 </div>
                 <div class="card">
-                    <h4 class="text-3xl font-bold mb-4 text-yellow-400">Multi-Modal Input</h4>
+                    <h4 id="multiModalInput" class="text-3xl font-bold mb-4 text-yellow-400">Multi-Modal Input</h4>
                     <p class="text-gray-300 leading-relaxed">
                         Interact effortlessly with <span class="text-neon-blue">Avneed</span> using conventional text-based inquiries, direct file uploads (Word, PDF, text), and intuitive voice commands via your device's microphone.
                     </p>
                 </div>
                 <div class="card">
-                    <h4 class="text-3xl font-bold mb-4 text-yellow-400">Contextual Assistance</h4>
+                    <h4 id="contextualAssistance" class="text-3xl font-bold mb-4 text-yellow-400">Contextual Assistance</h4>
                     <p class="text-gray-300 leading-relaxed">
                         Harnesses your uploaded documents to cite specific details, condense content, extract essential concepts, and provide meticulous assistance with reports, books, or research endeavors.
                     </p>
                 </div>
                 <div class="card">
-                    <h4 class="text-3xl font-bold mb-4 text-yellow-400">Cross-Device Functionality</h4>
+                    <h4 id="crossDeviceFunctionality" class="text-3xl font-bold mb-4 text-yellow-400">Cross-Device Functionality</h4>
                     <p class="text-gray-300 leading-relaxed">
                         Ingeniously engineered for seamless integration across laptops, desktops, and smartphones, ensuring you can access your work and <span class="text-neon-blue">Avneed</span>'s support whenever and wherever you choose.
                     </p>
                 </div>
                 <div class="card">
-                    <h4 class="text-3xl font-bold mb-4 text-yellow-400">Offline Capability</h4>
+                    <h4 id="offlineCapability" class="text-3xl font-bold mb-4 text-yellow-400">Offline Capability</h4>
                     <p class="text-gray-300 leading-relaxed">
                         The essential functionalities of <span class="text-neon-blue">Avneed</span> are meticulously designed to operate effectively without an active internet connection, particularly for processing local files, ensuring uninterrupted productivity.
                     </p>
@@ -283,32 +763,67 @@
 
     <section id="ai-demo" class="py-20 px-6 bg-[#1a1a2e] shadow-inner">
         <div class="container mx-auto text-center">
-            <h3 class="text-5xl font-bold mb-16 text-gray-100 leading-tight">Experience <span class="text-neon-blue">Avneed</span>'s AI Capabilities ✨</h3>
+            <h3 id="aiChatbotTitle" class="text-5xl font-bold mb-16 text-gray-100 leading-tight">Experience <span class="text-neon-blue">Avneed</span>'s AI Chatbot ✨</h3>
             <div class="max-w-4xl mx-auto bg-gray-900 p-10 rounded-3xl shadow-xl border border-gray-700">
-                <p class="text-xl text-gray-300 mb-8">
-                    Paste your text below or upload a file (.txt, .doc, .docx, .pdf) to see <span class="text-neon-blue">Avneed</span>'s intelligent assistance in action!
+                <p id="chatInstructions" class="text-xl text-gray-300 mb-8">
+                    Chat with Avneed about your documents or any topic! Upload a file (.txt, .doc, .docx, .pdf) to provide context.
                     <br><span class="text-sm text-gray-400">(Note: Only plain text content will be processed from uploaded files.)</span>
                 </p>
-                <textarea id="aiInputText" class="w-full h-48 input-field mb-6 resize-y" placeholder="Paste your document text here..."></textarea>
+                <div id="chatHistory" class="bg-[#1a1a1a] p-6 rounded-xl shadow-md text-left text-gray-200 min-h-[250px] max-h-[400px] overflow-y-auto mb-6 border border-gray-700">
+                    <p class="text-gray-400" id="initialChatMessage">Hello! I'm Avneed. How can I assist you today?</p>
+                </div>
                 
-                <label for="aiFileInput" id="aiFileInputLabel" class="mb-8 block w-fit mx-auto ai-button">Upload Document</label>
-                <input type="file" id="aiFileInput" accept=".txt, .doc, .docx, .pdf" class="hidden-file-input">
-
-                <div class="flex flex-wrap justify-center gap-4 mb-8">
-                    <button id="summarizeBtn" class="ai-button">Summarize Document ✨</button>
-                    <button id="keyConceptsBtn" class="ai-button">Extract Key Concepts ✨</button>
-                    <button id="reportOutlineBtn" class="ai-button">Generate Report Outline ✨</button>
+                <div class="flex gap-4 mb-4">
+                    <textarea id="aiInputText" class="flex-grow input-field resize-none" placeholder="Type your message here..."></textarea>
+                    <label for="aiFileInput" id="aiFileInputLabel" class="ai-button flex-shrink-0 flex items-center justify-center">Upload File</label>
+                    <input type="file" id="aiFileInput" accept=".txt, .doc, .docx, .pdf" class="hidden-file-input">
+                    <button id="sendBtn" class="ai-button flex-shrink-0">Send</button>
                 </div>
 
-                <div id="aiOutput" class="bg-[#1a1a1a] p-6 rounded-xl shadow-md text-left text-gray-200 min-h-[150px] overflow-auto border border-gray-700">
-                    <p class="text-gray-400">Your AI-generated content will appear here.</p>
-                </div>
                 <div id="loadingIndicator" class="mt-4 text-center hidden">
                     <div class="loading-spinner"></div>
-                    <p class="ml-2 text-gray-300 inline-block">Generating content...</p>
+                    <p class="ml-2 text-gray-300 inline-block">Avneed is thinking...</p>
                 </div>
                 <div id="errorMessage" class="mt-4 text-center text-red-500 hidden">
-                    <p>An error occurred. Please try again.</p>
+                    <p id="errorMessageText">An error occurred. Please try again.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="image-generator" class="py-20 px-6 bg-[#121212] shadow-inner">
+        <div class="container mx-auto text-center">
+            <h3 id="imageGeneratorTitle" class="text-5xl font-bold mb-16 text-gray-100 leading-tight">Avneed's Creative Canvas ✨</h3>
+            <div class="max-w-4xl mx-auto bg-gray-900 p-10 rounded-3xl shadow-xl border border-gray-700">
+                <p id="imageGeneratorInstructions" class="text-xl text-gray-300 mb-8">
+                    Describe the image you want Avneed to create! Choose an aspect ratio for your masterpiece.
+                </p>
+                
+                <div class="flex flex-col gap-4 mb-6">
+                    <textarea id="imagePromptInput" class="flex-grow input-field resize-none" placeholder="e.g., 'A futuristic city at sunset with flying cars, highly detailed, cyberpunk style'"></textarea>
+                    
+                    <div class="flex flex-wrap justify-center gap-2 mb-4" id="aspectRatioButtons">
+                        <button class="ai-button text-sm px-6 py-3" data-aspect="1-1">1:1 Square</button>
+                        <button class="ai-button text-sm px-6 py-3" data-aspect="16-9">16:9 Landscape</button>
+                        <button class="ai-button text-sm px-6 py-3" data-aspect="4-3">4:3 Standard</button>
+                        <button class="ai-button text-sm px-6 py-3" data-aspect="9-16">9:16 Portrait</button>
+                    </div>
+
+                    <button id="generateImageBtn" class="ai-button">Generate Image</button>
+                </div>
+
+                <div id="imageOutputArea" class="mt-8 flex justify-center items-center relative min-h-[300px]">
+                    <div id="imageFrame" class="image-frame-container aspect-1-1">
+                        <img id="generatedImage" class="generated-image" src="https://placehold.co/400x400/333333/FFFFFF?text=Your+Image+Here" alt="Generated Image Placeholder">
+                        <div id="imageLoadingOverlay" class="image-loading-overlay hidden">
+                            <span class="image-loading-spinner"></span>
+                            <p id="imageLoadingText">Generating image...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="imageErrorMessage" class="mt-4 text-center text-red-500 hidden">
+                    <p id="imageErrorMessageText">An error occurred during image generation. Please try again.</p>
                 </div>
             </div>
         </div>
@@ -316,21 +831,20 @@
 
     <section id="contact" class="py-20 px-6 gradient-bg text-white text-center shadow-inner">
         <div class="container mx-auto">
-            <h3 class="text-5xl font-bold mb-8 drop-shadow-lg">Ready to Transform Your Workflow?</h3>
-            <p class="text-2xl mb-12 max-w-3xl mx-auto opacity-90">
+            <h3 id="contactTitle" class="text-5xl font-bold mb-8 drop-shadow-lg">Ready to Transform Your Workflow?</h3>
+            <p id="contactSubheading" class="text-2xl mb-12 max-w-3xl mx-auto opacity-90">
                 Join the future of personal AI assistance. Sign up for early access and stay tuned for <span class="text-neon-blue">Avneed</span>'s groundbreaking release!
             </p>
             <div class="contact-content-wrapper">
                 <form class="contact-form-container max-w-lg mx-auto bg-gray-900 p-10 rounded-3xl shadow-2xl border border-gray-700">
-                    <h4 class="text-3xl font-bold mb-8 text-gray-100">Get Early Access Updates</h4>
+                    <h4 id="getUpdatesTitle" class="text-3xl font-bold mb-8 text-gray-100">Get Early Access Updates</h4>
                     <div class="flex flex-col md:flex-row gap-6 mb-6">
-                        <input type="text" placeholder="Your Name" class="flex-1 input-field">
-                        <input type="email" placeholder="Your Email" class="flex-1 input-field">
+                        <input type="text" id="yourNameInput" placeholder="Your Name" class="flex-1 input-field min-w-0">
+                        <input type="email" id="yourEmailInput" placeholder="Your Email" class="flex-1 input-field min-w-0">
                     </div>
-                    <button type="submit" class="btn-primary w-full">Sign Up for Updates</button>
+                    <button type="submit" id="signUpBtn" class="btn-primary w-full">Sign Up for Updates</button>
                 </form>
 
-                <!-- New 3D Model Viewer Container -->
                 <div class="new-model-viewer-area max-w-lg mx-auto">
                     <div id="secondaryModelContainer" class="model-viewer-container">
                         <canvas id="secondaryModelCanvas" class="model-viewer-canvas"></canvas>
@@ -340,7 +854,39 @@
                         </div>
                         <label for="secondaryModelFileInput" id="secondaryModelFileInputLabel" class="model-file-input-label">+</label>
                         <input type="file" id="secondaryModelFileInput" accept=".gltf, .glb" class="hidden-file-input">
+                        <input type="file" id="secondaryAudioFileInput" accept=".mp3" class="hidden-file-input">
+
+                        <div id="secondaryUploadMenu" class="upload-menu hidden">
+                            <button class="upload-menu-button" data-type="model">Upload 3D Model</button>
+                            <button class="upload-menu-button" data-type="audio">Upload MP3</button>
+                        </div>
+
+                        <div id="secondaryAudioControls" class="audio-controls hidden">
+                            <button class="audio-play-pause-button" data-action="play-pause">▶</button>
+                        </div>
+                        <audio id="secondaryAudioPlayer" class="hidden"></audio>
+
                         <div id="secondaryResizeHandle" class="resize-handle"></div>
+                        <div id="secondaryModelControls" class="model-controls hidden">
+                            <div class="grid grid-cols-3 gap-1">
+                                <div></div>
+                                <button class="model-control-button" data-action="move-up">↑</button>
+                                <div></div>
+                                <button class="model-control-button" data-action="move-left">←</button>
+                                <button class="model-control-button" data-action="move-down">↓</button>
+                                <button class="model-control-button" data-action="move-right">→</button>
+                            </div>
+                            <div class="grid grid-cols-2 gap-1">
+                                <button class="model-control-button toggle-lock" data-action="toggle-lock">Lock Cam</button>
+                                <button class="model-control-button" data-action="reset-view">Reset</button>
+                                <button class="model-control-button" data-action="toggle-rotation">Auto-Rotate</button>
+                                <button class="model-control-button" data-action="toggle-background">Toggle BG</button>
+                                <button class="model-control-button" data-action="toggle-wireframe">Wireframe</button>
+                                <button class="model-control-button" data-action="screenshot">Screenshot</button>
+                                <button class="model-control-button" data-action="scale-up">Scale +</button>
+                                <button class="model-control-button" data-action="scale-down">Scale -</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -349,57 +895,286 @@
 
     <footer class="bg-gray-950 text-white py-10 px-6">
         <div class="container mx-auto text-center text-gray-500">
-            <p class="text-lg">&copy; 2025 <span class="text-neon-blue">Avneed</span>. All rights reserved.</p>
-            <p class="mt-4 text-md">Designed with precision for an enhanced user experience and a smarter future.</p>
+            <p class="text-lg" id="copyrightText">&copy; 2025 <span class="text-neon-blue">Avneed</span>. All rights reserved.</p>
+            <p class="mt-4 text-md" id="designMessage">Designed with precision for an enhanced user experience and a smarter future.</p>
         </div>
     </footer>
 
     <script>
         const aiInputText = document.getElementById('aiInputText');
         const aiFileInput = document.getElementById('aiFileInput');
-        const summarizeBtn = document.getElementById('summarizeBtn');
-        const keyConceptsBtn = document.getElementById('keyConceptsBtn');
-        const reportOutlineBtn = document.getElementById('reportOutlineBtn');
-        const aiOutput = document.getElementById('aiOutput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatHistoryDiv = document.getElementById('chatHistory');
         const loadingIndicator = document.getElementById('loadingIndicator');
         const errorMessage = document.getElementById('errorMessage');
+        let chatHistory = [{ role: "model", parts: [{ text: "Hello! I'm Avneed. How can I assist you today?" }] }];
+        
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsMenu = document.getElementById('settingsMenu');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
 
         const modelContainer = document.getElementById('modelContainer');
         const modelCanvas = document.getElementById('modelCanvas');
         const modelFileInput = document.getElementById('modelFileInput');
+        const audioFileInput = document.getElementById('audioFileInput');
         const modelStatus = document.getElementById('modelStatus');
         const resizeHandle = document.getElementById('resizeHandle');
+        const modelControls = document.getElementById('modelControls');
+        const modelFileInputLabel = document.getElementById('modelFileInputLabel');
+        const uploadMenu = document.getElementById('uploadMenu');
+        const audioControls = document.getElementById('audioControls');
+        const primaryAudioPlayer = document.getElementById('primaryAudioPlayer');
 
-        const aiFileInputLabel = document.getElementById('aiFileInputLabel');
-
-        // New elements for the secondary model viewer
         const secondaryModelContainer = document.getElementById('secondaryModelContainer');
         const secondaryModelCanvas = document.getElementById('secondaryModelCanvas');
         const secondaryModelFileInput = document.getElementById('secondaryModelFileInput');
+        const secondaryAudioFileInput = document.getElementById('secondaryAudioFileInput');
         const secondaryModelStatus = document.getElementById('secondaryModelStatus');
         const secondaryResizeHandle = document.getElementById('secondaryResizeHandle');
+        const secondaryModelControls = document.getElementById('secondaryModelControls');
+        const secondaryModelFileInputLabel = document.getElementById('secondaryModelFileInputLabel');
+        const secondaryUploadMenu = document.getElementById('secondaryUploadMenu');
+        const secondaryAudioControls = document.getElementById('secondaryAudioControls');
+        const secondaryAudioPlayer = document.getElementById('secondaryAudioPlayer');
 
-        aiFileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    aiInputText.value = e.target.result;
-                };
-                reader.onerror = () => {
-                    aiOutput.innerHTML = '<p class="text-red-500">Error reading file.</p>';
-                };
-                reader.readAsText(file);
+        const discoverAvneedBtn = document.getElementById('discoverAvneedBtn');
+        const mainAudioPlayer = document.getElementById('mainHeroAudio');
+        const mainAudioPlayerContainer = document.getElementById('mainAudioPlayerContainer');
+        const mainAudioPlayToggle = document.getElementById('mainAudioPlayToggle');
+        const heroHeading = document.getElementById('heroHeading');
+        const heroSubheading = document.getElementById('heroSubheading');
+
+        const imagePromptInput = document.getElementById('imagePromptInput');
+        const aspectRatioButtons = document.getElementById('aspectRatioButtons');
+        const generateImageBtn = document.getElementById('generateImageBtn');
+        const imageFrame = document.getElementById('imageFrame');
+        const generatedImage = document.getElementById('generatedImage');
+        const imageLoadingOverlay = document.getElementById('imageLoadingOverlay');
+        const imageLoadingText = document.getElementById('imageLoadingText');
+        const imageErrorMessage = document.getElementById('imageErrorMessage');
+        let selectedAspectRatio = '1-1';
+
+        const translations = {
+            en: {
+                heroHeading: 'Empower Your Workflow with <span class="text-neon-blue">Avneed</span>',
+                heroSubheading: 'The proactive, omnipresent AI assistant designed to seamlessly integrate with your digital life, providing intelligent support across all your devices.',
+                discoverAvneed: 'Discover <span class="text-neon-blue">Avneed</span>',
+                helloAvneed: 'Hello! I\'m Avneed. How can I assist you today?',
+                typeMessage: 'Type your message here...',
+                uploadFile: 'Upload File',
+                send: 'Send',
+                avneedThinking: 'Avneed is thinking...',
+                errorOccurred: 'An error occurred. Please try again.',
+                errorConnectingAI: 'An error occurred while connecting to the AI. Please check your network and try again.',
+                visionTitle: 'Our Vision: A Transformative Companion',
+                capabilitiesTitle: 'Unleash Your Potential with <span class="text-neon-blue">Avneed</span>\'s Core Capabilities',
+                persistentPresence: 'Persistent Desktop Presence',
+                dynamicInteraction: 'Dynamic Interaction',
+                multiModalInput: 'Multi-Modal Input',
+                contextualAssistance: 'Contextual Assistance',
+                crossDeviceFunctionality: 'Cross-Device Functionality',
+                offlineCapability: 'Offline Capability',
+                aiChatbotTitle: 'Experience <span class="text-neon-blue">Avneed</span>\'s AI Chatbot ✨',
+                chatInstructions: 'Chat with Avneed about your documents or any topic! Upload a file (.txt, .doc, .docx, .pdf) to provide context.<br><span class="text-sm text-gray-400">(Note: Only plain text content will be processed from uploaded files.)</span>',
+                imageGeneratorTitle: 'Avneed\'s Creative Canvas ✨',
+                imageGeneratorInstructions: 'Describe the image you want Avneed to create! Choose an aspect ratio for your masterpiece.',
+                square: '1:1 Square',
+                landscape: '16:9 Landscape',
+                standard: '4:3 Standard',
+                portrait: '9:16 Portrait',
+                generateImage: 'Generate Image',
+                generatingImage: 'Generating image...',
+                imageGenError: 'An error occurred during image generation. Please try again.',
+                contactTitle: 'Ready to Transform Your Workflow?',
+                contactSubheading: 'Join the future of personal AI assistance. Sign up for early access and stay tuned for <span class="text-neon-blue">Avneed</span>\'s groundbreaking release!',
+                getUpdates: 'Get Early Access Updates',
+                yourName: 'Your Name',
+                yourEmail: 'Your Email',
+                signUp: 'Sign Up for Updates',
+                copyright: '&copy; 2025 <span class="text-neon-blue">Avneed</span>. All rights reserved.',
+                designMessage: 'Designed with precision for an enhanced user experience and a smarter future.',
+                language: 'Language',
+                logIn: 'Log In',
+                logOut: 'Log Out'
+            },
+            es: {
+                heroHeading: 'Potencia tu Flujo de Trabajo con <span class="text-neon-blue">Avneed</span>',
+                heroSubheading: 'El asistente de IA proactivo y omnipresente diseñado para integrarse perfectamente con tu vida digital, brindando soporte inteligente en todos tus dispositivos.',
+                discoverAvneed: 'Descubre <span class="text-neon-blue">Avneed</span>',
+                helloAvneed: '¡Hola! Soy Avneed. ¿Cómo puedo ayudarte hoy?',
+                typeMessage: 'Escribe tu mensaje aquí...',
+                uploadFile: 'Subir Archivo',
+                send: 'Enviar',
+                avneedThinking: 'Avneed está pensando...',
+                errorOccurred: 'Ocurrió un error. Por favor, inténtalo de nuevo.',
+                errorConnectingAI: 'Ocurrió un error al conectar con la IA. Por favor, revisa tu red e inténtalo de nuevo.',
+                visionTitle: 'Nuestra Visión: Un Compañero Transformador',
+                capabilitiesTitle: 'Libera Tu Potencial con las Capacidades Principales de <span class="text-neon-blue">Avneed</span>',
+                persistentPresence: 'Presencia Persistente en el Escritorio',
+                dynamicInteraction: 'Interacción Dinámica',
+                multiModalInput: 'Entrada Multimodal',
+                contextualAssistance: 'Asistencia Contextual',
+                crossDeviceFunctionality: 'Funcionalidad Multi-dispositivo',
+                offlineCapability: 'Capacidad Offline',
+                aiChatbotTitle: 'Experimenta el Chatbot de IA de <span class="text-neon-blue">Avneed</span> ✨',
+                chatInstructions: '¡Chatea con Avneed sobre tus documentos o cualquier tema! Sube un archivo (.txt, .doc, .docx, .pdf) para proporcionar contexto.<br><span class="text-sm text-gray-400">(Nota: Solo se procesará el contenido de texto sin formato de los archivos subidos.)</span>',
+                imageGeneratorTitle: 'Lienzo Creativo de Avneed ✨',
+                imageGeneratorInstructions: '¡Describe la imagen que quieres que Avneed cree! Elige una relación de aspecto para tu obra maestra.',
+                square: '1:1 Cuadrado',
+                landscape: '16:9 Horizontal',
+                standard: '4:3 Estándar',
+                portrait: '9:16 Vertical',
+                generateImage: 'Generar Imagen',
+                generatingImage: 'Generando imagen...',
+                imageGenError: 'Ocurrió un error durante la generación de la imagen. Por favor, inténtalo de nuevo.',
+                contactTitle: '¿Listo para Transformar tu Flujo de Trabajo?',
+                contactSubheading: 'Únete al futuro de la asistencia personal de IA. ¡Regístrate para acceso anticipado y mantente atento al lanzamiento innovador de <span class="text-neon-blue">Avneed</span>!',
+                getUpdates: 'Obtén Actualizaciones de Acceso Anticipado',
+                yourName: 'Tu Nombre',
+                yourEmail: 'Tu Correo Electrónico',
+                signUp: 'Regístrate para Recibir Actualizaciones',
+                copyright: '&copy; 2025 <span class="text-neon-blue">Avneed</span>. Todos los derechos reservados.',
+                designMessage: 'Diseñado con precisión para una experiencia de usuario mejorada y un futuro más inteligente.',
+                language: 'Idioma',
+                logIn: 'Iniciar Sesión',
+                logOut: 'Cerrar Sesión'
+            }
+        };
+
+        function applyTheme(theme) {
+            document.body.classList.remove('dark-theme', 'light-theme');
+            document.body.classList.add(theme + '-theme');
+            localStorage.setItem('theme', theme);
+        }
+
+        function applyLanguage(lang) {
+            const currentTranslations = translations[lang];
+            if (!currentTranslations) return;
+
+            heroHeading.innerHTML = currentTranslations.heroHeading;
+            heroSubheading.innerHTML = currentTranslations.heroSubheading;
+            discoverAvneedBtn.innerHTML = currentTranslations.discoverAvneed;
+            document.getElementById('visionTitle').textContent = currentTranslations.visionTitle;
+            document.getElementById('capabilitiesTitle').innerHTML = currentTranslations.capabilitiesTitle;
+            document.getElementById('persistentPresence').textContent = currentTranslations.persistentPresence;
+            document.getElementById('dynamicInteraction').textContent = currentTranslations.dynamicInteraction;
+            document.getElementById('multiModalInput').textContent = currentTranslations.multiModalInput;
+            document.getElementById('contextualAssistance').textContent = currentTranslations.contextualAssistance;
+            document.getElementById('crossDeviceFunctionality').textContent = currentTranslations.crossDeviceFunctionality;
+            document.getElementById('offlineCapability').textContent = currentTranslations.offlineCapability;
+            document.getElementById('aiChatbotTitle').innerHTML = currentTranslations.aiChatbotTitle;
+            document.getElementById('chatInstructions').innerHTML = currentTranslations.chatInstructions;
+            document.getElementById('initialChatMessage').textContent = currentTranslations.helloAvneed;
+            document.getElementById('aiInputText').placeholder = currentTranslations.typeMessage;
+            document.getElementById('aiFileInputLabel').textContent = currentTranslations.uploadFile;
+            document.getElementById('sendBtn').textContent = currentTranslations.send;
+            document.getElementById('loadingIndicator').querySelector('p').textContent = currentTranslations.avneedThinking;
+            document.getElementById('errorMessageText').textContent = currentTranslations.errorOccurred;
+            document.getElementById('imageGeneratorTitle').innerHTML = currentTranslations.imageGeneratorTitle;
+            document.getElementById('imageGeneratorInstructions').textContent = currentTranslations.imageGeneratorInstructions;
+            document.querySelector('#aspectRatioButtons button[data-aspect="1-1"]').textContent = currentTranslations.square;
+            document.querySelector('#aspectRatioButtons button[data-aspect="16-9"]').textContent = currentTranslations.landscape;
+            document.querySelector('#aspectRatioButtons button[data-aspect="4-3"]').textContent = currentTranslations.standard;
+            document.querySelector('#aspectRatioButtons button[data-aspect="9-16"]').textContent = currentTranslations.portrait;
+            document.getElementById('generateImageBtn').textContent = currentTranslations.generateImage;
+            document.getElementById('imageLoadingText').textContent = currentTranslations.generatingImage;
+            document.getElementById('imageErrorMessageText').textContent = currentTranslations.imageGenError;
+            document.getElementById('contactTitle').textContent = currentTranslations.contactTitle;
+            document.getElementById('contactSubheading').innerHTML = currentTranslations.contactSubheading;
+            document.getElementById('getUpdatesTitle').textContent = currentTranslations.getUpdates;
+            document.getElementById('yourNameInput').placeholder = currentTranslations.yourName;
+            document.getElementById('yourEmailInput').placeholder = currentTranslations.yourEmail;
+            document.getElementById('signUpBtn').textContent = currentTranslations.signUp;
+            document.getElementById('copyrightText').innerHTML = currentTranslations.copyright;
+            document.getElementById('designMessage').textContent = currentTranslations.designMessage;
+            document.getElementById('languageSettingLabel').textContent = currentTranslations.language;
+            loginBtn.textContent = currentTranslations.logIn;
+            logoutBtn.textContent = currentTranslations.logOut;
+
+            localStorage.setItem('language', lang);
+        }
+
+        function updateLoginButtons() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+            } else {
+                loginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+            }
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(savedTheme);
+
+        const savedLanguage = localStorage.getItem('language') || 'en';
+        applyLanguage(savedLanguage);
+        updateLoginButtons();
+
+        settingsBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            settingsMenu.classList.toggle('hidden');
+        });
+
+        settingsMenu.querySelectorAll('.settings-menu-button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                if (event.target.dataset.theme) {
+                    const theme = event.target.dataset.theme;
+                    applyTheme(theme);
+                } else if (event.target.dataset.lang) {
+                    const lang = event.target.dataset.lang;
+                    applyLanguage(lang);
+                }
+                settingsMenu.classList.add('hidden');
+            });
+        });
+
+        loginBtn.addEventListener('click', () => {
+            localStorage.setItem('isLoggedIn', 'true');
+            updateLoginButtons();
+            settingsMenu.classList.add('hidden');
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.setItem('isLoggedIn', 'false');
+            updateLoginButtons();
+            settingsMenu.classList.add('hidden');
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!settingsMenu.contains(event.target) && event.target !== settingsBtn) {
+                settingsMenu.classList.add('hidden');
             }
         });
 
-        async function callGeminiAPI(prompt) {
+        function displayMessage(role, text) {
+            const messageElement = document.createElement('p');
+            messageElement.classList.add('mb-2', 'p-3', 'rounded-lg', 'max-w-[75%]');
+            
+            if (role === 'user') {
+                messageElement.classList.add('user-message');
+            } else {
+                messageElement.classList.add('ai-message');
+            }
+            messageElement.textContent = text;
+            chatHistoryDiv.appendChild(messageElement);
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+        }
+
+        async function sendChatMessage() {
+            const userMessage = aiInputText.value.trim();
+            if (!userMessage) return;
+
+            displayMessage('user', userMessage);
+            chatHistory.push({ role: "user", parts: [{ text: userMessage }] });
+            aiInputText.value = '';
+
+            aiInputText.style.height = 'auto';
+
             loadingIndicator.classList.remove('hidden');
             errorMessage.classList.add('hidden');
-            aiOutput.innerHTML = '';
-
-            let chatHistory = [];
-            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
             const payload = { contents: chatHistory };
             const apiKey = "";
@@ -417,62 +1192,59 @@
                 if (result.candidates && result.candidates.length > 0 &&
                     result.candidates[0].content && result.candidates[0].content.parts &&
                     result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    aiOutput.innerHTML = `<pre class="whitespace-pre-wrap">${text}</pre>`;
+                    const aiResponse = result.candidates[0].content.parts[0].text;
+                    displayMessage('model', aiResponse);
+                    chatHistory.push({ role: "model", parts: [{ text: aiResponse }] });
                 } else {
-                    aiOutput.innerHTML = '<p class="text-red-500">No content generated. Please try a different input or prompt.</p>';
-                    console.error("Unexpected API response structure:", result);
+                    displayMessage('model', 'Sorry, I could not generate a response. Please try again.');
                 }
             } catch (error) {
                 errorMessage.classList.remove('hidden');
-                console.error("Error calling Gemini API:", error);
-                aiOutput.innerHTML = '';
+                displayMessage('model', 'An error occurred while connecting to the AI. Please check your network and try again.');
             } finally {
                 loadingIndicator.classList.add('hidden');
             }
         }
 
-        summarizeBtn.addEventListener('click', () => {
-            const text = aiInputText.value.trim();
-            if (text) {
-                const prompt = `Summarize the following document concisely:\n\n${text}`;
-                callGeminiAPI(prompt);
-            } else {
-                aiOutput.innerHTML = '<p class="text-red-500">Please provide text to summarize.</p>';
+        sendBtn.addEventListener('click', sendChatMessage);
+        aiInputText.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChatMessage();
             }
         });
 
-        keyConceptsBtn.addEventListener('click', () => {
-            const text = aiInputText.value.trim();
-            if (text) {
-                const prompt = `Extract the key concepts and main ideas from the following document. Present them as a bulleted list:\n\n${text}`;
-                callGeminiAPI(prompt);
+        aiInputText.addEventListener('input', () => {
+            aiInputText.style.height = 'auto';
+            aiInputText.style.height = (aiInputText.scrollHeight) + 'px';
+            if (aiInputText.scrollHeight > aiInputText.clientHeight) {
+                aiInputText.style.overflowY = 'auto';
             } else {
-                aiOutput.innerHTML = '<p class="text-red-500">Please provide text to extract concepts from.</p>';
+                aiInputText.style.overflowY = 'hidden';
             }
         });
 
-        reportOutlineBtn.addEventListener('click', () => {
-            const text = aiInputText.value.trim();
-            if (text) {
-                const prompt = `Generate a detailed report outline based on the following document. Include sections, sub-sections, and key points relevant to the content:\n\n${text}`;
-                callGeminiAPI(prompt);
-            } else {
-                aiOutput.innerHTML = '<p class="text-red-500">Please provide text to generate a report outline from.</p>';
+        aiFileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const fileContent = e.target.result;
+                    aiInputText.value = `File content:\n\n${fileContent}\n\nMy question: `;
+                    aiInputText.focus();
+                    aiInputText.dispatchEvent(new Event('input'));
+                };
+                reader.onerror = () => {
+                    errorMessage.classList.remove('hidden');
+                    errorMessage.textContent = 'Error reading file.';
+                };
+                reader.readAsText(file);
             }
         });
 
-        // --- 3D Viewer Logic (Generalized for multiple viewers) ---
-        // Store instances of scenes, cameras, etc. in objects/maps if more viewers are added dynamically
-        // For now, we'll keep separate variables for simplicity as there are only two.
+        let viewer1Instance, viewer2Instance;
 
-        let scene1, camera1, renderer1, controls1, currentModel1, mixer1;
-        const clock1 = new THREE.Clock();
-
-        let scene2, camera2, renderer2, controls2, currentModel2, mixer2;
-        const clock2 = new THREE.Clock();
-
-        function init3DViewer(canvas, container, statusElement) {
+        function init3DViewer(canvas, container, statusElement, audioPlayerElement, audioControlsElement) {
             const scene = new THREE.Scene();
             scene.background = null;
 
@@ -482,6 +1254,7 @@
             const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setClearAlpha(0);
 
             const controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
@@ -503,8 +1276,40 @@
             statusElement.classList.remove('hidden');
             statusElement.innerHTML = '<p>Upload a 3D model (.gltf, .glb)</p><p>Use mouse to interact</p>';
 
-            // Return the Three.js components for later use
-            return { scene, camera, renderer, controls, currentModel: null, mixer: null };
+            const playPauseButton = audioControlsElement.querySelector('[data-action="play-pause"]');
+            audioPlayerElement.addEventListener('play', () => { playPauseButton.textContent = '⏸'; });
+            audioPlayerElement.addEventListener('pause', () => { playPauseButton.textContent = '▶'; });
+            audioPlayerElement.addEventListener('ended', () => { playPauseButton.textContent = '▶'; });
+            
+            playPauseButton.addEventListener('click', () => {
+                if (audioPlayerElement.paused) {
+                    audioPlayerElement.play();
+                } else {
+                    audioPlayerElement.pause();
+                }
+            });
+
+            return { 
+                scene, 
+                camera, 
+                renderer, 
+                controls, 
+                currentModel: null, 
+                mixer: null, 
+                clock: new THREE.Clock(), 
+                isCameraLocked: false,
+                autoRotate: true,
+                isBackgroundSolid: false,
+                isWireframe: false,
+                initialCameraPosition: camera.position.clone(),
+                initialControlsTarget: controls.target.clone(),
+                initialModelPosition: new THREE.Vector3(),
+                initialModelRotation: new THREE.Euler(),
+                initialModelScale: new THREE.Vector3(1,1,1),
+                audioPlayer: audioPlayerElement, 
+                audioControls: audioControlsElement,
+                hasAudioLoaded: false, 
+            };
         }
 
         function onWindowResize(camera, renderer, container) {
@@ -513,16 +1318,16 @@
             renderer.setSize(container.clientWidth, container.clientHeight);
         }
 
-        function animate3D(viewerInstance, clock) {
-            requestAnimationFrame(() => animate3D(viewerInstance, clock));
+        function animate3D(viewerInstance) {
+            requestAnimationFrame(() => animate3D(viewerInstance));
 
-            const delta = clock.getDelta();
+            const delta = viewerInstance.clock.getDelta();
 
             if (viewerInstance.mixer) {
                 viewerInstance.mixer.update(delta);
             }
 
-            if (viewerInstance.currentModel) {
+            if (viewerInstance.currentModel && viewerInstance.autoRotate) {
                 viewerInstance.currentModel.rotation.y += 0.015;
             }
 
@@ -530,85 +1335,83 @@
             viewerInstance.renderer.render(viewerInstance.scene, viewerInstance.camera);
         }
 
-        function setupModelFileInput(fileInput, statusElement, viewerInstance) {
-            fileInput.addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (!file) return;
+        function loadModel(modelPath, viewerInstance, statusElement, controlsElement, fileInputLabelElement, audioControlsElement) {
+            statusElement.classList.remove('hidden');
+            statusElement.innerHTML = '<div class="loading-spinner mb-4"></div><p>Loading 3D Model...</p>';
+            
+            const modelFileInput = fileInputLabelElement.nextElementSibling;
 
-                const fileName = file.name.toLowerCase();
-                if (!fileName.endsWith('.gltf') && !fileName.endsWith('.glb')) {
-                    statusElement.classList.remove('hidden');
-                    statusElement.innerHTML = '<p class="text-red-500">Unsupported file type. Please upload .gltf or .glb.</p>';
-                    return;
+            if (modelFileInput) modelFileInput.style.display = 'none';
+            if (fileInputLabelElement) fileInputLabelElement.classList.add('hidden');
+            if (controlsElement) controlsElement.classList.add('hidden');
+            if (audioControlsElement) audioControlsElement.classList.add('hidden');
+
+            const loader = new THREE.GLTFLoader();
+            loader.load(modelPath, (gltf) => {
+                if (viewerInstance.currentModel) {
+                    viewerInstance.scene.remove(viewerInstance.currentModel);
+                    if (viewerInstance.mixer) {
+                        viewerInstance.mixer.stopAllAction();
+                        viewerInstance.mixer = null;
+                    }
+                }
+                viewerInstance.currentModel = gltf.scene;
+                viewerInstance.scene.add(viewerInstance.currentModel);
+
+                viewerInstance.isWireframe = false;
+                viewerInstance.isBackgroundSolid = false;
+                viewerInstance.renderer.setClearAlpha(0);
+                controlsElement.querySelector('[data-action="toggle-wireframe"]').textContent = 'Wireframe';
+                controlsElement.querySelector('[data-action="toggle-background"]').textContent = 'Toggle BG';
+
+
+                if (gltf.animations && gltf.animations.length) {
+                    viewerInstance.mixer = new THREE.AnimationMixer(viewerInstance.currentModel);
+                    gltf.animations.forEach((clip) => {
+                        viewerInstance.mixer.clipAction(clip).play();
+                    });
+                } else {
                 }
 
+                const box = new THREE.Box3().setFromObject(viewerInstance.currentModel);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const fov = viewerInstance.camera.fov * (Math.PI / 180);
+                let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+                cameraZ *= 1.5;
+
+                viewerInstance.camera.position.set(center.x, center.y, center.z + cameraZ);
+                viewerInstance.controls.target.set(center.x, center.y, center.z);
+                viewerInstance.controls.update();
+
+                viewerInstance.initialCameraPosition.copy(viewerInstance.camera.position);
+                viewerInstance.initialControlsTarget.copy(viewerInstance.controls.target);
+                viewerInstance.initialModelPosition.copy(viewerInstance.currentModel.position);
+                viewerInstance.initialModelRotation.copy(viewerInstance.currentModel.rotation);
+                viewerInstance.initialModelScale.copy(viewerInstance.currentModel.scale);
+
+
+                statusElement.innerHTML = '';
+                statusElement.classList.add('hidden');
+                if (modelFileInput) modelFileInput.style.display = 'block';
+                if (modelPath.startsWith('blob:')) {
+                    URL.revokeObjectURL(modelPath);
+                }
+
+            }, (xhr) => {
+                const percent = (xhr.loaded / xhr.total * 100).toFixed(0);
+                statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>Loading: ${percent}%</p>`;
+            }, (error) => {
                 statusElement.classList.remove('hidden');
-                statusElement.innerHTML = '<div class="loading-spinner mb-4"></div><p>Loading 3D Model...</p>';
-                fileInput.style.display = 'none';
-                fileInput.previousElementSibling.style.display = 'none'; // Hide the plus sign label
-
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const loader = new THREE.GLTFLoader();
-                    loader.parse(e.target.result, '', (gltf) => {
-                        if (viewerInstance.currentModel) {
-                            viewerInstance.scene.remove(viewerInstance.currentModel);
-                            if (viewerInstance.mixer) {
-                                viewerInstance.mixer.stopAllAction();
-                                viewerInstance.mixer = null;
-                            }
-                        }
-                        viewerInstance.currentModel = gltf.scene;
-                        viewerInstance.scene.add(viewerInstance.currentModel);
-
-                        if (gltf.scene.environment) {
-                            viewerInstance.scene.environment = gltf.scene.environment;
-                        }
-
-                        if (gltf.animations && gltf.animations.length) {
-                            viewerInstance.mixer = new THREE.AnimationMixer(viewerInstance.currentModel);
-                            gltf.animations.forEach((clip) => {
-                                viewerInstance.mixer.clipAction(clip).play();
-                            });
-                            console.log("Animations found and playing:", gltf.animations.length);
-                        } else {
-                            console.log("No animations found in this model.");
-                        }
-
-                        const box = new THREE.Box3().setFromObject(viewerInstance.currentModel);
-                        const center = box.getCenter(new THREE.Vector3());
-                        const size = box.getSize(new THREE.Vector3());
-                        const maxDim = Math.max(size.x, size.y, size.z);
-                        const fov = viewerInstance.camera.fov * (Math.PI / 180);
-                        let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
-                        cameraZ *= 1.5;
-
-                        viewerInstance.camera.position.set(center.x, center.y, center.z + cameraZ);
-                        viewerInstance.controls.target.set(center.x, center.y, center.z);
-                        viewerInstance.controls.update();
-
-                        statusElement.classList.add('hidden');
-                        fileInput.style.display = 'block';
-                        fileInput.previousElementSibling.style.display = 'flex'; // Show the plus sign label
-
-                    }, (xhr) => {
-                        const percent = (xhr.loaded / xhr.total * 100).toFixed(0);
-                        statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>Loading: ${percent}%</p>`;
-                    }, (error) => {
-                        statusElement.classList.remove('hidden');
-                        statusElement.innerHTML = `<p class="text-red-500">Error loading model: ${error.message || 'Unknown error'}</p>`;
-                        console.error('Error loading GLTF model:', error);
-                        fileInput.style.display = 'block';
-                        fileInput.previousElementSibling.style.display = 'flex'; // Show the plus sign label
-                    });
-                };
-                reader.onerror = () => {
-                    statusElement.classList.remove('hidden');
-                    statusElement.innerHTML = '<p class="text-red-500">Error reading file.</p>';
-                    fileInput.style.display = 'block';
-                    fileInput.previousElementSibling.style.display = 'flex'; // Show the plus sign label
-                };
-                reader.readAsArrayBuffer(file);
+                statusElement.innerHTML = `<p class="text-red-500">Error loading model: ${error.message || 'Unknown error'}</p>`;
+                if (modelFileInput) modelFileInput.style.display = 'block';
+                if (fileInputLabelElement) fileInputLabelElement.classList.remove('hidden');
+                if (controlsElement) controlsElement.classList.add('hidden');
+                if (audioControlsElement) audioControlsElement.classList.add('hidden');
+                if (modelPath.startsWith('blob:')) {
+                    URL.revokeObjectURL(modelPath);
+                }
             });
         }
 
@@ -654,32 +1457,309 @@
             });
         }
 
+        function setupModelControls(controlsElement, viewerInstance, containerElement, fileInputLabelElement, uploadMenuElement) {
+            const movementStep = 0.1;
+            const scaleFactor = 1.05;
+
+            const updateOverlayVisibility = () => {
+                const isHovering = containerElement.matches(':hover');
+                const isMenuOpen = !uploadMenuElement.classList.contains('hidden');
+
+                if (isHovering || isMenuOpen) {
+                    fileInputLabelElement.classList.remove('hidden');
+                    if (viewerInstance.currentModel) {
+                        controlsElement.classList.remove('hidden');
+                    }
+                    if (viewerInstance.hasAudioLoaded) {
+                        viewerInstance.audioControls.classList.remove('hidden');
+                    }
+                } else {
+                    fileInputLabelElement.classList.add('hidden');
+                    controlsElement.classList.add('hidden');
+                    viewerInstance.audioControls.classList.add('hidden');
+                }
+            };
+
+            containerElement.addEventListener('mouseenter', updateOverlayVisibility);
+            containerElement.addEventListener('mouseleave', updateOverlayVisibility);
+
+            document.addEventListener('click', (event) => {
+                if (!uploadMenuElement.contains(event.target) && event.target !== fileInputLabelElement) {
+                    uploadMenuElement.classList.add('hidden');
+                    updateOverlayVisibility();
+                }
+            });
+
+            fileInputLabelElement.addEventListener('click', (event) => {
+                event.stopPropagation();
+                uploadMenuElement.classList.toggle('hidden');
+                updateOverlayVisibility();
+            });
+
+            uploadMenuElement.addEventListener('click', (event) => {
+                if (event.target.classList.contains('upload-menu-button')) {
+                    const type = event.target.dataset.type;
+                    uploadMenuElement.classList.add('hidden');
+
+                    if (type === 'model') {
+                        fileInputLabelElement.closest('.model-viewer-container').querySelector('input[type="file"][accept=".gltf, .glb"]').click();
+                    } else if (type === 'audio') {
+                        fileInputLabelElement.closest('.model-viewer-container').querySelector('input[type="file"][accept=".mp3"]').click();
+                    }
+                    updateOverlayVisibility();
+                }
+            });
+
+            controlsElement.querySelectorAll('.model-control-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const action = button.dataset.action;
+                    if (!viewerInstance.currentModel) return;
+
+                    switch (action) {
+                        case 'move-up':
+                            viewerInstance.currentModel.position.y += movementStep;
+                            break;
+                        case 'move-down':
+                            viewerInstance.currentModel.position.y -= movementStep;
+                            break;
+                        case 'move-left':
+                            viewerInstance.currentModel.position.x -= movementStep;
+                            break;
+                        case 'move-right':
+                            viewerInstance.currentModel.position.x += movementStep;
+                            break;
+                        case 'toggle-lock':
+                            viewerInstance.isCameraLocked = !viewerInstance.isCameraLocked;
+                            viewerInstance.controls.enabled = !viewerInstance.isCameraLocked;
+                            button.textContent = viewerInstance.isCameraLocked ? 'Unlock Cam' : 'Lock Cam';
+                            break;
+                        case 'reset-view':
+                            viewerInstance.camera.position.copy(viewerInstance.initialCameraPosition);
+                            viewerInstance.controls.target.copy(viewerInstance.initialControlsTarget);
+                            viewerInstance.currentModel.position.copy(viewerInstance.initialModelPosition);
+                            viewerInstance.currentModel.rotation.copy(viewerInstance.initialModelRotation);
+                            viewerInstance.currentModel.scale.copy(viewerInstance.initialModelScale);
+                            viewerInstance.controls.update();
+                            viewerInstance.autoRotate = true;
+                            controlsElement.querySelector('[data-action="toggle-rotation"]').textContent = 'Auto-Rotate';
+                            viewerInstance.isWireframe = false;
+                            viewerInstance.currentModel.traverse((node) => {
+                                if (node.isMesh) {
+                                    node.material.wireframe = false;
+                                }
+                            });
+                            controlsElement.querySelector('[data-action="toggle-wireframe"]').textContent = 'Wireframe';
+                            viewerInstance.isBackgroundSolid = false;
+                            viewerInstance.renderer.setClearAlpha(0);
+                            controlsElement.querySelector('[data-action="toggle-background"]').textContent = 'Toggle BG';
+                            break;
+                        case 'toggle-rotation':
+                            viewerInstance.autoRotate = !viewerInstance.autoRotate;
+                            button.textContent = viewerInstance.autoRotate ? 'Auto-Rotate (Off)' : 'Auto-Rotate (On)';
+                            break;
+                        case 'scale-up':
+                            viewerInstance.currentModel.scale.multiplyScalar(scaleFactor);
+                            break;
+                        case 'scale-down':
+                            viewerInstance.currentModel.scale.multiplyScalar(1 / scaleFactor);
+                            break;
+                        case 'toggle-background':
+                            viewerInstance.isBackgroundSolid = !viewerInstance.isBackgroundSolid;
+                            if (viewerInstance.isBackgroundSolid) {
+                                viewerInstance.renderer.setClearColor(0x333333, 1);
+                                button.textContent = 'Toggle BG (Solid)';
+                            } else {
+                                viewerInstance.renderer.setClearAlpha(0);
+                                button.textContent = 'Toggle BG (Transparent)';
+                            }
+                            break;
+                        case 'toggle-wireframe':
+                            viewerInstance.isWireframe = !viewerInstance.isWireframe;
+                            viewerInstance.currentModel.traverse((node) => {
+                                if (node.isMesh) {
+                                    node.material.wireframe = viewerInstance.isWireframe;
+                                }
+                            });
+                            button.textContent = viewerInstance.isWireframe ? 'Wireframe (On)' : 'Wireframe (Off)';
+                            break;
+                        case 'screenshot':
+                            const canvas = viewerInstance.renderer.domElement;
+                            const link = document.createElement('a');
+                            link.download = 'model-screenshot.png';
+                            link.href = canvas.toDataURL('image/png');
+                            link.click();
+                            link.remove();
+                            break;
+                    }
+                });
+            });
+        }
+
 
         window.onload = function() {
-            // Initialize the first 3D viewer
-            const viewer1 = init3DViewer(modelCanvas, modelContainer, modelStatus);
-            scene1 = viewer1.scene;
-            camera1 = viewer1.camera;
-            renderer1 = viewer1.renderer;
-            controls1 = viewer1.controls;
-            currentModel1 = viewer1.currentModel;
-            mixer1 = viewer1.mixer;
-            setupModelFileInput(modelFileInput, modelStatus, viewer1);
-            setupResizeHandle(resizeHandle, modelContainer, camera1, renderer1);
-            animate3D(viewer1, clock1);
+            viewer1Instance = init3DViewer(modelCanvas, modelContainer, modelStatus, primaryAudioPlayer, audioControls);
+            modelFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    loadModel(URL.createObjectURL(file), viewer1Instance, modelStatus, modelControls, modelFileInputLabel, audioControls);
+                }
+            });
+            audioFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const audioURL = URL.createObjectURL(file);
+                    viewer1Instance.audioPlayer.src = audioURL;
+                    viewer1Instance.audioPlayer.play();
+                    viewer1Instance.hasAudioLoaded = true;
+                }
+            });
+            setupResizeHandle(resizeHandle, modelContainer, viewer1Instance.camera, viewer1Instance.renderer);
+            setupModelControls(modelControls, viewer1Instance, modelContainer, modelFileInputLabel, uploadMenu);
 
-            // Initialize the secondary 3D viewer
-            const viewer2 = init3DViewer(secondaryModelCanvas, secondaryModelContainer, secondaryModelStatus);
-            scene2 = viewer2.scene;
-            camera2 = viewer2.camera;
-            renderer2 = viewer2.renderer;
-            controls2 = viewer2.controls;
-            currentModel2 = viewer2.currentModel;
-            mixer2 = viewer2.mixer;
-            setupModelFileInput(secondaryModelFileInput, secondaryModelStatus, viewer2);
-            setupResizeHandle(secondaryResizeHandle, secondaryModelContainer, camera2, renderer2);
-            animate3D(viewer2, clock2);
+            animate3D(viewer1Instance);
+
+            loadModel('https://imelijah88.github.io/Avneed/friendlyrobot.glb', viewer1Instance, modelStatus, modelControls, modelFileInputLabel, audioControls);
+
+
+            viewer2Instance = init3DViewer(secondaryModelCanvas, secondaryModelContainer, secondaryModelStatus, secondaryAudioPlayer, secondaryAudioControls);
+            secondaryModelFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    loadModel(URL.createObjectURL(file), viewer2Instance, secondaryModelStatus, secondaryModelControls, secondaryModelFileInputLabel, secondaryAudioControls);
+                }
+            });
+            secondaryAudioFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const audioURL = URL.createObjectURL(file);
+                    viewer2Instance.audioPlayer.src = audioURL;
+                    secondaryAudioPlayer.play();
+                    viewer2Instance.hasAudioLoaded = true;
+                }
+            });
+            setupResizeHandle(secondaryResizeHandle, secondaryModelContainer, viewer2Instance.camera, viewer2Instance.renderer);
+            setupModelControls(secondaryModelControls, viewer2Instance, secondaryModelContainer, secondaryModelFileInputLabel, secondaryUploadMenu);
+            animate3D(viewer2Instance);
+
+            loadModel('https://imelijah88.github.io/Avneed/metalady.glb', viewer2Instance, secondaryModelStatus, secondaryModelControls, secondaryModelFileInputLabel, secondaryAudioControls);
         };
+
+        discoverAvneedBtn.addEventListener('click', () => {
+            document.getElementById('vision').scrollIntoView({
+                behavior: 'smooth'
+            });
+
+            heroHeading.classList.remove('glitch-text');
+            void heroHeading.offsetWidth;
+            heroHeading.classList.add('glitch-text');
+
+            setTimeout(() => {
+                heroHeading.classList.remove('glitch-text');
+            }, 1600);
+
+            mainHeroAudio.play().catch(error => {
+                console.error("Audio playback failed:", error);
+            });
+
+            discoverAvneedBtn.classList.add('hidden');
+            mainAudioPlayerContainer.classList.remove('hidden');
+            mainAudioPlayToggle.textContent = '⏸';
+        });
+
+        mainAudioPlayToggle.addEventListener('click', () => {
+            if (mainAudioPlayer.paused) {
+                mainAudioPlayer.play();
+                mainAudioPlayToggle.textContent = '⏸';
+            } else {
+                mainAudioPlayer.pause();
+                mainAudioPlayToggle.textContent = '▶';
+            }
+        });
+
+        mainAudioPlayer.addEventListener('ended', () => {
+            mainAudioPlayToggle.textContent = '▶';
+        });
+
+        aspectRatioButtons.addEventListener('click', (event) => {
+            if (event.target.tagName === 'BUTTON') {
+                aspectRatioButtons.querySelectorAll('button').forEach(btn => {
+                    btn.classList.remove('selected-button');
+                });
+
+                event.target.classList.add('selected-button');
+                selectedAspectRatio = event.target.dataset.aspect;
+
+                imageFrame.classList.remove('aspect-1-1', 'aspect-16-9', 'aspect-4-3', 'aspect-9-16');
+                imageFrame.classList.add(`aspect-${selectedAspectRatio}`);
+            }
+        });
+
+        document.querySelector('#aspectRatioButtons button[data-aspect="1-1"]').classList.add('selected-button');
+
+
+        generateImageBtn.addEventListener('click', async () => {
+            const prompt = imagePromptInput.value.trim();
+            if (!prompt) {
+                imageErrorMessage.classList.remove('hidden');
+                imageErrorMessage.querySelector('p').textContent = 'Please enter a description for the image.';
+                return;
+            }
+
+            imageLoadingOverlay.classList.remove('hidden');
+            generatedImage.style.opacity = '0.5';
+            imageErrorMessage.classList.add('hidden');
+            
+            generateImageBtn.classList.add('selected-button');
+            generateImageBtn.disabled = true;
+            generateImageBtn.innerHTML = `<span class="loading-spinner w-5 h-5 mr-2"></span> ${translations[savedLanguage].generatingImage}`;
+
+            const payload = { instances: { prompt: prompt }, parameters: { "sampleCount": 1} };
+            const apiKey = "AIzaSyAfeN21oZXEHg6gSFmdENs8Dc_lz27Wxyw";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.predictions && result.predictions.length > 0 && result.predictions[0].bytesBase64Encoded) {
+                    const imageUrl = `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                    generatedImage.src = imageUrl;
+                    generatedImage.alt = prompt;
+                    generatedImage.style.opacity = '1';
+                } else {
+                    imageErrorMessage.classList.remove('hidden');
+                    imageErrorMessage.querySelector('p').textContent = 'Image generation failed: No image data received.';
+                }
+            } catch (error) {
+                console.error("Error generating image:", error);
+                imageErrorMessage.classList.remove('hidden');
+                imageErrorMessage.querySelector('p').textContent = `Error generating image: ${error.message}. Please try again.`;
+            } finally {
+                imageLoadingOverlay.classList.add('hidden');
+                generateImageBtn.classList.remove('selected-button');
+                generateImageBtn.disabled = false;
+                generateImageBtn.textContent = translations[savedLanguage].generateImage;
+            }
+        });
+
+        imagePromptInput.addEventListener('input', () => {
+            imagePromptInput.style.height = 'auto';
+            imagePromptInput.style.height = (imagePromptInput.scrollHeight) + 'px';
+            if (imagePromptInput.scrollHeight > imagePromptInput.clientHeight) {
+                imagePromptInput.style.overflowY = 'auto';
+            } else {
+                imagePromptInput.style.overflowY = 'hidden';
+            }
+        });
     </script>
 </body>
 </html>

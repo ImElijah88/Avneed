@@ -10,6 +10,162 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/pmrem/PMREMGenerator.js"></script>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInWithPopup, GithubAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables for Firebase (provided by Canvas environment)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let app;
+        let db;
+        let auth;
+        let userId = null; // Will store the authenticated user's ID
+
+        // Initialize Firebase and set up auth listener
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (Object.keys(firebaseConfig).length > 0) {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Sign in with custom token if provided (for Canvas environment)
+                if (initialAuthToken) {
+                    try {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                        console.log("Signed in with custom token (Canvas environment).");
+                    } catch (error) {
+                        console.error("Error signing in with custom token:", error);
+                        // Fallback to anonymous or handle error
+                    }
+                } else {
+                    // For local testing outside Canvas or if custom token fails
+                    // You might want to handle anonymous sign-in or redirect to login
+                    console.log("No custom auth token provided. User will need to log in manually.");
+                }
+
+                // Listen for authentication state changes
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log("User is logged in:", userId);
+                        updateLoginButtons(true);
+                        // Call functions that depend on userId being available
+                        loadUserNotes();
+                    } else {
+                        userId = null;
+                        console.log("User is logged out.");
+                        updateLoginButtons(false);
+                        document.getElementById('userNotesInput').value = ''; // Clear notes on logout
+                        document.getElementById('userNotesStatus').textContent = 'Please log in to save notes.';
+                    }
+                });
+            } else {
+                console.warn("Firebase config not found. Firebase features will be disabled.");
+                // Disable Firebase related UI elements if config is missing
+                document.getElementById('loginBtn').disabled = true;
+                document.getElementById('logoutBtn').disabled = true;
+                document.getElementById('saveNotesBtn').disabled = true;
+                document.getElementById('userNotesInput').disabled = true;
+                document.getElementById('userNotesStatus').textContent = 'Firebase not configured.';
+            }
+        });
+
+        // Function to handle GitHub Login
+        window.loginWithGitHub = async () => {
+            const provider = new GithubAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+                console.log("Signed in with GitHub!");
+                // onAuthStateChanged will handle UI update
+            } catch (error) {
+                console.error("Error signing in with GitHub:", error);
+                // Handle specific errors like "auth/popup-closed-by-user"
+            }
+        };
+
+        // Function to handle Logout
+        window.logoutUser = async () => {
+            try {
+                await signOut(auth);
+                console.log("User signed out.");
+                // onAuthStateChanged will handle UI update
+            } catch (error) {
+                console.error("Error signing out:", error);
+            }
+        };
+
+        // Function to save user notes to Firestore
+        window.saveUserNotes = async () => {
+            if (!userId) {
+                document.getElementById('userNotesStatus').textContent = 'Please log in to save notes.';
+                return;
+            }
+            if (!db) {
+                document.getElementById('userNotesStatus').textContent = 'Firebase not initialized.';
+                return;
+            }
+
+            const userNotes = document.getElementById('userNotesInput').value;
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/private`, 'notes'); // Path adhering to rules
+
+            try {
+                await setDoc(userDocRef, { content: userNotes, timestamp: new Date() }, { merge: true });
+                document.getElementById('userNotesStatus').textContent = 'Notes saved successfully!';
+                console.log("User notes saved.");
+            } catch (error) {
+                console.error("Error saving notes:", error);
+                document.getElementById('userNotesStatus').textContent = `Error saving notes: ${error.message}`;
+            }
+        };
+
+        // Function to load user notes from Firestore
+        window.loadUserNotes = () => {
+            if (!userId || !db) {
+                // Will be handled by onAuthStateChanged or initial check
+                return;
+            }
+
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/private`, 'notes'); // Path adhering to rules
+
+            // Use onSnapshot for real-time updates
+            onSnapshot(userDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('userNotesInput').value = data.content || '';
+                    document.getElementById('userNotesStatus').textContent = 'Notes loaded.';
+                } else {
+                    document.getElementById('userNotesInput').value = '';
+                    document.getElementById('userNotesStatus').textContent = 'No notes found. Start typing!';
+                }
+                console.log("User notes loaded/updated from Firestore.");
+            }, (error) => {
+                console.error("Error loading notes:", error);
+                document.getElementById('userNotesStatus').textContent = `Error loading notes: ${error.message}`;
+            });
+        };
+
+        // Make updateLoginButtons available globally for event listeners
+        window.updateLoginButtons = (isLoggedIn) => {
+            if (isLoggedIn) {
+                loginBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                document.getElementById('userNotesInput').disabled = false;
+                document.getElementById('saveNotesBtn').disabled = false;
+            } else {
+                loginBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                document.getElementById('userNotesInput').disabled = true;
+                document.getElementById('saveNotesBtn').disabled = true;
+            }
+        };
+    </script>
+
     <style>
         :root {
             --bg-primary: #333333;
@@ -398,7 +554,7 @@
             border-bottom-left-radius: 0.25rem;
         }
 
-        #aiInputText, #imagePromptInput {
+        #aiInputText, #imagePromptInput, #videoPromptInput, #userNotesInput {
             min-height: 2.5rem;
             max-height: 152px;
             overflow-y: hidden;
@@ -604,6 +760,64 @@
             margin-bottom: 1rem;
         }
 
+        /* Video specific styles */
+        .video-player-container {
+            background-color: var(--bg-card);
+            border: 5px solid var(--color-neon-blue);
+            border-radius: 1.5rem;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6),
+                        0 0 30px rgba(0, 255, 255, 0.4) inset,
+                        0 15px 30px rgba(0, 0, 0, 0.7);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease-in-out;
+            transform: rotateZ(1deg); /* Slightly different rotation for visual distinction */
+            max-width: 100%;
+            margin: 0 auto;
+            animation: neon-pulse-frame 2s infinite alternate; /* Reusing same animation */
+        }
+
+        .generated-video {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5) inset;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .video-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 1rem;
+            z-index: 10;
+        }
+
+        .video-loading-spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid var(--color-neon-blue);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
     </style>
 </head>
 <body>
@@ -616,6 +830,7 @@
                     <li><a href="#capabilities" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">Capabilities</a></li>
                     <li><a href="#ai-demo" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">AI Demo</a></li>
                     <li><a href="#image-generator" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">Image Generator</a></li>
+                    <li><a href="#video-generator" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">Video Generator</a></li>
                     <li><a href="#contact" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">Contact</a></li>
                 </ul>
                 <button id="settingsBtn" class="ml-4">⚙️</button>
@@ -829,6 +1044,42 @@
         </div>
     </section>
 
+    <!-- New Video Generator Section -->
+    <section id="video-generator" class="py-20 px-6 bg-[#1a1a2e] shadow-inner">
+        <div class="container mx-auto text-center">
+            <h3 id="videoGeneratorTitle" class="text-5xl font-bold mb-16 text-gray-100 leading-tight">Avneed's Motion Studio 🎬</h3>
+            <div class="max-w-4xl mx-auto bg-gray-900 p-10 rounded-3xl shadow-xl border border-gray-700">
+                <p id="videoGeneratorInstructions" class="text-xl text-gray-300 mb-8">
+                    Describe the video you want Avneed to create!
+                    <br><span class="text-sm text-gray-400">(Note: Full video generation is a complex feature typically requiring backend services. This is a demo placeholder.)</span>
+                </p>
+                
+                <div class="flex flex-col gap-4 mb-6">
+                    <textarea id="videoPromptInput" class="flex-grow input-field resize-none" placeholder="e.g., 'A short animation of a robot walking through a neon-lit city at night'"></textarea>
+                    
+                    <button id="generateVideoBtn" class="ai-button">Generate Video</button>
+                </div>
+
+                <div id="videoOutputArea" class="mt-8 flex justify-center items-center relative min-h-[300px]">
+                    <div id="videoPlayerFrame" class="video-player-container aspect-16-9">
+                        <video id="generatedVideo" class="generated-video" controls poster="https://placehold.co/640x360/333333/FFFFFF?text=Your+Video+Here">
+                            <source src="" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div id="videoLoadingOverlay" class="video-loading-overlay hidden">
+                            <span class="video-loading-spinner"></span>
+                            <p id="videoLoadingText">Generating video...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="videoErrorMessage" class="mt-4 text-center text-red-500 hidden">
+                    <p id="videoErrorMessageText">An error occurred during video generation. Please try again.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section id="contact" class="py-20 px-6 gradient-bg text-white text-center shadow-inner">
         <div class="container mx-auto">
             <h3 id="contactTitle" class="text-5xl font-bold mb-8 drop-shadow-lg">Ready to Transform Your Workflow?</h3>
@@ -889,6 +1140,23 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- New User Notes Section -->
+    <section id="user-notes" class="py-20 px-6 bg-[#121212] shadow-inner">
+        <div class="container mx-auto text-center">
+            <h3 class="text-5xl font-bold mb-16 text-gray-100 leading-tight">Your Private Notes 📝</h3>
+            <div class="max-w-4xl mx-auto bg-gray-900 p-10 rounded-3xl shadow-xl border border-gray-700">
+                <p class="text-xl text-gray-300 mb-8">
+                    Log in with GitHub to save and load your personal notes. These notes are private to your account.
+                </p>
+                <div class="flex flex-col gap-4 mb-6">
+                    <textarea id="userNotesInput" class="flex-grow input-field resize-none" placeholder="Type your private notes here..." disabled></textarea>
+                    <button id="saveNotesBtn" class="ai-button" disabled>Save Notes</button>
+                </div>
+                <p id="userNotesStatus" class="mt-4 text-center text-gray-400">Please log in to save notes.</p>
             </div>
         </div>
     </section>
@@ -955,6 +1223,21 @@
         const imageErrorMessage = document.getElementById('imageErrorMessage');
         let selectedAspectRatio = '1-1';
 
+        // New Video Generator elements
+        const videoPromptInput = document.getElementById('videoPromptInput');
+        const generateVideoBtn = document.getElementById('generateVideoBtn');
+        const videoPlayerFrame = document.getElementById('videoPlayerFrame');
+        const generatedVideo = document.getElementById('generatedVideo');
+        const videoLoadingOverlay = document.getElementById('videoLoadingOverlay');
+        const videoLoadingText = document.getElementById('videoLoadingText');
+        const videoErrorMessage = document.getElementById('videoErrorMessage');
+
+        // New User Notes elements
+        const userNotesInput = document.getElementById('userNotesInput');
+        const saveNotesBtn = document.getElementById('saveNotesBtn');
+        const userNotesStatus = document.getElementById('userNotesStatus');
+
+
         const translations = {
             en: {
                 heroHeading: 'Empower Your Workflow with <span class="text-neon-blue">Avneed</span>',
@@ -986,6 +1269,11 @@
                 generateImage: 'Generate Image',
                 generatingImage: 'Generating image...',
                 imageGenError: 'An error occurred during image generation. Please try again.',
+                videoGeneratorTitle: 'Avneed\'s Motion Studio 🎬',
+                videoGeneratorInstructions: 'Describe the video you want Avneed to create!<br><span class="text-sm text-gray-400">(Note: Full video generation is a complex feature typically requiring backend services. This is a demo placeholder.)</span>',
+                generateVideo: 'Generate Video',
+                generatingVideo: 'Generating video...',
+                videoGenError: 'An error occurred during video generation. This feature requires complex backend integration.',
                 contactTitle: 'Ready to Transform Your Workflow?',
                 contactSubheading: 'Join the future of personal AI assistance. Sign up for early access and stay tuned for <span class="text-neon-blue">Avneed</span>\'s groundbreaking release!',
                 getUpdates: 'Get Early Access Updates',
@@ -996,7 +1284,17 @@
                 designMessage: 'Designed with precision for an enhanced user experience and a smarter future.',
                 language: 'Language',
                 logIn: 'Log In',
-                logOut: 'Log Out'
+                logOut: 'Log Out',
+                yourPrivateNotes: 'Your Private Notes 📝', // New translation
+                notesLoginPrompt: 'Log in with GitHub to save and load your personal notes. These notes are private to your account.', // New translation
+                typeNotesPlaceholder: 'Type your private notes here...', // New translation
+                saveNotes: 'Save Notes', // New translation
+                notesLoginStatus: 'Please log in to save notes.', // New translation
+                notesSavedSuccess: 'Notes saved successfully!', // New translation
+                notesSaveError: 'Error saving notes:', // New translation
+                notesLoaded: 'Notes loaded.', // New translation
+                noNotesFound: 'No notes found. Start typing!', // New translation
+                firebaseNotInit: 'Firebase not initialized.', // New translation
             },
             es: {
                 heroHeading: 'Potencia tu Flujo de Trabajo con <span class="text-neon-blue">Avneed</span>',
@@ -1028,6 +1326,11 @@
                 generateImage: 'Generar Imagen',
                 generatingImage: 'Generando imagen...',
                 imageGenError: 'Ocurrió un error durante la generación de la imagen. Por favor, inténtalo de nuevo.',
+                videoGeneratorTitle: 'Estudio de Movimiento de Avneed 🎬',
+                videoGeneratorInstructions: '¡Describe el video que quieres que Avneed cree!<br><span class="text-sm text-gray-400">(Nota: La generación completa de video es una característica compleja que normalmente requiere servicios de backend. Esto es un marcador de posición de demostración.)</span>',
+                generateVideo: 'Generar Video',
+                generatingVideo: 'Generando video...',
+                videoGenError: 'Ocurrió un error durante la generación de video. Esta característica requiere una integración de backend compleja.',
                 contactTitle: '¿Listo para Transformar tu Flujo de Trabajo?',
                 contactSubheading: 'Únete al futuro de la asistencia personal de IA. ¡Regístrate para acceso anticipado y mantente atento al lanzamiento innovador de <span class="text-neon-blue">Avneed</span>!',
                 getUpdates: 'Obtén Actualizaciones de Acceso Anticipado',
@@ -1038,7 +1341,15 @@
                 designMessage: 'Diseñado con precisión para una experiencia de usuario mejorada y un futuro más inteligente.',
                 language: 'Idioma',
                 logIn: 'Iniciar Sesión',
-                logOut: 'Cerrar Sesión'
+                logOut: 'Cerrar Sesión',
+                yourPrivateNotes: 'Tus Notas Privadas 📝', // New translation
+                notesLoginPrompt: 'Inicia sesión con GitHub para guardar y cargar tus notas personales. Estas notas son privadas para tu cuenta.', // New translation
+                typeNotesPlaceholder: 'Escribe tus notas privadas aquí...', // New translation
+                saveNotes: 'Guardar Notas', // New translation
+                notesSaveError: 'Error al guardar notas:', // New translation
+                notesLoaded: 'Notas cargadas.', // New translation
+                noNotesFound: 'No se encontraron notas. ¡Empieza a escribir!', // New translation
+                firebaseNotInit: 'Firebase no inicializado.', // New translation
             }
         };
 
@@ -1080,6 +1391,23 @@
             document.getElementById('generateImageBtn').textContent = currentTranslations.generateImage;
             document.getElementById('imageLoadingText').textContent = currentTranslations.generatingImage;
             document.getElementById('imageErrorMessageText').textContent = currentTranslations.imageGenError;
+            
+            // Video Generator translations
+            document.getElementById('videoGeneratorTitle').innerHTML = currentTranslations.videoGeneratorTitle;
+            document.getElementById('videoGeneratorInstructions').innerHTML = currentTranslations.videoGeneratorInstructions;
+            document.getElementById('generateVideoBtn').textContent = currentTranslations.generateVideo;
+            document.getElementById('videoLoadingText').textContent = currentTranslations.generatingVideo;
+            document.getElementById('videoErrorMessage').querySelector('p').textContent = currentTranslations.videoGenError;
+            document.getElementById('videoPromptInput').placeholder = 'e.g., ' + currentTranslations.videoGeneratorInstructions.split('<br>')[0].replace('Describe the video you want Avneed to create!', 'A short animation of a robot walking through a neon-lit city at night');
+
+            // User Notes translations
+            document.querySelector('#user-notes h3').textContent = currentTranslations.yourPrivateNotes;
+            document.querySelector('#user-notes .text-xl').innerHTML = currentTranslations.notesLoginPrompt;
+            document.getElementById('userNotesInput').placeholder = currentTranslations.typeNotesPlaceholder;
+            document.getElementById('saveNotesBtn').textContent = currentTranslations.saveNotes;
+            document.getElementById('userNotesStatus').textContent = currentTranslations.notesLoginStatus;
+
+
             document.getElementById('contactTitle').textContent = currentTranslations.contactTitle;
             document.getElementById('contactSubheading').innerHTML = currentTranslations.contactSubheading;
             document.getElementById('getUpdatesTitle').textContent = currentTranslations.getUpdates;
@@ -1095,23 +1423,17 @@
             localStorage.setItem('language', lang);
         }
 
-        function updateLoginButtons() {
-            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-            if (isLoggedIn) {
-                loginBtn.classList.add('hidden');
-                logoutBtn.classList.remove('hidden');
-            } else {
-                loginBtn.classList.remove('hidden');
-                logoutBtn.classList.add('hidden');
-            }
-        }
+        // Moved updateLoginButtons to global scope via window object
+        // so it can be called from the Firebase SDK import script block
+        // and also from event listeners.
+        // It's defined in the script import block above now.
 
         const savedTheme = localStorage.getItem('theme') || 'dark';
         applyTheme(savedTheme);
 
         const savedLanguage = localStorage.getItem('language') || 'en';
         applyLanguage(savedLanguage);
-        updateLoginButtons();
+        // updateLoginButtons will be called by onAuthStateChanged after Firebase init
 
         settingsBtn.addEventListener('click', (event) => {
             event.stopPropagation();
@@ -1131,17 +1453,9 @@
             });
         });
 
-        loginBtn.addEventListener('click', () => {
-            localStorage.setItem('isLoggedIn', 'true');
-            updateLoginButtons();
-            settingsMenu.classList.add('hidden');
-        });
-
-        logoutBtn.addEventListener('click', () => {
-            localStorage.setItem('isLoggedIn', 'false');
-            updateLoginButtons();
-            settingsMenu.classList.add('hidden');
-        });
+        // Event listeners for login/logout buttons
+        loginBtn.addEventListener('click', window.loginWithGitHub); // Call the global function
+        logoutBtn.addEventListener('click', window.logoutUser); // Call the global function
 
         document.addEventListener('click', (event) => {
             if (!settingsMenu.contains(event.target) && event.target !== settingsBtn) {
@@ -1177,7 +1491,7 @@
             errorMessage.classList.add('hidden');
 
             const payload = { contents: chatHistory };
-            const apiKey = "AIzaSyDEYsWiWXgJykNUhOUv7kC9PHOeI8qQ-Cc";
+            const apiKey = "AIzaSyDEYsWiWXgJykNUhOUv7kC9PHOeI8qQ-Cc"; // Your actual API key
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
             try {
@@ -1714,7 +2028,7 @@
             generateImageBtn.innerHTML = `<span class="loading-spinner w-5 h-5 mr-2"></span> ${translations[savedLanguage].generatingImage}`;
 
             const payload = { instances: { prompt: prompt }, parameters: { "sampleCount": 1} };
-            const apiKey = "AIzaSyDEYsWiWXgJykNUhOUv7kC9PHOeI8qQ-Cc";
+            const apiKey = "AIzaSyDEYsWiWXgJykNUhOUv7kC9PHOeI8qQ-Cc"; // Your actual API key
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
 
             try {
@@ -1758,6 +2072,79 @@
                 imagePromptInput.style.overflowY = 'auto';
             } else {
                 imagePromptInput.style.overflowY = 'hidden';
+            }
+        });
+
+        // Video Generation Logic
+        generateVideoBtn.addEventListener('click', async () => {
+            const prompt = videoPromptInput.value.trim();
+            if (!prompt) {
+                videoErrorMessage.classList.remove('hidden');
+                videoErrorMessage.querySelector('p').textContent = translations[savedLanguage].videoGenError; // Using generic error for now
+                return;
+            }
+
+            videoLoadingOverlay.classList.remove('hidden');
+            generatedVideo.style.opacity = '0.5';
+            videoErrorMessage.classList.add('hidden');
+            
+            generateVideoBtn.classList.add('selected-button');
+            generateVideoBtn.disabled = true;
+            generateVideoBtn.innerHTML = `<span class="loading-spinner w-5 h-5 mr-2"></span> ${translations[savedLanguage].generatingVideo}`;
+
+            // --- IMPORTANT: Placeholder for Video Generation API Call ---
+            // Direct client-side video generation from a simple text prompt
+            // using a single API key is generally not available or is very complex
+            // with current public Google APIs like Imagen.
+            // A real implementation would likely involve:
+            // 1. Sending the prompt to a backend server.
+            // 2. The backend server calling a more powerful video generation service (e.g., a Vertex AI custom model, or a third-party service).
+            // 3. The backend processing the video generation (which can take minutes to hours).
+            // 4. The backend returning a URL to the generated video once complete.
+            // For this demo, we'll simulate a delay and show a placeholder video.
+            try {
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 3000)); 
+                
+                // For demonstration, use a placeholder video.
+                // In a real scenario, you'd get a video URL from the API response.
+                generatedVideo.src = "https://www.w3schools.com/html/mov_bbb.mp4"; // Example public domain video
+                generatedVideo.load(); // Load the new video source
+                generatedVideo.play(); // Auto-play the video
+                generatedVideo.style.opacity = '1';
+
+            } catch (error) {
+                console.error("Error generating video (simulated):", error);
+                videoErrorMessage.classList.remove('hidden');
+                videoErrorMessage.querySelector('p').textContent = translations[savedLanguage].videoGenError;
+            } finally {
+                videoLoadingOverlay.classList.add('hidden');
+                generateVideoBtn.classList.remove('selected-button');
+                generateVideoBtn.disabled = false;
+                generateVideoBtn.textContent = translations[savedLanguage].generateVideo;
+            }
+        });
+
+        videoPromptInput.addEventListener('input', () => {
+            videoPromptInput.style.height = 'auto';
+            videoPromptInput.style.height = (videoPromptInput.scrollHeight) + 'px';
+            if (videoPromptInput.scrollHeight > videoPromptInput.clientHeight) {
+                videoPromptInput.style.overflowY = 'auto';
+            } else {
+                videoPromptInput.style.overflowY = 'hidden';
+            }
+        });
+
+        // Event listener for saving user notes
+        saveNotesBtn.addEventListener('click', window.saveUserNotes);
+
+        userNotesInput.addEventListener('input', () => {
+            userNotesInput.style.height = 'auto';
+            userNotesInput.style.height = (userNotesInput.scrollHeight) + 'px';
+            if (userNotesInput.scrollHeight > userNotesInput.clientHeight) {
+                userNotesInput.style.overflowY = 'auto';
+            } else {
+                userNotesInput.style.overflowY = 'hidden';
             }
         });
     </script>

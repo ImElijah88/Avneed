@@ -25,6 +25,10 @@
         let auth;
         let userId = null; // Variable to store the authenticated user's ID
 
+        // --- DEBUGGING LINE ADDED HERE ---
+        console.log("Firebase Config Loaded:", firebaseConfig);
+        // --- END DEBUGGING LINE ---
+
         // Initialize Firebase and set up authentication state listener
         document.addEventListener('DOMContentLoaded', async () => {
             if (Object.keys(firebaseConfig).length > 0) {
@@ -694,7 +698,7 @@
                 </div>
 
                 <div id="imageErrorMessage" class="mt-2 text-center text-red-500 hidden text-xs">
-                    <p id="imageErrorMessageText">Error. Try again.</p>
+                    <p id="errorMessageText">Error. Try again.</p>
                 </div>
             </div>
         </div>
@@ -892,7 +896,6 @@
                 generatingImage: 'Generando...',
                 imageGenError: 'Error. Intenta de nuevo.',
                 imageGenFailed: 'Fallo al generar imagen.',
-                videoGeneratorTitle: 'Video',
                 videoGeneratorInstructions: 'Describe video.<br><span class="text-xs text-gray-400">(Demostración.)</span>',
                 generateVideo: 'Generar',
                 generatingVideo: 'Generando...',

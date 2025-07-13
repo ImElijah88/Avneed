@@ -68,7 +68,6 @@
             border-color: var(--color-accent-yellow);
         }
 
-        /* Adjusted ai-button for smaller size and more rounded corners */
         .ai-button {
             @apply px-6 py-3 rounded-full text-white font-bold text-base shadow-lg transition duration-300 ease-in-out transform hover:scale-105;
             background: #2d3748;
@@ -81,18 +80,17 @@
             border-color: var(--color-accent-yellow);
         }
 
-        /* Style for selected buttons (neon blue) */
         .ai-button.selected-button {
             background: var(--color-neon-blue);
-            color: var(--bg-primary); /* Dark text on neon blue */
+            color: var(--bg-primary);
             border-color: var(--color-neon-blue);
             box-shadow: 0 0 20px var(--color-neon-blue), 0 0 30px var(--color-neon-blue);
-            transform: scale(1.02); /* Slightly larger to indicate selection */
+            transform: scale(1.02);
         }
         .ai-button.selected-button:hover {
-            background: var(--color-neon-blue); /* Keep background same on hover */
+            background: var(--color-neon-blue);
             color: var(--bg-primary);
-            box-shadow: 0 0 25px var(--color-neon-blue), 0 0 40px var(--color-neon-blue); /* Stronger glow on hover */
+            box-shadow: 0 0 25px var(--color-neon-blue), 0 0 40px var(--color-neon-blue);
             border-color: var(--color-neon-blue);
         }
 
@@ -437,8 +435,9 @@
                 transform: translate(-0.02em, 0.01em);
             }
             100% {
-                text-shadow: 0.01em 0.05em 0 var(--color-neon-blue), -0.025em -0.01em 0 var(--color-accent-yellow), 0.05em 0.025em 0 var(--color-neon-blue);
-                transform: translate(0.01em, -0.01em);
+                color: var(--text-primary);
+                text-shadow: none;
+                transform: scale(1);
             }
         }
 
@@ -474,14 +473,13 @@
             border-color: var(--color-neon-blue);
         }
 
-        /* Image Frame Styles */
         .image-frame-container {
-            background-color: var(--bg-card); /* Darker background, in theme */
-            border: 5px solid var(--color-neon-blue); /* Neon blue border */
-            border-radius: 1.5rem; /* Slightly more rounded */
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6), /* Initial neon glow */
-                        0 0 30px rgba(0, 255, 255, 0.4) inset, /* Inner glow */
-                        0 15px 30px rgba(0, 0, 0, 0.7); /* Main shadow */
+            background-color: var(--bg-card);
+            border: 5px solid var(--color-neon-blue);
+            border-radius: 1.5rem;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6),
+                        0 0 30px rgba(0, 255, 255, 0.4) inset,
+                        0 15px 30px rgba(0, 0, 0, 0.7);
             padding: 1.5rem;
             display: flex;
             justify-content: center;
@@ -492,10 +490,9 @@
             transform: rotateZ(-1deg);
             max-width: 100%;
             margin: 0 auto;
-            animation: neon-pulse-frame 2s infinite alternate; /* Pulsating animation */
+            animation: neon-pulse-frame 2s infinite alternate;
         }
 
-        /* Keyframes for pulsating neon effect */
         @keyframes neon-pulse-frame {
             0% {
                 box-shadow: 0 0 15px rgba(0, 255, 255, 0.6),
@@ -509,7 +506,6 @@
             }
         }
 
-        /* Pattern overlay using a pseudo-element */
         .image-frame-container::before {
             content: '';
             position: absolute;
@@ -517,60 +513,57 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* Subtle grid pattern */
             background-image: repeating-linear-gradient(0deg, rgba(0, 255, 255, 0.05) 0px, rgba(0, 255, 255, 0.05) 1px, transparent 1px, transparent 20px),
                               repeating-linear-gradient(90deg, rgba(0, 255, 255, 0.05) 0px, rgba(0, 255, 255, 0.05) 1px, transparent 1px, transparent 20px);
-            pointer-events: none; /* Allow clicks to pass through */
-            z-index: 1; /* Below the image, above the frame background */
-            border-radius: 1rem; /* Match frame border-radius */
+            pointer-events: none;
+            z-index: 1;
+            border-radius: 1rem;
         }
 
-        /* Adjustments for the image inside the frame to ensure it sits correctly */
         .generated-image {
-            position: relative; /* Ensure it's above the pseudo-element pattern */
+            position: relative;
             z-index: 2;
         }
 
         .image-frame-container.aspect-1-1 {
-            width: 400px; /* Fixed width for square, adjust as needed */
+            width: 400px;
             height: 400px;
         }
 
         .image-frame-container.aspect-16-9 {
-            width: 640px; /* Example 16:9 dimensions */
+            width: 640px;
             height: 360px;
         }
 
         .image-frame-container.aspect-4-3 {
-            width: 500px; /* Example 4:3 dimensions */
+            width: 500px;
             height: 375px;
         }
-        .image-frame-container.aspect-9-16 { /* New 9:16 aspect ratio */
-            width: 360px; /* Example 9:16 dimensions */
+        .image-frame-container.aspect-9-16 {
+            width: 360px;
             height: 640px;
         }
 
-        /* Responsive adjustments for frame dimensions */
         @media (max-width: 768px) {
             .image-frame-container.aspect-1-1 {
                 width: 300px;
                 height: 300px;
             }
             .image-frame-container.aspect-16-9 {
-                width: 90%; /* Use percentage for smaller screens */
-                height: calc(90vw * 9 / 16); /* Maintain aspect ratio */
-                max-height: 300px; /* Prevent excessive height on very narrow screens */
+                width: 90%;
+                height: calc(90vw * 9 / 16);
+                max-height: 300px;
             }
             .image-frame-container.aspect-4-3 {
                 width: 90%;
                 height: calc(90vw * 3 / 4);
                 max-height: 300px;
             }
-            .image-frame-container.aspect-9-16 { /* Responsive 9:16 */
+            .image-frame-container.aspect-9-16 {
                 width: calc(90vw * 9 / 16);
-                height: 90vw; /* Invert for portrait on small screens */
-                max-width: 200px; /* Limit width to prevent it from being too wide */
-                max-height: 350px; /* Limit height */
+                height: 90vw;
+                max-width: 200px;
+                max-height: 350px;
             }
         }
 
@@ -578,9 +571,9 @@
             display: block;
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Ensure image fits within the frame without cropping */
+            object-fit: contain;
             border-radius: 0.5rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5) inset; /* Inner shadow for depth */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5) inset;
             transition: opacity 0.3s ease-in-out;
         }
 
@@ -798,7 +791,6 @@
         </div>
     </section>
 
-    <!-- New Section: Avneed's Creative Canvas (AI Image Generator) -->
     <section id="image-generator" class="py-20 px-6 bg-[#121212] shadow-inner">
         <div class="container mx-auto text-center">
             <h3 id="imageGeneratorTitle" class="text-5xl font-bold mb-16 text-gray-100 leading-tight">Avneed's Creative Canvas ✨</h3>
@@ -953,7 +945,6 @@
         const heroHeading = document.getElementById('heroHeading');
         const heroSubheading = document.getElementById('heroSubheading');
 
-        // Image Generator Elements
         const imagePromptInput = document.getElementById('imagePromptInput');
         const aspectRatioButtons = document.getElementById('aspectRatioButtons');
         const generateImageBtn = document.getElementById('generateImageBtn');
@@ -962,7 +953,7 @@
         const imageLoadingOverlay = document.getElementById('imageLoadingOverlay');
         const imageLoadingText = document.getElementById('imageLoadingText');
         const imageErrorMessage = document.getElementById('imageErrorMessage');
-        let selectedAspectRatio = '1-1'; // Default aspect ratio
+        let selectedAspectRatio = '1-1';
 
         const translations = {
             en: {
@@ -991,7 +982,7 @@
                 square: '1:1 Square',
                 landscape: '16:9 Landscape',
                 standard: '4:3 Standard',
-                portrait: '9:16 Portrait', // New translation
+                portrait: '9:16 Portrait',
                 generateImage: 'Generate Image',
                 generatingImage: 'Generating image...',
                 imageGenError: 'An error occurred during image generation. Please try again.',
@@ -1033,7 +1024,7 @@
                 square: '1:1 Cuadrado',
                 landscape: '16:9 Horizontal',
                 standard: '4:3 Estándar',
-                portrait: '9:16 Vertical', // New translation
+                portrait: '9:16 Vertical',
                 generateImage: 'Generar Imagen',
                 generatingImage: 'Generando imagen...',
                 imageGenError: 'Ocurrió un error durante la generación de la imagen. Por favor, inténtalo de nuevo.',
@@ -1085,7 +1076,7 @@
             document.querySelector('#aspectRatioButtons button[data-aspect="1-1"]').textContent = currentTranslations.square;
             document.querySelector('#aspectRatioButtons button[data-aspect="16-9"]').textContent = currentTranslations.landscape;
             document.querySelector('#aspectRatioButtons button[data-aspect="4-3"]').textContent = currentTranslations.standard;
-            document.querySelector('#aspectRatioButtons button[data-aspect="9-16"]').textContent = currentTranslations.portrait; // Apply new translation
+            document.querySelector('#aspectRatioButtons button[data-aspect="9-16"]').textContent = currentTranslations.portrait;
             document.getElementById('generateImageBtn').textContent = currentTranslations.generateImage;
             document.getElementById('imageLoadingText').textContent = currentTranslations.generatingImage;
             document.getElementById('imageErrorMessageText').textContent = currentTranslations.imageGenError;
@@ -1120,7 +1111,7 @@
 
         const savedLanguage = localStorage.getItem('language') || 'en';
         applyLanguage(savedLanguage);
-        updateLoginButtons(); // Call on load to set initial state
+        updateLoginButtons();
 
         settingsBtn.addEventListener('click', (event) => {
             event.stopPropagation();
@@ -1144,16 +1135,12 @@
             localStorage.setItem('isLoggedIn', 'true');
             updateLoginButtons();
             settingsMenu.classList.add('hidden');
-            // For demonstration, replace with actual login flow
-            // alert('You are now "logged in"!');
         });
 
         logoutBtn.addEventListener('click', () => {
             localStorage.setItem('isLoggedIn', 'false');
             updateLoginButtons();
             settingsMenu.classList.add('hidden');
-            // For demonstration, replace with actual logout flow
-            // alert('You have been "logged out".');
         });
 
         document.addEventListener('click', (event) => {
@@ -1693,25 +1680,20 @@
             mainAudioPlayToggle.textContent = '▶';
         });
 
-        // Image Generator Logic
         aspectRatioButtons.addEventListener('click', (event) => {
             if (event.target.tagName === 'BUTTON') {
-                // Remove active class from all buttons
                 aspectRatioButtons.querySelectorAll('button').forEach(btn => {
                     btn.classList.remove('selected-button');
                 });
 
-                // Add active class to the clicked button
                 event.target.classList.add('selected-button');
                 selectedAspectRatio = event.target.dataset.aspect;
 
-                // Update frame class
                 imageFrame.classList.remove('aspect-1-1', 'aspect-16-9', 'aspect-4-3', 'aspect-9-16');
                 imageFrame.classList.add(`aspect-${selectedAspectRatio}`);
             }
         });
 
-        // Set initial active state for the default aspect ratio button
         document.querySelector('#aspectRatioButtons button[data-aspect="1-1"]').classList.add('selected-button');
 
 
@@ -1723,17 +1705,16 @@
                 return;
             }
 
-            // Show loading state and disable button
             imageLoadingOverlay.classList.remove('hidden');
-            generatedImage.style.opacity = '0.5'; // Dim the image
+            generatedImage.style.opacity = '0.5';
             imageErrorMessage.classList.add('hidden');
             
-            generateImageBtn.classList.add('selected-button'); // Turn on neon blue
-            generateImageBtn.disabled = true; // Disable button
-            generateImageBtn.innerHTML = `<span class="loading-spinner w-5 h-5 mr-2"></span> ${translations[savedLanguage].generatingImage}`; // Show spinner and text
+            generateImageBtn.classList.add('selected-button');
+            generateImageBtn.disabled = true;
+            generateImageBtn.innerHTML = `<span class="loading-spinner w-5 h-5 mr-2"></span> ${translations[savedLanguage].generatingImage}`;
 
             const payload = { instances: { prompt: prompt }, parameters: { "sampleCount": 1} };
-            const apiKey = "AIzaSyDEYsWiWXgJykNUhOUv7kC9PHOeI8qQ-Cc"; // This will be provided by Canvas runtime or you can hardcode your key
+            const apiKey = "AIzaSyDEYsWiWXgJykNUhOUv7kC9PHOeI8qQ-Cc";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
 
             try {
@@ -1752,8 +1733,8 @@
                 if (result.predictions && result.predictions.length > 0 && result.predictions[0].bytesBase64Encoded) {
                     const imageUrl = `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
                     generatedImage.src = imageUrl;
-                    generatedImage.alt = prompt; // Set alt text for accessibility
-                    generatedImage.style.opacity = '1'; // Restore full opacity
+                    generatedImage.alt = prompt;
+                    generatedImage.style.opacity = '1';
                 } else {
                     imageErrorMessage.classList.remove('hidden');
                     imageErrorMessage.querySelector('p').textContent = 'Image generation failed: No image data received.';
@@ -1764,9 +1745,9 @@
                 imageErrorMessage.querySelector('p').textContent = `Error generating image: ${error.message}. Please try again.`;
             } finally {
                 imageLoadingOverlay.classList.add('hidden');
-                generateImageBtn.classList.remove('selected-button'); // Turn off neon blue
-                generateImageBtn.disabled = false; // Re-enable button
-                generateImageBtn.textContent = translations[savedLanguage].generateImage; // Restore original text
+                generateImageBtn.classList.remove('selected-button');
+                generateImageBtn.disabled = false;
+                generateImageBtn.textContent = translations[savedLanguage].generateImage;
             }
         });
 

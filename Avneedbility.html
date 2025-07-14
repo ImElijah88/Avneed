@@ -904,16 +904,24 @@
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- GLOBAL APP STATE & CONFIGURATION ---
-        // IMPORTANT: These variables are provided by the Canvas environment.
-        // If deploying elsewhere (e.g., GitHub Pages), you MUST replace these with your actual Firebase config.
-        // For example: const firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "...", ... };
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // Your Firebase App ID for GitHub Pages deployment (e.g., 'avneed-github-pages')
+        const appId = 'avneed-github-pages'; 
 
-        // --- IMPORTANT: Replace "YOUR_GEMINI_API_KEY_HERE" with your actual Gemini API Key ---
-        // This key is used for both the Chatbot (Gemini 1.5 Flash) and Image Generator (Imagen 3.0)
-        const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
+        // Your Firebase Project Configuration Object (PASTED FROM FIREBASE CONSOLE)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCda21nbBWaYKe4K_YndLmz06FdTv7b-Hk",
+            authDomain: "avneed.firebaseapp.com",
+            projectId: "avneed",
+            storageBucket: "avneed.firebasestorage.app",
+            messagingSenderId: "862015532884",
+            appId: "1:862015532884:web:3c1731e57a678d0d3322c1",
+            measurementId: "G-N31V5YXL47"
+        };
+        // The initialAuthToken is only for the Canvas environment, not needed for GitHub Pages.
+        const initialAuthToken = null; 
+
+        // Your Google Gemini API Key (PASTED FROM GOOGLE AI STUDIO)
+        const GEMINI_API_KEY = "AIzaSyCGGbogRbxQQg7p_2SYhT-U6APOJKnq-3M"; 
 
         let app;
         let db;
@@ -921,9 +929,7 @@
         let userId = null; // Will store the current user's UID
 
         // Store Three.js viewer instances globally if multiple are needed or for easy access
-        // viewer1Instance is for the main page 3D model. modalViewerInstance is for the modal 3D model.
-        let viewer1Instance = null;
-        let modalViewerInstance = null;
+        let modalViewerInstance = null; // Only one 3D viewer in the modal at a time
 
         // Store unsubscribe functions for Firestore listeners to clean up
         let unsubscribeProjectNotes = null;
@@ -974,6 +980,7 @@
                 uploadModelPrompt: 'Upload a 3D model (.gltf, .glb)',
                 useMouseToInteract: 'Use mouse to interact',
                 errorLoadingModel: 'Error loading model:',
+                loadingModel: 'Loading 3D Model...', // Added for clarity
             }
         };
         let currentLanguage = 'en'; // Default language for this component
@@ -982,14 +989,11 @@
 
         /**
          * Helper function to disable Firebase-dependent UI elements and display a message.
-         * Note: This function is more generic now as elements are dynamically loaded.
-         * It primarily logs warnings and can be extended to disable specific modal elements
-         * if Firebase isn't available.
          */
         function disableFirebaseFeatures(message) {
             console.warn("Firebase features disabled:", message);
             // Specific UI elements within modals will be handled by their respective init functions
-            // if Firebase is not available.
+            // if Firebase isn't available.
         }
 
         /**
@@ -1032,6 +1036,7 @@
 
         // --- Firebase Core Initialization ---
         document.addEventListener('DOMContentLoaded', async () => {
+            // Check if firebaseConfig is not empty and has a projectId
             if (Object.keys(firebaseConfig).length > 0 && firebaseConfig.projectId) {
                 try {
                     app = initializeApp(firebaseConfig);
@@ -1039,16 +1044,20 @@
                     auth = getAuth(app);
 
                     if (auth) {
+                        // For GitHub Pages, we typically sign in anonymously or with a provider directly.
+                        // The initialAuthToken is specific to the Canvas environment.
                         if (initialAuthToken) {
-                            try {
+                             try {
                                 await signInWithCustomToken(auth, initialAuthToken);
                                 console.log("Signed in with custom token (Canvas environment).");
                             } catch (error) {
                                 console.error("Error signing in with custom token:", error);
+                                // Fallback to anonymous if custom token fails (e.g., in local testing outside Canvas)
                                 await signInAnonymously(auth);
                                 console.log("Signed in anonymously after custom token failure.");
                             }
                         } else {
+                            // Sign in anonymously if no custom token is provided (standard for GitHub Pages if no explicit login)
                             try {
                                 await signInAnonymously(auth);
                                 console.log("Signed in anonymously (no custom token).");
@@ -1086,7 +1095,7 @@
                     disableFirebaseFeatures(translations[currentLanguage].firebaseInitError);
                 }
             } else {
-                console.warn("Firebase config not found. Firebase features will be disabled. Please ensure __firebase_config is set in your environment (or manually paste it).");
+                console.warn("Firebase config not found or incomplete. Firebase features will be disabled. Please ensure firebaseConfig is correctly set in your script.");
                 disableFirebaseFeatures(translations[currentLanguage].firebaseNotConfigured);
             }
         });
@@ -1197,20 +1206,28 @@
 
             // Attach event listeners
             if (loginBtnGoogle) loginBtnGoogle.addEventListener('click', async () => {
+                // Ensure Firebase is initialized before attempting login
+                if (!auth) { showStatusMessage(loginStatus, translations[currentLanguage].firebaseNotConfigured, 'error'); return; }
                 const provider = new GoogleAuthProvider();
                 try { await signInWithPopup(auth, provider); console.log("Signed in with Google!"); }
                 catch (error) { console.error("Error signing in with Google:", error); if (loginStatus) loginStatus.textContent = `Google login failed: ${error.message}`; }
             });
             if (loginBtnGithub) loginBtnGithub.addEventListener('click', async () => {
+                // Ensure Firebase is initialized before attempting login
+                if (!auth) { showStatusMessage(loginStatus, translations[currentLanguage].firebaseNotConfigured, 'error'); return; }
                 const provider = new GithubAuthProvider();
                 try { await signInWithPopup(auth, provider); console.log("Signed in with GitHub!"); }
                 catch (error) { console.error("Error signing in with GitHub:", error); if (loginStatus) loginStatus.textContent = `GitHub login failed: ${error.message}`; }
             });
             if (loginBtnGuest) loginBtnGuest.addEventListener('click', async () => {
+                // Ensure Firebase is initialized before attempting login
+                if (!auth) { showStatusMessage(loginStatus, translations[currentLanguage].firebaseNotConfigured, 'error'); return; }
                 try { await signInAnonymously(auth); console.log("Signed in as Guest!"); }
                 catch (error) { console.error("Error signing in anonymously:", error); if (loginStatus) loginStatus.textContent = `Guest login failed: ${error.message}`; }
             });
             if (logoutBtn) logoutBtn.addEventListener('click', async () => {
+                // Ensure Firebase is initialized before attempting logout
+                if (!auth) { showStatusMessage(loginStatus, translations[currentLanguage].firebaseNotConfigured, 'error'); return; }
                 try { await signOut(auth); console.log("User signed out."); }
                 catch (error) { console.error("Error signing out:", error); if (loginStatus) loginStatus.textContent = `Logout failed: ${error.message}`; }
             });
@@ -1231,7 +1248,7 @@
             }
 
             // Update UI based on current auth state
-            updateLoginButtonsInModal(!!userId, auth.currentUser);
+            updateLoginButtonsInModal(!!userId, auth?.currentUser); // Use optional chaining for auth.currentUser
             if (userId) {
                 loadProjectNotesInModal();
             }
@@ -1248,6 +1265,8 @@
             if (!db) { showStatusMessage(userNotesStatus, translations[currentLanguage].firebaseNotConfigured, 'error'); return; }
 
             const projectNotes = userNotesInput.value;
+            // Ensure the path matches your Firestore security rules.
+            // For private user data, it's typically /artifacts/{appId}/users/{userId}/private/collection_name
             const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/private/projects`, 'my-project-notes');
 
             try {
@@ -1273,6 +1292,7 @@
 
             if (!userId || !db) { showStatusMessage(userNotesStatus, translations[currentLanguage].notesLoginStatus, 'error'); return; }
 
+            // Ensure the path matches your Firestore security rules.
             const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/private/projects`, 'my-project-notes');
 
             unsubscribeProjectNotes = onSnapshot(userDocRef, (docSnap) => {
@@ -1787,8 +1807,8 @@
                 viewerInstance.initialCameraPosition.copy(viewerInstance.camera.position);
                 viewerInstance.initialControlsTarget.copy(viewerInstance.controls.target);
                 viewerInstance.initialModelPosition.copy(viewerInstance.currentModel.position);
-                viewerInstance.initialModelRotation.copy(viewerInstance.currentModel.rotation);
-                viewerInstance.initialModelScale.copy(viewerInstance.currentModel.scale);
+                viewerInstance.currentModel.rotation.copy(viewerInstance.initialModelRotation);
+                viewerInstance.currentModel.scale.copy(viewerInstance.initialModelScale);
 
                 // Hide status and show controls/input label
                 statusElement.classList.add('hidden');
@@ -2061,6 +2081,8 @@
                     modalViewerInstance.hasAudioLoaded = true;
                     audioControls.classList.remove('hidden'); // Show audio controls once audio is loaded
                 }
+                // Clear the file input value to allow selecting the same file again if needed
+                event.target.value = ''; 
             });
             // Setup resize handle and model controls for the modal viewer
             setupResizeHandle3D(resizeHandle, modelContainer, modalViewerInstance.camera, modalViewerInstance.renderer);
@@ -2070,6 +2092,8 @@
             animate3D(modalViewerInstance);
 
             // Load a default model for the modal viewer (optional, can be removed)
+            // Ensure this path is correct relative to your GitHub Pages deployment,
+            // or use a full URL if hosting the model elsewhere.
             loadModel('https://imelijah88.github.io/Avneed/friendlyrobot.glb', modalViewerInstance, modelStatus, modelControls, modelFileInputLabel, audioControls);
         }
 

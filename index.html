@@ -692,8 +692,6 @@
             <button class="settings-menu-button" data-theme="dark" role="menuitem">Dark Theme</button>
             <button class="settings-menu-button" data-theme="light" role="menuitem">Light Theme</button>
             <div class="border-t border-gray-600 my-2"></div>
-            <p class="text-gray-400 text-sm px-2" id="languageSettingLabel">Language</p>
-            <button class="settings-menu-button" data-lang="en" role="menuitem">English</button>
         </div>
     </header>
 
@@ -880,7 +878,7 @@
         };
         const initialAuthToken = null; 
 
-        const GEMINI_API_KEY = "YOUR_ACTUAL_GEMINI_API_KEY_HERE"; 
+        const GEMINI_API_KEY = "AIzaSyCGGbogRbxQQg7p_2SYhT-U6APOJKnq-3M"; 
 
         let app;
         let db;
@@ -891,55 +889,7 @@
 
         let unsubscribeProjectNotes = null;
 
-        const translations = {
-            en: {
-                firebaseInitError: 'Firebase initialization failed. Check console for details.',
-                firebaseNotConfigured: 'Firebase config not found. Features disabled. Please configure Firebase.',
-                notesTitle: 'Your Project Notes 📝',
-                notesLoginPrompt: 'Log in to save and load your personal project notes. These notes are private to your account.',
-                typeNotesPlaceholder: 'Type your private project notes here...',
-                saveNotes: 'Save Project Notes',
-                notesLoginStatus: 'Please log in to save notes.',
-                notesSavedSuccess: 'Project notes saved successfully!',
-                notesSaveError: 'Error saving project notes:',
-                notesLoaded: 'Project notes loaded.',
-                noNotesFound: 'No project notes found. Start typing!',
-                notesLoadError: 'Error loading project notes:',
-                loginMenuTitle: 'Account',
-                manageAccount: 'Manage your Avneed account.',
-                loginWithGoogle: 'Log In with Google',
-                loginWithGitHub: 'Log In with GitHub',
-                continueAsGuest: 'Continue as Guest',
-                logout: 'Log Out',
-                loggedInAs: 'Logged in as:',
-                guestUser: 'Guest User',
-                copyUserId: 'Copy User ID',
-                copied: 'Copied!',
-                copyFailed: 'Failed to copy!',
-                chatInstructions: 'Chat or upload a file (.txt, .doc, .pdf). (Plain text only from files.)',
-                initialChatMessage: 'Hello! How can I assist?',
-                typeMessagePlaceholder: 'Type message...',
-                uploadButton: 'Upload',
-                sendButton: 'Send',
-                thinking: 'Thinking...',
-                enterMessageOrUpload: 'Please enter a message or upload a file.',
-                fileReading: 'Reading file...',
-                fileReadError: 'Error reading file:',
-                fileProcessed: 'File processed and message sent.',
-                apiResponseError: "Sorry, I couldn't generate a response. Please try again.",
-                apiConnectionError: "An error occurred while connecting to the AI. Please check your internet connection or try again later.",
-                imageGenPrompt: 'Describe the image you want to generate...',
-                generateImage: 'Generate Image',
-                imageGenerating: 'Generating image... This may take a moment.',
-                imageGenSuccess: 'Image generated successfully!',
-                imageGenFail: 'Failed to generate image. Please try a different prompt.',
-                uploadModelPrompt: 'Upload a 3D model (.gltf, .glb)',
-                useMouseToInteract: 'Use mouse to interact',
-                errorLoadingModel: 'Error loading model:',
-                loadingModel: 'Loading 3D Model...',
-            }
-        };
-        let currentLanguage = 'en'; 
+        // Removed translations object
 
         function disableFirebaseFeatures(message) {
             console.warn("Firebase features disabled:", message);
@@ -1010,21 +960,21 @@
                                 if (document.getElementById('modalLoginBtnGoogle') && document.getElementById('aiModal').classList.contains('visible')) {
                                     updateLoginButtonsInModal(false, null);
                                     document.getElementById('modalUserNotesInput').value = '';
-                                    document.getElementById('modalUserNotesStatus').textContent = translations[currentLanguage].notesLoginStatus;
+                                    document.getElementById('modalUserNotesStatus').textContent = 'Please log in to save notes.'; // Hardcoded
                                 }
                             }
                         });
                     } else {
                         console.error("Firebase Auth could not be initialized. Check your Firebase configuration.");
-                        disableFirebaseFeatures(translations[currentLanguage].firebaseInitError);
+                        disableFirebaseFeatures('Firebase initialization failed. Check console for details.'); // Hardcoded
                     }
                 } catch (firebaseInitError) {
                     console.error("Error initializing Firebase app:", firebaseInitError);
-                    disableFirebaseFeatures(translations[currentLanguage].firebaseInitError);
+                    disableFirebaseFeatures('Firebase initialization failed. Check console for details.'); // Hardcoded
                 }
             } else {
                 console.warn("Firebase config not found or incomplete. Firebase features will be disabled. Please ensure firebaseConfig is correctly set in your script.");
-                disableFirebaseFeatures(translations[currentLanguage].firebaseNotConfigured);
+                disableFirebaseFeatures('Firebase config not found. Features disabled. Please configure Firebase.'); // Hardcoded
             }
         });
 
@@ -1100,37 +1050,37 @@
             const manageAccountText = document.getElementById('modalManageAccountText');
             const userNotesStatus = document.getElementById('modalUserNotesStatus');
 
-            if (notesTitle) notesTitle.textContent = translations[currentLanguage].notesTitle;
-            if (notesLoginPrompt) notesLoginPrompt.textContent = translations[currentLanguage].notesLoginPrompt;
-            if (userNotesInput) userNotesInput.placeholder = translations[currentLanguage].typeNotesPlaceholder;
-            if (saveNotesBtn) saveNotesBtn.textContent = translations[currentLanguage].saveNotes;
-            if (manageAccountText) manageAccountText.textContent = translations[currentLanguage].manageAccount;
-            if (loginBtnGoogle) loginBtnGoogle.textContent = translations[currentLanguage].loginWithGoogle;
-            if (loginBtnGithub) loginBtnGithub.textContent = translations[currentLanguage].loginWithGitHub;
-            if (loginBtnGuest) loginBtnGuest.textContent = translations[currentLanguage].continueAsGuest;
-            if (logoutBtn) logoutBtn.textContent = translations[currentLanguage].logout;
-            if (copyUserIdBtn) copyUserIdBtn.textContent = translations[currentLanguage].copyUserId;
-            if (userNotesStatus) userNotesStatus.textContent = translations[currentLanguage].notesLoginStatus;
+            if (notesTitle) notesTitle.textContent = 'Your Project Notes 📝'; // Hardcoded
+            if (notesLoginPrompt) notesLoginPrompt.textContent = 'Log in to save and load your personal project notes. These notes are private to your account.'; // Hardcoded
+            if (userNotesInput) userNotesInput.placeholder = 'Type your private project notes here...'; // Hardcoded
+            if (saveNotesBtn) saveNotesBtn.textContent = 'Save Project Notes'; // Hardcoded
+            if (manageAccountText) manageAccountText.textContent = 'Manage your Avneed account.'; // Hardcoded
+            if (loginBtnGoogle) loginBtnGoogle.textContent = 'Log In with Google'; // Hardcoded
+            if (loginBtnGithub) loginBtnGithub.textContent = 'Log In with GitHub'; // Hardcoded
+            if (loginBtnGuest) loginBtnGuest.textContent = 'Continue as Guest'; // Hardcoded
+            if (logoutBtn) logoutBtn.textContent = 'Log Out'; // Hardcoded
+            if (copyUserIdBtn) copyUserIdBtn.textContent = 'Copy User ID'; // Hardcoded
+            if (userNotesStatus) userNotesStatus.textContent = 'Please log in to save notes.'; // Hardcoded
 
             if (loginBtnGoogle) loginBtnGoogle.addEventListener('click', async () => {
-                if (!auth) { showStatusMessage(loginStatus, translations[currentLanguage].firebaseNotConfigured, 'error'); return; }
+                if (!auth) { showStatusMessage(loginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; } // Hardcoded
                 const provider = new GoogleAuthProvider();
                 try { await signInWithPopup(auth, provider); console.log("Signed in with Google!"); }
                 catch (error) { console.error("Error signing in with Google:", error); if (loginStatus) loginStatus.textContent = `Google login failed: ${error.message}`; }
             });
             if (loginBtnGithub) loginBtnGithub.addEventListener('click', async () => {
-                if (!auth) { showStatusMessage(loginStatus, translations[currentLanguage].firebaseNotConfigured, 'error'); return; }
+                if (!auth) { showStatusMessage(loginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; } // Hardcoded
                 const provider = new GithubAuthProvider();
                 try { await signInWithPopup(auth, provider); console.log("Signed in with GitHub!"); }
                 catch (error) { console.error("Error signing in with GitHub:", error); if (loginStatus) loginStatus.textContent = `GitHub login failed: ${error.message}`; }
             });
             if (loginBtnGuest) loginBtnGuest.addEventListener('click', async () => {
-                if (!auth) { showStatusMessage(loginStatus, translations[currentLanguage].firebaseNotConfigured, 'error'); return; }
+                if (!auth) { showStatusMessage(loginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; } // Hardcoded
                 try { await signInAnonymously(auth); console.log("Signed in as Guest!"); }
                 catch (error) { console.error("Error signing in anonymously:", error); if (loginStatus) loginStatus.textContent = `Guest login failed: ${error.message}`; }
             });
             if (logoutBtn) logoutBtn.addEventListener('click', async () => {
-                if (!auth) { showStatusMessage(loginStatus, translations[currentLanguage].firebaseNotConfigured, 'error'); return; }
+                if (!auth) { showStatusMessage(loginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; } // Hardcoded
                 try { await signOut(auth); console.log("User signed out."); }
                 catch (error) { console.error("Error signing out:", error); if (loginStatus) loginStatus.textContent = `Logout failed: ${error.message}`; }
             });
@@ -1159,19 +1109,19 @@
             const userNotesInput = document.getElementById('modalUserNotesInput');
             const userNotesStatus = document.getElementById('modalUserNotesStatus');
 
-            if (!userId) { showStatusMessage(userNotesStatus, translations[currentLanguage].notesLoginStatus, 'error'); return; }
-            if (!db) { showStatusMessage(userNotesStatus, translations[currentLanguage].firebaseNotConfigured, 'error'); return; }
+            if (!userId) { showStatusMessage(userNotesStatus, 'Please log in to save notes.', 'error'); return; } // Hardcoded
+            if (!db) { showStatusMessage(userNotesStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; } // Hardcoded
 
             const projectNotes = userNotesInput.value;
             const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'private', 'my-project-notes');
 
             try {
                 await setDoc(userDocRef, { content: projectNotes, timestamp: new Date() }, { merge: true });
-                showStatusMessage(userNotesStatus, translations[currentLanguage].notesSavedSuccess, 'success');
+                showStatusMessage(userNotesStatus, 'Project notes saved successfully!', 'success'); // Hardcoded
                 console.log("User project notes saved.");
             } catch (error) {
                 console.error("Error saving project notes:", error);
-                showStatusMessage(userNotesStatus, `${translations[currentLanguage].notesSaveError} ${error.message}`, 'error');
+                showStatusMessage(userNotesStatus, `Error saving project notes: ${error.message}`, 'error'); // Hardcoded
             }
         }
 
@@ -1183,7 +1133,7 @@
                 unsubscribeProjectNotes();
             }
 
-            if (!userId || !db) { showStatusMessage(userNotesStatus, translations[currentLanguage].notesLoginStatus, 'error'); return; }
+            if (!userId || !db) { showStatusMessage(userNotesStatus, 'Please log in to save notes.', 'error'); return; } // Hardcoded
 
             const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'private', 'my-project-notes');
 
@@ -1191,15 +1141,15 @@
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     if (userNotesInput) userNotesInput.value = data.content || '';
-                    if (userNotesStatus) userNotesStatus.textContent = translations[currentLanguage].notesLoaded;
+                    if (userNotesStatus) userNotesStatus.textContent = 'Project notes loaded.'; // Hardcoded
                 } else {
                     if (userNotesInput) userNotesInput.value = '';
-                    if (userNotesStatus) userNotesStatus.textContent = translations[currentLanguage].noNotesFound;
+                    if (userNotesStatus) userNotesStatus.textContent = 'No project notes found. Start typing!'; // Hardcoded
                 }
                 console.log("User project notes loaded/updated from Firestore.");
             }, (error) => {
                 console.error("Error loading project notes:", error);
-                showStatusMessage(userNotesStatus, `${translations[currentLanguage].notesLoadError} ${error.message}`, 'error');
+                showStatusMessage(userNotesStatus, `Error loading project notes: ${error.message}`, 'error'); // Hardcoded
             });
         }
 
@@ -1226,12 +1176,12 @@
                 if (saveNotesBtn) saveNotesBtn.disabled = false;
 
                 if (userIdDisplay) {
-                    userIdDisplay.textContent = `${translations[currentLanguage].loggedInAs} ${user.isAnonymous ? translations[currentLanguage].guestUser : user.uid}`;
+                    userIdDisplay.textContent = `Logged in as: ${user.isAnonymous ? 'Guest User' : user.uid}`; // Hardcoded
                     userIdDisplay.classList.remove('hidden');
                 }
                 if (copyUserIdBtn) {
                     copyUserIdBtn.classList.remove('hidden');
-                    copyUserIdBtn.textContent = translations[currentLanguage].copyUserId;
+                    copyUserIdBtn.textContent = 'Copy User ID'; // Hardcoded
                 }
                 if (loginStatus) loginStatus.textContent = '';
             } else {
@@ -1244,7 +1194,7 @@
 
                 if (userIdDisplay) userIdDisplay.classList.add('hidden');
                 if (copyUserIdBtn) copyUserIdBtn.classList.add('hidden');
-                if (loginStatus) loginStatus.textContent = translations[currentLanguage].notesLoginStatus;
+                if (loginStatus) loginStatus.textContent = 'Please log in to save notes.'; // Hardcoded
             }
         }
 
@@ -1258,11 +1208,11 @@
                 tempInput.select();
                 try {
                     document.execCommand('copy');
-                    copyButton.textContent = translations[currentLanguage].copied;
-                    setTimeout(() => { copyButton.textContent = translations[currentLanguage].copyUserId; }, 2000);
+                    copyButton.textContent = 'Copied!'; // Hardcoded
+                    setTimeout(() => { copyButton.textContent = 'Copy User ID'; }, 2000); // Hardcoded
                 } catch (err) {
                     console.error('Failed to copy text: ', err);
-                    copyButton.textContent = translations[currentLanguage].copyFailed;
+                    copyButton.textContent = 'Failed to copy!'; // Hardcoded
                 }
                 document.body.removeChild(tempInput);
             }
@@ -1277,15 +1227,15 @@
             const aiFileInputLabel = document.getElementById('chatbotFileInputLabel');
             const aiInputText = document.getElementById('chatbotInputText');
 
-            chatHistoryDiv.innerHTML = `<p class="ai-message">${translations[currentLanguage].initialChatMessage}</p>`;
+            chatHistoryDiv.innerHTML = `<p class="ai-message">Hello! How can I assist?</p>`; // Hardcoded
             let chatHistory = []; 
 
-            document.querySelector('#chatbotContent h2').textContent = 'AI Chatbot 💬';
-            document.querySelector('#chatbotContent p.text-sm').innerHTML = translations[currentLanguage].chatInstructions;
-            if (aiInputText) aiInputText.placeholder = translations[currentLanguage].typeMessagePlaceholder;
-            if (aiFileInputLabel) aiFileInputLabel.textContent = translations[currentLanguage].uploadButton;
-            if (sendBtn) sendBtn.textContent = translations[currentLanguage].sendButton;
-            if (loadingIndicator) loadingIndicator.querySelector('p').textContent = translations[currentLanguage].thinking;
+            document.querySelector('#chatbotContent h2').textContent = 'AI Chatbot 💬'; // Hardcoded
+            document.querySelector('#chatbotContent p.text-sm').innerHTML = 'Chat or upload a file (.txt, .doc, .pdf).<br><span class="text-xs text-gray-400">(Plain text only from files.)</span>'; // Hardcoded
+            if (aiInputText) aiInputText.placeholder = 'Type message...'; // Hardcoded
+            if (aiFileInputLabel) aiFileInputLabel.textContent = 'Upload'; // Hardcoded
+            if (sendBtn) sendBtn.textContent = 'Send'; // Hardcoded
+            if (loadingIndicator) loadingIndicator.querySelector('p').textContent = 'Thinking...'; // Hardcoded
 
 
             if (aiInputText) {
@@ -1345,11 +1295,11 @@
                         appendMessage(aiResponseText, 'ai');
                         chatHistory.push({ role: "model", parts: [{ text: aiResponseText }] });
                     } else {
-                        appendMessage(translations[currentLanguage].apiResponseError, 'ai');
+                        appendMessage("Sorry, I couldn't generate a response. Please try again.", 'ai'); // Hardcoded
                         console.error('API response structure unexpected:', result);
                     }
                 } catch (error) {
-                    appendMessage(translations[currentLanguage].apiConnectionError, 'ai');
+                    appendMessage("An error occurred while connecting to the AI. Please check your internet connection or try again later.", 'ai'); // Hardcoded
                     chatStatus.textContent = `Error: ${error.message}`;
                     console.error('Error during API call:', error);
                 } finally {
@@ -1365,7 +1315,7 @@
                 if (prompt) {
                     sendMessage(prompt);
                 } else {
-                    chatStatus.textContent = translations[currentLanguage].enterMessageOrUpload;
+                    chatStatus.textContent = 'Please enter a message or upload a file.'; // Hardcoded
                 }
             });
 
@@ -1379,17 +1329,17 @@
             aiFileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
                 if (file) {
-                    chatStatus.textContent = translations[currentLanguage].fileReading;
+                    chatStatus.textContent = 'Reading file...'; // Hardcoded
                     try {
                         const reader = new FileReader();
                         reader.onload = async (e) => {
                             const fileContent = e.target.result;
                             const prompt = `Analyze the following content from a file: ${file.name}`;
                             await sendMessage(prompt, fileContent);
-                            chatStatus.textContent = translations[current.language].fileProcessed;
+                            chatStatus.textContent = 'File processed and message sent.'; // Hardcoded
                         };
                         reader.onerror = (e) => {
-                            chatStatus.textContent = `${translations[currentLanguage].fileReadError} ${e.target.error.name}`;
+                            chatStatus.textContent = `Error reading file: ${e.target.error.name}`; // Hardcoded
                             console.error('File reading error:', e.target.error);
                         };
                         reader.readAsText(file);
@@ -1410,10 +1360,10 @@
             const imageGenStatus = document.getElementById('imageGenStatus');
             const imageGenAspectRatioSelect = document.getElementById('imageGenAspectRatio');
 
-            document.querySelector('#imageGeneratorContent h2').textContent = 'AI Image Generator 🖼️';
-            document.querySelector('#imageGeneratorContent p.text-sm').textContent = 'Enter a prompt to generate an image.';
-            if (imageGenPromptInput) imageGenPromptInput.placeholder = translations[currentLanguage].imageGenPrompt;
-            if (imageGenGenerateBtn) imageGenGenerateBtn.textContent = translations[currentLanguage].generateImage;
+            document.querySelector('#imageGeneratorContent h2').textContent = 'AI Image Generator 🖼️'; // Hardcoded
+            document.querySelector('#imageGeneratorContent p.text-sm').textContent = 'Enter a prompt to generate an image.'; // Hardcoded
+            if (imageGenPromptInput) imageGenPromptInput.placeholder = 'Describe the image you want to generate...'; // Hardcoded
+            if (imageGenGenerateBtn) imageGenGenerateBtn.textContent = 'Generate Image'; // Hardcoded
 
             if (imageGenPromptInput) {
                 imageGenPromptInput.addEventListener('input', () => {
@@ -1439,7 +1389,7 @@
 
                 imageGenDisplayArea.classList.remove('hidden');
                 imageGenLoadingOverlay.classList.remove('hidden');
-                imageGenStatus.textContent = translations[currentLanguage].imageGenerating;
+                imageGenStatus.textContent = 'Generating image... This may take a moment.'; // Hardcoded
                 imageGenGeneratedImage.src = '';
                 imageGenGeneratedImage.alt = 'Generating...';
 
@@ -1462,9 +1412,9 @@
                         const imageUrl = `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
                         imageGenGeneratedImage.src = imageUrl;
                         imageGenGeneratedImage.alt = `Generated image for prompt: ${prompt}`;
-                        showStatusMessage(imageGenStatus, translations[currentLanguage].imageGenSuccess, 'success');
+                        showStatusMessage(imageGenStatus, 'Image generated successfully!', 'success'); // Hardcoded
                     } else {
-                        showStatusMessage(imageGenStatus, translations[currentLanguage].imageGenFail, 'error');
+                        showStatusMessage(imageGenStatus, 'Failed to generate image. Please try a different prompt.', 'error'); // Hardcoded
                         console.error('Image generation response missing expected data:', result);
                     }
                 } catch (error) {
@@ -1506,7 +1456,7 @@
             scene.add(pointLight);
 
             statusElement.classList.remove('hidden');
-            statusElement.innerHTML = `<p>${translations[currentLanguage].uploadModelPrompt}</p><p>${translations[currentLanguage].useMouseToInteract}</p>`;
+            statusElement.innerHTML = `<p>Upload a 3D model (.gltf, .glb)</p><p>Use mouse to interact</p>`; // Hardcoded
 
             const playPauseButton = audioControlsElement.querySelector('[data-action="play-pause"]');
             if (playPauseButton) {
@@ -1572,7 +1522,7 @@
 
         function loadModel(modelPath, viewerInstance, statusElement, controlsElement, fileInputLabelElement, audioControlsElement) {
             statusElement.classList.remove('hidden');
-            statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>${translations[currentLanguage].loadingModel}</p>`;
+            statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>Loading 3D Model...</p>`; // Hardcoded
             
             if (fileInputLabelElement) fileInputLabelElement.classList.add('hidden');
             if (controlsElement) controlsElement.classList.add('hidden');
@@ -1634,10 +1584,10 @@
 
             }, (xhr) => {
                 const percent = (xhr.loaded / xhr.total * 100).toFixed(0);
-                statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>${translations[currentLanguage].loadingModel} ${percent}%</p>`;
+                statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>Loading 3D Model... ${percent}%</p>`; // Hardcoded
             }, (error) => {
                 statusElement.classList.remove('hidden');
-                statusElement.innerHTML = `<p class="text-red-500">${translations[currentLanguage].errorLoadingModel} ${error.message || 'Unknown error'}</p>`;
+                statusElement.innerHTML = `<p class="text-red-500">Error loading model: ${error.message || 'Unknown error'}</p>`; // Hardcoded
                 if (fileInputLabelElement) fileInputLabelElement.classList.remove('hidden');
                 if (controlsElement) controlsElement.classList.add('hidden');
                 if (audioControlsElement) audioControlsElement.classList.add('hidden');

@@ -1,0 +1,2123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avneed AI Features</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Three.js Libraries (needed for 3D Viewer) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/pmrem/PMREMGenerator.js"></script>
+
+    <style>
+        /* Base CSS variables for dark theme */
+        :root {
+            --bg-primary: #333333;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #121212;
+            --text-primary: #e2e8f0;
+            --text-secondary: #cbd5e1;
+            --text-light-gray: #a0aec0;
+            --border-color: #4a5568;
+            --input-bg: #1a1a1a;
+            --gradient-start: #0f172a;
+            --gradient-mid: #1e293b;
+            --gradient-end: #334155;
+            --color-neon-blue: #00FFFF;
+            --color-accent-yellow: #ffd700;
+            --modal-bg: rgba(0, 0, 0, 0.8);
+            --modal-content-bg: var(--bg-secondary);
+        }
+
+        /* Light theme overrides */
+        body.light-theme {
+            --bg-primary: #f0f2f5;
+            --bg-secondary: #ffffff;
+            --bg-card: #e2e8f0;
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --text-light-gray: #718096;
+            --border-color: #cbd5e1;
+            --input-bg: #ffffff;
+            --gradient-start: #e0e7ff;
+            --gradient-mid: #c3dafe;
+            --gradient-end: #a7c5ff;
+            --color-neon-blue: #007bff;
+            --color-accent-yellow: #ff9800;
+            --modal-bg: rgba(255, 255, 255, 0.8);
+            --modal-content-bg: var(--bg-secondary);
+        }
+
+        /* General body styling */
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+            box-sizing: border-box;
+            gap: 2rem;
+        }
+        
+        /* Utility classes using CSS variables */
+        .text-neon-blue { color: var(--color-neon-blue); }
+        .gradient-bg { background: linear-gradient(to right top, var(--gradient-start), var(--gradient-mid), var(--gradient-end)); }
+        
+        /* Button styling */
+        .ai-button {
+            @apply px-6 py-3 rounded-full text-white font-bold text-base shadow-lg transition duration-300 ease-in-out transform hover:scale-105;
+            background: #2d3748;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        .ai-button:hover {
+            background: #374151;
+            box-shadow: 0 0 25px 8px rgba(255, 215, 0, 0.7), 0 0 10px 2px rgba(255, 215, 0, 0.4);
+            border-color: var(--color-accent-yellow);
+        }
+
+        .ai-button.selected-button {
+            background: var(--color-neon-blue);
+            color: var(--bg-primary);
+            border-color: var(--color-neon-blue);
+            box-shadow: 0 0 20px var(--color-neon-blue), 0 0 30px var(--color-neon-blue);
+            transform: scale(1.02);
+        }
+        .ai-button.selected-button:hover {
+            background: var(--color-neon-blue);
+            color: var(--bg-primary);
+            box-shadow: 0 0 25px var(--color-neon-blue), 0 0 40px var(--color-neon-blue);
+            border-color: var(--color-neon-blue);
+        }
+
+        .sphere-button {
+            @apply w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-base shadow-lg transition duration-300 ease-in-out transform hover:scale-110;
+            width: 80px; /* Explicitly setting width for consistency */
+            height: 80px; /* Explicitly setting height for consistency */
+            border-radius: 9999px; /* Ensures a perfect circle */
+            background: #2d3748;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .sphere-button:hover {
+            background: #374151;
+            box-shadow: 0 0 25px 8px rgba(255, 215, 0, 0.7), 0 0 10px 2px rgba(255, 215, 0, 0.4);
+            border-color: var(--color-accent-yellow);
+        }
+        .sphere-button.neon-hover:hover {
+            background: var(--color-neon-blue);
+            color: var(--bg-primary);
+            box-shadow: 0 0 25px 8px rgba(0, 255, 255, 0.7), 0 0 10px 2px rgba(0, 255, 255, 0.4);
+            border-color: var(--color-neon-blue);
+        }
+
+        /* Card and input styling */
+        .card {
+            background-color: var(--bg-card);
+            @apply p-8 rounded-[2.5rem] shadow-xl transition duration-300 ease-in-out hover:shadow-2xl hover:translate-y-[-5px];
+            border: 1px solid rgba(74, 85, 104, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+        .input-field {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            @apply p-4 rounded-2xl border border-gray-700 focus:outline-none focus:ring-4 focus:ring-purple-600 transition duration-200 ease-in-out;
+            border-color: var(--border-color);
+        }
+        
+        /* Loading spinner animation */
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top: 4px solid var(--color-accent-yellow);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Text and background color utilities */
+        .text-gray-100 { color: var(--text-primary); }
+        .text-gray-200 { color: var(--text-secondary); }
+        .text-gray-300 { color: var(--text-light-gray); }
+        .text-gray-400 { color: var(--text-light-gray); }
+        .text-gray-500 { color: var(--text-light-gray); }
+        .text-gray-700 { border-color: var(--border-color); }
+        .bg-gray-800 { background-color: var(--bg-card); }
+        .bg-gray-900 { background-color: var(--bg-secondary); }
+        .bg-gray-950 { background-color: var(--bg-card); }
+        .bg-[#1a1a1a] { background-color: var(--input-bg); }
+        .text-yellow-400 { color: var(--color-accent-yellow); }
+
+        /* 3D Model Viewer Specific Styles */
+        .model-viewer-container {
+            position: relative;
+            width: 100%;
+            height: 450px;
+            background-color: transparent;
+            border-radius: 2.5rem;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            border: 1px solid var(--border-color);
+        }
+        .model-viewer-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 2.5rem;
+        }
+        .model-status {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--color-accent-yellow);
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-align: center;
+            z-index: 10;
+        }
+        .model-file-input-label {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 50px;
+            height: 50px;
+            background: #2d3748;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            z-index: 15;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        .model-file-input-label:hover {
+            background: #374151;
+            color: var(--color-neon-blue);
+            box-shadow: 0 0 25px 8px rgba(var(--color-neon-blue), 0.7), 0 0 10px 2px rgba(var(--color-neon-blue), 0.4);
+            border-color: var(--color-neon-blue);
+            transform: scale(1.1);
+        }
+        .hidden-file-input {
+            display: none !important;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .resize-handle {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(0, 255, 255, 0.5);
+            border-radius: 0 0 2.5rem 0;
+            cursor: nwse-resize;
+            z-index: 20;
+        }
+
+        /* Model Controls Overlay */
+        .model-controls {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            z-index: 15;
+            background: rgba(45, 55, 72, 0.7);
+            padding: 0.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(74, 85, 104, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .model-control-button {
+            @apply px-1 py-0.5 rounded-md text-white font-bold text-xs transition duration-300 ease-in-out transform hover:scale-105;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .model-control-button:hover {
+            background: #374151;
+            color: var(--color-neon-blue);
+            box-shadow: 0 0 10px 3px rgba(var(--color-neon-blue), 0.5);
+            border-color: var(--color-neon-blue);
+        }
+        .model-controls .grid-cols-3 .model-control-button {
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+        }
+        .model-control-button.toggle-lock {
+            width: 100%;
+        }
+
+        /* Upload Menu Overlay */
+        .upload-menu {
+            position: absolute;
+            top: 65px;
+            right: 1.5rem;
+            background: rgba(45, 55, 72, 0.9);
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            border: 1px solid rgba(74, 85, 104, 0.3);
+        }
+
+        .upload-menu-button {
+            @apply px-4 py-2 rounded-md text-white font-bold text-sm transition duration-300 ease-in-out transform hover:scale-105;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            cursor: pointer;
+        }
+        .upload-menu-button:hover {
+            background: #374151;
+            color: var(--color-neon-blue);
+            box-shadow: 0 0 10px 3px rgba(var(--color-neon-blue), 0.5);
+            border-color: var(--color-neon-blue);
+        }
+
+        /* Audio Controls Overlay */
+        .audio-controls {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            width: 50px;
+            height: 50px;
+            background: #2d3748;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            z-index: 15;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        .audio-controls:hover {
+            background: #374151;
+            color: var(--color-neon-blue);
+            box-shadow: 0 0 25px 8px rgba(var(--color-neon-blue), 0.7), 0 0 10px 2px rgba(var(--color-neon-blue), 0.4);
+            border-color: var(--color-neon-blue);
+            transform: scale(1.1);
+        }
+        .audio-play-pause-button {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: inherit;
+            cursor: inherit;
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+        }
+
+        /* Settings Button and Menu */
+        #settingsBtn {
+            @apply text-3xl cursor-pointer transition duration-300 ease-in-out transform hover:rotate-90 hover:text-yellow-300;
+        }
+
+        .settings-menu {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: rgba(45, 55, 72, 0.95);
+            padding: 1rem;
+            border-radius: 1rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            border: 1px solid rgba(74, 85, 104, 0.5);
+        }
+
+        .settings-menu-button {
+            @apply px-4 py-2 rounded-md text-white font-bold text-sm transition duration-300 ease-in-out transform hover:scale-105;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+        .settings-menu-button:hover {
+            background: #374151;
+            color: var(--color-neon-blue);
+            box-shadow: 0 0 10px 3px rgba(var(--color-neon-blue), 0.5);
+            border-color: var(--color-neon-blue);
+        }
+
+        /* Chat History Styling */
+        #chatHistory p {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            max-width: 75%;
+        }
+
+        #chatHistory p.user-message {
+            margin-left: auto;
+            background-color: var(--color-neon-blue);
+            color: var(--bg-primary);
+            font-weight: 600;
+            border-bottom-right-radius: 0.25rem;
+        }
+        #chatHistory p.ai-message {
+            margin-right: auto;
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border-bottom-left-radius: 0.25rem;
+        }
+
+        /* Textarea Auto-Resize */
+        #aiInputText, #imagePromptInput, #videoPromptInput, #userNotesInput {
+            min-height: 2.5rem;
+            max-height: 152px; /* Approx 4 lines of text */
+            overflow-y: hidden;
+            box-sizing: border-box;
+        }
+
+        /* Glitch and Neon Pulse Animations */
+        .glitch-text {
+            animation: glitch 0.8s linear infinite alternate, neon-pulse 0.8s ease-in-out forwards;
+        }
+
+        @keyframes glitch {
+            0% {
+                text-shadow: 0.05em 0 0 var(--color-neon-blue), -0.05em -0.025em 0 var(--color-accent-yellow), -0.025em 0.05em 0 var(--color-neon-blue);
+                transform: translate(0.01em, 0.01em);
+            }
+            15% {
+                text-shadow: 0.025em 0.05em 0 var(--color-accent-yellow), -0.025em -0.01em 0 var(--color-neon-blue), 0.05em -0.025em 0 var(--color-accent-yellow);
+                transform: translate(-0.01em, -0.02em);
+            }
+            30% {
+                text-shadow: -0.025em -0.05em 0 var(--color-neon-blue), 0.05em 0.025em 0 var(--color-accent-yellow), 0.01em 0.01em 0 var(--color-neon-blue);
+                transform: translate(0.02em, 0.01em);
+            }
+            45% {
+                text-shadow: 0.05em 0.01em 0 var(--color-accent-yellow), -0.01em -0.05em 0 var(--color-neon-blue), -0.05em 0.025em 0 var(--color-accent-yellow);
+                transform: translate(-0.01em, -0.01em);
+            }
+            60% {
+                text-shadow: -0.01em -0.025em 0 var(--color-neon-blue), 0.025em 0.05em 0 var(--color-accent-yellow), 0.05em -0.01em 0 var(--color-neon-blue);
+                transform: translate(0.01em, 0.02em);
+            }
+            75% {
+                text-shadow: 0.025em 0.01em 0 var(--color-accent-yellow), -0.05em -0.025em 0 var(--color-neon-blue), -0.01em 0.05em 0 var(--color-accent-yellow);
+                transform: translate(-0.02em, 0.01em);
+            }
+            100% {
+                color: var(--text-primary);
+                text-shadow: none;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes neon-pulse {
+            0% {
+                color: var(--text-primary);
+                text-shadow: none;
+                transform: scale(1);
+            }
+            50% {
+                color: var(--color-neon-blue);
+                text-shadow: 0 0 10px var(--color-neon-blue), 0 0 20px var(--color-neon-blue), 0 0 30px var(--color-neon-blue);
+                transform: scale(1.02);
+            }
+            100% {
+                color: var(--text-primary);
+                text-shadow: none;
+                transform: scale(1);
+            }
+        }
+
+        /* Image/Video Frame Styling */
+        .image-frame-container, .video-player-container {
+            background-color: var(--bg-card);
+            border: 5px solid var(--color-neon-blue);
+            border-radius: 1.5rem;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.6),
+                        0 0 30px rgba(0, 255, 255, 0.4) inset,
+                        0 15px 30px rgba(0, 0, 0, 0.7);
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease-in-out;
+            transform: rotateZ(-1deg); /* Slight rotation for visual flair */
+            max-width: 100%;
+            margin: 0 auto;
+            animation: neon-pulse-frame 2s infinite alternate;
+        }
+
+        @keyframes neon-pulse-frame {
+            0% {
+                box-shadow: 0 0 15px rgba(0, 255, 255, 0.6),
+                            0 0 30px rgba(0, 255, 255, 0.4) inset,
+                            0 15px 30px rgba(0, 0, 0, 0.7);
+            }
+            100% {
+                box-shadow: 0 0 25px rgba(0, 255, 255, 0.9),
+                            0 0 40px rgba(0, 255, 255, 0.6) inset,
+                            0 15px 30px rgba(0, 0, 0, 0.9);
+            }
+        }
+
+        /* Grid overlay for frames */
+        .image-frame-container::before, .video-player-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: repeating-linear-gradient(0deg, rgba(0, 255, 255, 0.05) 0px, rgba(0, 255, 255, 0.05) 1px, transparent 1px, transparent 20px),
+                              repeating-linear-gradient(90deg, rgba(0, 255, 255, 0.05) 0px, rgba(0, 255, 255, 0.05) 1px, transparent 1px, transparent 20px);
+            pointer-events: none;
+            z-index: 1;
+            border-radius: 1rem;
+        }
+
+        .generated-image, .generated-video {
+            position: relative;
+            z-index: 2;
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5) inset;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        /* Aspect Ratio Classes for Image/Video */
+        .image-frame-container.aspect-1-1 { width: 400px; height: 400px; }
+        .image-frame-container.aspect-16-9 { width: 640px; height: 360px; }
+        .image-frame-container.aspect-4-3 { width: 500px; height: 375px; }
+        .image-frame-container.aspect-9-16 { width: 360px; height: 640px; }
+
+        /* Responsive Aspect Ratio adjustments */
+        @media (max-width: 768px) {
+            .image-frame-container.aspect-1-1 { width: 300px; height: 300px; }
+            .image-frame-container.aspect-16-9 { width: 90%; height: calc(90vw * 9 / 16); max-height: 300px; }
+            .image-frame-container.aspect-4-3 { width: 90%; height: calc(90vw * 3 / 4); max-height: 300px; }
+            .image-frame-container.aspect-9-16 { width: calc(90vw * 9 / 16); height: 90vw; max-width: 200px; max-height: 350px; }
+        }
+
+        /* Loading Overlays for Image/Video */
+        .image-loading-overlay, .video-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 1rem;
+            z-index: 10;
+        }
+
+        .image-loading-spinner, .video-loading-spinner {
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid var(--color-neon-blue);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        /* Modal Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--modal-content-bg);
+            padding: 1.5rem;
+            border-radius: 2rem;
+            max-width: 600px; /* Adjusted max-width for modal */
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: translateY(-50px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            border: 1px solid var(--border-color);
+            position: relative; /* For close button positioning */
+        }
+
+        .modal-overlay.visible .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .modal-close-button {
+            position: absolute;
+            top: 0.8rem;
+            right: 0.8rem;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            z-index: 1010;
+        }
+        .modal-close-button:hover {
+            background: var(--color-neon-blue);
+            color: var(--bg-primary);
+            border-color: var(--color-neon-blue);
+            transform: scale(1.1);
+        }
+
+        /* Modal content specific styling (adjusts content within modal) */
+        .ai-feature-content h2 {
+            font-size: 2.2rem; /* Adjusted font size for modal */
+            margin-bottom: 1.5rem;
+        }
+
+        .ai-feature-content p {
+            font-size: 0.9rem; /* Smaller text for minimalist feel */
+            margin-bottom: 1rem;
+        }
+
+        .ai-feature-content .card {
+            padding: 1.5rem;
+            border-radius: 1.5rem;
+        }
+        .ai-feature-content .input-field {
+            font-size: 0.9rem; /* Smaller font in input fields */
+            padding: 0.75rem; /* Smaller padding */
+        }
+        .ai-feature-content #chatHistory p {
+            font-size: 0.85rem; /* Smaller chat history text */
+            padding: 0.6rem;
+            margin-bottom: 0.3rem;
+        }
+        .ai-feature-content .loading-spinner {
+            width: 25px;
+            height: 25px;
+        }
+        .ai-feature-content .ai-button {
+            font-size: 0.85rem; /* Smaller button text */
+            padding: 0.6rem 1rem;
+        }
+
+        /* Responsive adjustments for modal content */
+        @media (max-width: 640px) {
+            .modal-content {
+                max-width: 95%;
+                padding: 1rem;
+                border-radius: 1.5rem;
+            }
+            .ai-feature-content h2 {
+                font-size: 1.8rem;
+            }
+            .ai-feature-content p {
+                font-size: 0.8rem;
+            }
+            .ai-feature-content .input-field {
+                font-size: 0.8rem;
+            }
+            .ai-feature-content #chatHistory p {
+                font-size: 0.75rem;
+            }
+            .ai-feature-content .ai-button {
+                font-size: 0.75rem;
+                padding: 0.5rem 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="gradient-bg text-white py-6 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <h1 class="text-4xl font-extrabold tracking-tight text-neon-blue">Avneed</h1>
+            <nav class="flex items-center space-x-8 text-lg font-semibold">
+                <ul class="flex space-x-8">
+                    <li><a href="#ai-features" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">Features</a></li>
+                </ul>
+                <button id="settingsBtn" class="ml-4" aria-label="Settings">⚙️</button>
+            </nav>
+        </div>
+        <div id="settingsMenu" class="settings-menu hidden" role="menu" aria-labelledby="settingsBtn">
+            <button class="settings-menu-button" data-theme="dark" role="menuitem">Dark Theme</button>
+            <button class="settings-menu-button" data-theme="light" role="menuitem">Light Theme</button>
+            <div class="border-t border-gray-600 my-2"></div>
+            <p class="text-gray-400 text-sm px-2" id="languageSettingLabel">Language</p>
+            <button class="settings-menu-button" data-lang="en" role="menuitem">English</button>
+        </div>
+    </header>
+
+    <section id="ai-features" class="py-20 px-6 bg-[#1a1a2e] shadow-inner text-center">
+        <div class="container mx-auto">
+            <h3 class="text-5xl font-bold mb-16 text-gray-100 leading-tight">Explore Avneed's AI Capabilities</h3>
+            <div class="flex flex-col md:flex-row justify-center gap-8">
+                <button id="openLoginNotesBtn" class="sphere-button neon-hover" aria-label="Open Login & Notes">Login & Notes</button>
+                <button id="openAvneedChatbotBtn" class="sphere-button neon-hover" aria-label="Open Chatbot">Chatbot</button>
+                <button id="openImageGeneratorBtn" class="sphere-button neon-hover" aria-label="Open Image Generator">Image</button>
+                <button id="open3DViewerBtn" class="sphere-button neon-hover" aria-label="Open 3D Model Viewer">3D Viewer</button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-950 text-white py-10 px-6">
+        <div class="container mx-auto text-center text-gray-500">
+            <p class="text-lg" id="copyrightText">&copy; 2025 <span class="text-neon-blue">Avneed</span>. All rights reserved.</p>
+            <p class="mt-4 text-md" id="designMessage">Designed with precision for a smarter future.</p>
+        </div>
+    </footer>
+
+    <!-- Modal Overlay and Content -->
+    <div id="aiModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content">
+            <button class="modal-close-button" id="closeModalBtn" aria-label="Close Modal">&times;</button>
+            <div id="modalContentArea">
+                <!-- AI feature content will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Content Templates for Modals -->
+
+    <!-- 1. Login & Project Notes Content -->
+    <div id="loginNotesContent" class="ai-feature-content hidden">
+        <div class="max-w-md mx-auto bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700 text-center">
+            <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight" id="modalLoginTitle">Account</h2>
+            <p class="text-sm text-gray-300 mb-4" id="modalManageAccountText">
+                Manage your Avneed account.
+            </p>
+            <div class="flex flex-col gap-4 mb-6">
+                <button id="modalLoginBtnGoogle" class="ai-button" aria-label="Log In with Google">Log In with Google</button>
+                <button id="modalLoginBtnGithub" class="ai-button" aria-label="Log In with GitHub">Log In with GitHub</button>
+                <button id="modalLoginBtnGuest" class="ai-button" aria-label="Continue as Guest">Continue as Guest</button>
+                <button id="modalLogoutBtn" class="ai-button hidden" aria-label="Log Out">Log Out</button>
+            </div>
+            <p id="modalUserIdDisplay" class="text-sm text-gray-400 hidden"></p>
+            <button id="modalCopyUserIdBtn" class="ai-button text-xs mt-2 hidden" aria-label="Copy User ID">Copy User ID</button>
+            <p id="modalLoginStatus" class="mt-2 text-center text-yellow-400 text-xs"></p>
+        </div>
+
+        <!-- User Project Notes Section -->
+        <div class="max-w-md mx-auto bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700 text-center mt-8">
+            <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight" id="modalNotesTitle">Your Project Notes 📝</h2>
+            <p class="text-sm text-gray-300 mb-4" id="modalNotesLoginPrompt">
+                Log in to save and load your personal project notes. These notes are private to your account.
+            </p>
+            <div class="flex flex-col gap-4 mb-6">
+                <textarea id="modalUserNotesInput" class="flex-grow input-field resize-none" placeholder="Type your private project notes here..." disabled aria-label="Your private project notes"></textarea>
+                <button id="modalSaveNotesBtn" class="ai-button" disabled aria-label="Save Notes">Save Project Notes</button>
+            </div>
+            <p id="modalUserNotesStatus" class="mt-2 text-center text-gray-400 text-xs">Please log in to save notes.</p>
+        </div>
+    </div>
+
+    <!-- 2. AI Chatbot Content -->
+    <div id="chatbotContent" class="ai-feature-content hidden">
+        <div class="max-w-4xl mx-auto bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700 text-center">
+            <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight">AI Chatbot 💬</h2>
+            <p class="text-sm text-gray-300 mb-4">
+                Chat or upload a file (.txt, .doc, .pdf).
+                <br><span class="text-xs text-gray-400">(Plain text only from files.)</span>
+            </p>
+            <div id="chatbotHistory" class="bg-[#1a1a1a] p-4 rounded-xl shadow-md text-left text-gray-200 min-h-[200px] max-h-[300px] overflow-y-auto mb-4 border border-gray-700" aria-live="polite" aria-atomic="false">
+                <p class="ai-message">Hello! How can I assist?</p>
+            </div>
+            
+            <div class="flex gap-2 mb-2">
+                <textarea id="chatbotInputText" class="flex-grow input-field resize-none" placeholder="Type message..." aria-label="Chat message input"></textarea>
+                <label for="chatbotFileInput" id="chatbotFileInputLabel" class="ai-button flex-shrink-0 flex items-center justify-center" tabindex="0" role="button" aria-controls="chatbotInputText">Upload</label>
+                <input type="file" id="chatbotFileInput" accept=".txt, .doc, .docx, .pdf" class="hidden-file-input">
+                <button id="chatbotSendBtn" class="ai-button flex-shrink-0" aria-label="Send Message">Send</button>
+            </div>
+
+            <div id="chatbotLoadingIndicator" class="mt-2 text-center hidden" aria-live="polite" aria-busy="true">
+                <div class="loading-spinner"></div>
+                <p class="ml-1 text-gray-300 inline-block">Thinking...</p>
+            </div>
+            <p id="chatbotStatus" class="mt-2 text-center text-yellow-400 text-xs"></p>
+        </div>
+    </div>
+
+    <!-- 3. AI Image Generator Content -->
+    <div id="imageGeneratorContent" class="ai-feature-content hidden">
+        <div class="max-w-4xl mx-auto bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700 text-center">
+            <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight">AI Image Generator 🖼️</h2>
+            <p class="text-sm text-gray-300 mb-4">
+                Enter a prompt to generate an image.
+            </p>
+            <div class="flex flex-col gap-4 mb-6">
+                <textarea id="imageGenPromptInput" class="flex-grow input-field resize-none" placeholder="Describe the image you want to generate..." aria-label="Image prompt input"></textarea>
+                <div class="flex justify-center gap-4">
+                    <button id="imageGenGenerateBtn" class="ai-button" aria-label="Generate Image">Generate Image</button>
+                    <select id="imageGenAspectRatio" class="ai-button bg-gray-800" aria-label="Image Aspect Ratio">
+                        <option value="1-1">1:1 (Square)</option>
+                        <option value="16-9">16:9 (Landscape)</option>
+                        <option value="4-3">4:3 (Traditional)</option>
+                        <option value="9-16">9:16 (Portrait)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Image Display Area -->
+            <div id="imageGenDisplayArea" class="image-frame-container aspect-1-1 relative mx-auto mt-8 hidden">
+                <div id="imageGenLoadingOverlay" class="image-loading-overlay hidden">
+                    <div class="image-loading-spinner"></div>
+                    <p>Generating Image...</p>
+                </div>
+                <img id="imageGenGeneratedImage" class="generated-image" src="" alt="Generated AI Image" onerror="this.onerror=null;this.src='https://placehold.co/400x400/333333/FFFFFF?text=Image+Load+Error';" />
+            </div>
+            <p id="imageGenStatus" class="mt-4 text-center text-yellow-400 text-xs"></p>
+        </div>
+    </div>
+
+    <!-- 4. 3D Model Viewer Content -->
+    <div id="threeDViewerContent" class="ai-feature-content hidden">
+        <div class="max-w-4xl mx-auto bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700 text-center">
+            <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight">3D Model Viewer 🌐</h2>
+            <p class="text-sm text-gray-300 mb-4">
+                Upload and interact with 3D models.
+            </p>
+            <div id="modalModelContainer" class="model-viewer-container mx-auto">
+                <canvas id="modalModelCanvas" class="model-viewer-canvas"></canvas>
+                <div id="modalModelStatus" class="model-status hidden" aria-live="polite">
+                    <div class="loading-spinner mb-4"></div>
+                    <p>Loading 3D Model...</p>
+                </div>
+                <label for="modalModelFileInput" id="modalModelFileInputLabel" class="model-file-input-label" aria-label="Upload 3D Model">+</label>
+                <input type="file" id="modalModelFileInput" accept=".gltf, .glb" class="hidden-file-input">
+                <input type="file" id="modalAudioFileInput" accept=".mp3" class="hidden-file-input">
+
+                <div id="modalUploadMenu" class="upload-menu hidden" role="menu" aria-labelledby="modalModelFileInputLabel">
+                    <button class="upload-menu-button" data-type="model" role="menuitem">Upload 3D Model</button>
+                    <button class="upload-menu-button" data-type="audio" role="menuitem">Upload MP3</button>
+                </div>
+
+                <div id="modalAudioControls" class="audio-controls hidden">
+                    <button class="audio-play-pause-button" data-action="play-pause" aria-label="Play/Pause Model Audio">▶</button>
+                </div>
+                <audio id="modalPrimaryAudioPlayer" class="hidden"></audio>
+
+                <div id="modalResizeHandle" class="resize-handle" aria-label="Resize 3D Viewer"></div>
+                <div id="modalModelControls" class="model-controls hidden">
+                    <div class="grid grid-cols-3 gap-1">
+                        <div></div>
+                        <button class="model-control-button" data-action="move-up" aria-label="Move Model Up">↑</button>
+                        <div></div>
+                        <button class="model-control-button" data-action="move-left" aria-label="Move Model Left">←</button>
+                        <button class="model-control-button" data-action="move-down" aria-label="Move Model Down">↓</button>
+                        <button class="model-control-button" data-action="move-right" aria-label="Move Model Right">→</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1">
+                        <button class="model-control-button toggle-lock" data-action="toggle-lock" aria-label="Toggle Camera Lock">Lock Cam</button>
+                        <button class="model-control-button" data-action="reset-view" aria-label="Reset View">Reset</button>
+                        <button class="model-control-button" data-action="toggle-rotation" aria-label="Toggle Auto Rotation">Auto-Rotate</button>
+                        <button class="model-control-button" data-action="toggle-background" aria-label="Toggle Background">Toggle BG</button>
+                        <button class="model-control-button" data-action="toggle-wireframe" aria-label="Toggle Wireframe">Wireframe</button>
+                        <button class="model-control-button" data-action="screenshot" aria-label="Take Screenshot">Screenshot</button>
+                        <button class="model-control-button" data-action="scale-up" aria-label="Scale Up">Scale +</button>
+                        <button class="model-control-button" data-action="scale-down" aria-label="Scale Down">Scale -</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // Firebase Libraries
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInWithPopup, GithubAuthProvider, GoogleAuthProvider, signInAnonymously, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- GLOBAL APP STATE & CONFIGURATION ---
+        // IMPORTANT: These variables are provided by the Canvas environment.
+        // If deploying elsewhere (e.g., GitHub Pages), you MUST replace these with your actual Firebase config.
+        // For example: const firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "...", ... };
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // --- IMPORTANT: Replace "YOUR_GEMINI_API_KEY_HERE" with your actual Gemini API Key ---
+        // This key is used for both the Chatbot (Gemini 1.5 Flash) and Image Generator (Imagen 3.0)
+        const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
+
+        let app;
+        let db;
+        let auth;
+        let userId = null; // Will store the current user's UID
+
+        // Store Three.js viewer instances globally if multiple are needed or for easy access
+        // viewer1Instance is for the main page 3D model. modalViewerInstance is for the modal 3D model.
+        let viewer1Instance = null;
+        let modalViewerInstance = null;
+
+        // Store unsubscribe functions for Firestore listeners to clean up
+        let unsubscribeProjectNotes = null;
+
+        // Simplified translations for this specific component
+        const translations = {
+            en: {
+                firebaseInitError: 'Firebase initialization failed. Check console for details.',
+                firebaseNotConfigured: 'Firebase config not found. Features disabled. Please configure Firebase.',
+                notesTitle: 'Your Project Notes 📝',
+                notesLoginPrompt: 'Log in to save and load your personal project notes. These notes are private to your account.',
+                typeNotesPlaceholder: 'Type your private project notes here...',
+                saveNotes: 'Save Project Notes',
+                notesLoginStatus: 'Please log in to save notes.',
+                notesSavedSuccess: 'Project notes saved successfully!',
+                notesSaveError: 'Error saving project notes:',
+                notesLoaded: 'Project notes loaded.',
+                noNotesFound: 'No project notes found. Start typing!',
+                notesLoadError: 'Error loading project notes:',
+                loginMenuTitle: 'Account',
+                manageAccount: 'Manage your Avneed account.',
+                loginWithGoogle: 'Log In with Google',
+                loginWithGitHub: 'Log In with GitHub',
+                continueAsGuest: 'Continue as Guest',
+                logout: 'Log Out',
+                loggedInAs: 'Logged in as:',
+                guestUser: 'Guest User',
+                copyUserId: 'Copy User ID',
+                copied: 'Copied!',
+                copyFailed: 'Failed to copy!',
+                chatInstructions: 'Chat or upload a file (.txt, .doc, .pdf). (Plain text only from files.)',
+                initialChatMessage: 'Hello! How can I assist?',
+                typeMessagePlaceholder: 'Type message...',
+                uploadButton: 'Upload',
+                sendButton: 'Send',
+                thinking: 'Thinking...',
+                enterMessageOrUpload: 'Please enter a message or upload a file.',
+                fileReading: 'Reading file...',
+                fileReadError: 'Error reading file:',
+                fileProcessed: 'File processed and message sent.',
+                apiResponseError: "Sorry, I couldn't generate a response. Please try again.",
+                apiConnectionError: "An error occurred while connecting to the AI. Please check your internet connection or try again later.",
+                imageGenPrompt: 'Describe the image you want to generate...',
+                generateImage: 'Generate Image',
+                imageGenerating: 'Generating image... This may take a moment.',
+                imageGenSuccess: 'Image generated successfully!',
+                imageGenFail: 'Failed to generate image. Please try a different prompt.',
+                uploadModelPrompt: 'Upload a 3D model (.gltf, .glb)',
+                useMouseToInteract: 'Use mouse to interact',
+                errorLoadingModel: 'Error loading model:',
+            }
+        };
+        let currentLanguage = 'en'; // Default language for this component
+
+        // --- Helper Functions ---
+
+        /**
+         * Helper function to disable Firebase-dependent UI elements and display a message.
+         * Note: This function is more generic now as elements are dynamically loaded.
+         * It primarily logs warnings and can be extended to disable specific modal elements
+         * if Firebase isn't available.
+         */
+        function disableFirebaseFeatures(message) {
+            console.warn("Firebase features disabled:", message);
+            // Specific UI elements within modals will be handled by their respective init functions
+            // if Firebase is not available.
+        }
+
+        /**
+         * Appends a message to the chat history display.
+         * @param {HTMLElement} chatHistoryDiv - The chat history div element.
+         * @param {string} text - The message text.
+         * @param {string} sender - 'user' or 'ai'.
+         */
+        function appendChatMessage(chatHistoryDiv, text, sender) {
+            const p = document.createElement('p');
+            p.classList.add(`${sender}-message`);
+            p.textContent = text;
+            chatHistoryDiv.appendChild(p);
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; // Scroll to bottom
+        }
+
+        /**
+         * Shows a temporary status message to the user.
+         * @param {HTMLElement} statusElement - The element to display the status.
+         * @param {string} message - The message to display.
+         * @param {string} type - 'success', 'error', 'info'.
+         * @param {number} duration - How long to show the message in ms.
+         */
+        function showStatusMessage(statusElement, message, type = 'info', duration = 3000) {
+            if (!statusElement) return;
+            statusElement.textContent = message;
+            statusElement.className = 'mt-2 text-center text-xs'; // Reset classes
+            if (type === 'success') {
+                statusElement.classList.add('text-green-400');
+            } else if (type === 'error') {
+                statusElement.classList.add('text-red-400');
+            } else { // info
+                statusElement.classList.add('text-yellow-400');
+            }
+            setTimeout(() => {
+                statusElement.textContent = '';
+                statusElement.className = 'mt-2 text-center text-yellow-400 text-xs'; // Reset to default
+            }, duration);
+        }
+
+        // --- Firebase Core Initialization ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (Object.keys(firebaseConfig).length > 0 && firebaseConfig.projectId) {
+                try {
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+
+                    if (auth) {
+                        if (initialAuthToken) {
+                            try {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                                console.log("Signed in with custom token (Canvas environment).");
+                            } catch (error) {
+                                console.error("Error signing in with custom token:", error);
+                                await signInAnonymously(auth);
+                                console.log("Signed in anonymously after custom token failure.");
+                            }
+                        } else {
+                            try {
+                                await signInAnonymously(auth);
+                                console.log("Signed in anonymously (no custom token).");
+                            } catch (error) {
+                                console.error("Error signing in anonymously:", error);
+                            }
+                        }
+
+                        onAuthStateChanged(auth, (user) => {
+                            if (user) {
+                                userId = user.uid;
+                                console.log("User is logged in:", userId);
+                                // If the login/notes modal is open, update its UI
+                                if (document.getElementById('modalLoginBtnGoogle') && document.getElementById('aiModal').classList.contains('visible')) {
+                                    updateLoginButtonsInModal(true, user);
+                                    loadProjectNotesInModal();
+                                }
+                            } else {
+                                userId = null;
+                                console.log("User is logged out.");
+                                // If the login/notes modal is open, update its UI
+                                if (document.getElementById('modalLoginBtnGoogle') && document.getElementById('aiModal').classList.contains('visible')) {
+                                    updateLoginButtonsInModal(false, null);
+                                    document.getElementById('modalUserNotesInput').value = '';
+                                    document.getElementById('modalUserNotesStatus').textContent = translations[currentLanguage].notesLoginStatus;
+                                }
+                            }
+                        });
+                    } else {
+                        console.error("Firebase Auth could not be initialized. Check your Firebase configuration.");
+                        disableFirebaseFeatures(translations[currentLanguage].firebaseInitError);
+                    }
+                } catch (firebaseInitError) {
+                    console.error("Error initializing Firebase app:", firebaseInitError);
+                    disableFirebaseFeatures(translations[currentLanguage].firebaseInitError);
+                }
+            } else {
+                console.warn("Firebase config not found. Firebase features will be disabled. Please ensure __firebase_config is set in your environment (or manually paste it).");
+                disableFirebaseFeatures(translations[currentLanguage].firebaseNotConfigured);
+            }
+        });
+
+        // --- MODAL MANAGEMENT ---
+        const aiModal = document.getElementById('aiModal');
+        const modalContentArea = document.getElementById('modalContentArea');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        closeModalBtn.addEventListener('click', closeModal);
+        aiModal.addEventListener('click', (e) => {
+            if (e.target === aiModal) { // Close modal if clicking on the overlay
+                closeModal();
+            }
+        });
+
+        /**
+         * Opens a specific feature in the modal.
+         * @param {string} featureId - The ID of the hidden div containing the feature's content.
+         */
+        function openModal(featureId) {
+            // Clear previous content and reset scroll
+            modalContentArea.innerHTML = '';
+            modalContentArea.scrollTop = 0;
+
+            // Get the template content and clone it
+            const templateContent = document.getElementById(featureId);
+            if (!templateContent) {
+                console.error(`Feature content with ID '${featureId}' not found.`);
+                return;
+            }
+            const clonedContent = templateContent.cloneNode(true);
+            clonedContent.classList.remove('hidden'); // Make the cloned content visible
+
+            modalContentArea.appendChild(clonedContent);
+
+            // Show the modal
+            aiModal.classList.add('visible');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling background
+
+            // Call specific initialization function for the feature
+            if (featureId === 'loginNotesContent') {
+                initLoginNotesFeature();
+            } else if (featureId === 'chatbotContent') {
+                initChatbotFeature();
+            } else if (featureId === 'imageGeneratorContent') {
+                initImageGeneratorFeature();
+            } else if (featureId === 'threeDViewerContent') {
+                init3DViewerFeature();
+            }
+        }
+
+        /**
+         * Closes the modal and cleans up.
+         */
+        function closeModal() {
+            aiModal.classList.remove('visible');
+            document.body.style.overflow = ''; // Restore scrolling
+
+            // Stop any ongoing animations/audio from modal content
+            if (modalViewerInstance && modalViewerInstance.audioPlayer) {
+                modalViewerInstance.audioPlayer.pause();
+                modalViewerInstance.audioPlayer.currentTime = 0;
+            }
+            if (unsubscribeProjectNotes) {
+                unsubscribeProjectNotes();
+                unsubscribeProjectNotes = null;
+            }
+
+            // Clear modal content after transition for performance/cleanup
+            setTimeout(() => {
+                modalContentArea.innerHTML = '';
+            }, 300); // Match CSS transition duration
+        }
+
+        // --- FEATURE-SPECIFIC INITIALIZATION FUNCTIONS (called when modal opens) ---
+
+        /**
+         * Initializes the Login & Project Notes feature when its content is loaded into the modal.
+         */
+        function initLoginNotesFeature() {
+            const loginBtnGoogle = document.getElementById('modalLoginBtnGoogle');
+            const loginBtnGithub = document.getElementById('modalLoginBtnGithub');
+            const loginBtnGuest = document.getElementById('modalLoginBtnGuest');
+            const logoutBtn = document.getElementById('modalLogoutBtn');
+            const userNotesInput = document.getElementById('modalUserNotesInput');
+            const saveNotesBtn = document.getElementById('modalSaveNotesBtn');
+            const userIdDisplay = document.getElementById('modalUserIdDisplay');
+            const copyUserIdBtn = document.getElementById('modalCopyUserIdBtn');
+            const loginStatus = document.getElementById('modalLoginStatus');
+            const notesLoginPrompt = document.getElementById('modalNotesLoginPrompt');
+            const notesTitle = document.getElementById('modalNotesTitle');
+            const manageAccountText = document.getElementById('modalManageAccountText');
+            const userNotesStatus = document.getElementById('modalUserNotesStatus');
+
+            // Set text content based on translations
+            if (notesTitle) notesTitle.textContent = translations[currentLanguage].notesTitle;
+            if (notesLoginPrompt) notesLoginPrompt.textContent = translations[currentLanguage].notesLoginPrompt;
+            if (userNotesInput) userNotesInput.placeholder = translations[currentLanguage].typeNotesPlaceholder;
+            if (saveNotesBtn) saveNotesBtn.textContent = translations[currentLanguage].saveNotes;
+            if (manageAccountText) manageAccountText.textContent = translations[currentLanguage].manageAccount;
+            if (loginBtnGoogle) loginBtnGoogle.textContent = translations[currentLanguage].loginWithGoogle;
+            if (loginBtnGithub) loginBtnGithub.textContent = translations[currentLanguage].loginWithGitHub;
+            if (loginBtnGuest) loginBtnGuest.textContent = translations[currentLanguage].continueAsGuest;
+            if (logoutBtn) logoutBtn.textContent = translations[currentLanguage].logout;
+            if (copyUserIdBtn) copyUserIdBtn.textContent = translations[currentLanguage].copyUserId;
+            if (userNotesStatus) userNotesStatus.textContent = translations[currentLanguage].notesLoginStatus;
+
+            // Attach event listeners
+            if (loginBtnGoogle) loginBtnGoogle.addEventListener('click', async () => {
+                const provider = new GoogleAuthProvider();
+                try { await signInWithPopup(auth, provider); console.log("Signed in with Google!"); }
+                catch (error) { console.error("Error signing in with Google:", error); if (loginStatus) loginStatus.textContent = `Google login failed: ${error.message}`; }
+            });
+            if (loginBtnGithub) loginBtnGithub.addEventListener('click', async () => {
+                const provider = new GithubAuthProvider();
+                try { await signInWithPopup(auth, provider); console.log("Signed in with GitHub!"); }
+                catch (error) { console.error("Error signing in with GitHub:", error); if (loginStatus) loginStatus.textContent = `GitHub login failed: ${error.message}`; }
+            });
+            if (loginBtnGuest) loginBtnGuest.addEventListener('click', async () => {
+                try { await signInAnonymously(auth); console.log("Signed in as Guest!"); }
+                catch (error) { console.error("Error signing in anonymously:", error); if (loginStatus) loginStatus.textContent = `Guest login failed: ${error.message}`; }
+            });
+            if (logoutBtn) logoutBtn.addEventListener('click', async () => {
+                try { await signOut(auth); console.log("User signed out."); }
+                catch (error) { console.error("Error signing out:", error); if (loginStatus) loginStatus.textContent = `Logout failed: ${error.message}`; }
+            });
+            if (saveNotesBtn) saveNotesBtn.addEventListener('click', saveProjectNotesInModal);
+            if (copyUserIdBtn) copyUserIdBtn.addEventListener('click', copyUserIdToClipboardInModal);
+
+            // Auto-resize textarea for notes
+            if (userNotesInput) {
+                userNotesInput.addEventListener('input', () => {
+                    userNotesInput.style.height = 'auto';
+                    userNotesInput.style.height = (userNotesInput.scrollHeight) + 'px';
+                    if (userNotesInput.scrollHeight > userNotesInput.clientHeight) {
+                        userNotesInput.style.overflowY = 'auto';
+                    } else {
+                        userNotesInput.style.overflowY = 'hidden';
+                    }
+                });
+            }
+
+            // Update UI based on current auth state
+            updateLoginButtonsInModal(!!userId, auth.currentUser);
+            if (userId) {
+                loadProjectNotesInModal();
+            }
+        }
+
+        /**
+         * Saves user project notes to Firestore (for modal context).
+         */
+        async function saveProjectNotesInModal() {
+            const userNotesInput = document.getElementById('modalUserNotesInput');
+            const userNotesStatus = document.getElementById('modalUserNotesStatus');
+
+            if (!userId) { showStatusMessage(userNotesStatus, translations[currentLanguage].notesLoginStatus, 'error'); return; }
+            if (!db) { showStatusMessage(userNotesStatus, translations[currentLanguage].firebaseNotConfigured, 'error'); return; }
+
+            const projectNotes = userNotesInput.value;
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/private/projects`, 'my-project-notes');
+
+            try {
+                await setDoc(userDocRef, { content: projectNotes, timestamp: new Date() }, { merge: true });
+                showStatusMessage(userNotesStatus, translations[currentLanguage].notesSavedSuccess, 'success');
+                console.log("User project notes saved.");
+            } catch (error) {
+                console.error("Error saving project notes:", error);
+                showStatusMessage(userNotesStatus, `${translations[currentLanguage].notesSaveError} ${error.message}`, 'error');
+            }
+        }
+
+        /**
+         * Loads user project notes from Firestore and sets up a real-time listener (for modal context).
+         */
+        function loadProjectNotesInModal() {
+            const userNotesInput = document.getElementById('modalUserNotesInput');
+            const userNotesStatus = document.getElementById('modalUserNotesStatus');
+
+            if (unsubscribeProjectNotes) {
+                unsubscribeProjectNotes(); // Unsubscribe previous listener
+            }
+
+            if (!userId || !db) { showStatusMessage(userNotesStatus, translations[currentLanguage].notesLoginStatus, 'error'); return; }
+
+            const userDocRef = doc(db, `artifacts/${appId}/users/${userId}/private/projects`, 'my-project-notes');
+
+            unsubscribeProjectNotes = onSnapshot(userDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (userNotesInput) userNotesInput.value = data.content || '';
+                    if (userNotesStatus) userNotesStatus.textContent = translations[currentLanguage].notesLoaded;
+                } else {
+                    if (userNotesInput) userNotesInput.value = '';
+                    if (userNotesStatus) userNotesStatus.textContent = translations[currentLanguage].noNotesFound;
+                }
+                console.log("User project notes loaded/updated from Firestore.");
+            }, (error) => {
+                console.error("Error loading project notes:", error);
+                showStatusMessage(userNotesStatus, `${translations[currentLanguage].notesLoadError} ${error.message}`, 'error');
+            });
+        }
+
+        /**
+         * Updates the visibility and state of login/logout and notes buttons within the modal.
+         * @param {boolean} isLoggedIn - True if a user is logged in, false otherwise.
+         * @param {object|null} user - The Firebase User object if logged in, null otherwise.
+         */
+        function updateLoginButtonsInModal(isLoggedIn, user) {
+            const loginBtnGoogle = document.getElementById('modalLoginBtnGoogle');
+            const loginBtnGithub = document.getElementById('modalLoginBtnGithub');
+            const loginBtnGuest = document.getElementById('modalLoginBtnGuest');
+            const logoutBtn = document.getElementById('modalLogoutBtn');
+            const userNotesInput = document.getElementById('modalUserNotesInput');
+            const saveNotesBtn = document.getElementById('modalSaveNotesBtn');
+            const userIdDisplay = document.getElementById('modalUserIdDisplay');
+            const copyUserIdBtn = document.getElementById('modalCopyUserIdBtn');
+            const loginStatus = document.getElementById('modalLoginStatus');
+
+            if (isLoggedIn) {
+                if (loginBtnGoogle) loginBtnGoogle.classList.add('hidden');
+                if (loginBtnGithub) loginBtnGithub.classList.add('hidden');
+                if (loginBtnGuest) {
+                    if (user && user.isAnonymous) { loginBtnGuest.classList.remove('hidden'); }
+                    else { loginBtnGuest.classList.add('hidden'); }
+                }
+                if (logoutBtn) logoutBtn.classList.remove('hidden');
+                if (userNotesInput) userNotesInput.disabled = false;
+                if (saveNotesBtn) saveNotesBtn.disabled = false;
+
+                if (userIdDisplay) {
+                    userIdDisplay.textContent = `${translations[currentLanguage].loggedInAs} ${user.isAnonymous ? translations[currentLanguage].guestUser : user.uid}`;
+                    userIdDisplay.classList.remove('hidden');
+                }
+                if (copyUserIdBtn) {
+                    copyUserIdBtn.classList.remove('hidden');
+                    copyUserIdBtn.textContent = translations[currentLanguage].copyUserId;
+                }
+                if (loginStatus) loginStatus.textContent = '';
+            } else {
+                if (loginBtnGoogle) loginBtnGoogle.classList.remove('hidden');
+                if (loginBtnGithub) loginBtnGithub.classList.remove('hidden');
+                if (loginBtnGuest) loginBtnGuest.classList.remove('hidden');
+                if (logoutBtn) logoutBtn.classList.add('hidden');
+                if (userNotesInput) userNotesInput.disabled = true;
+                if (saveNotesBtn) saveNotesBtn.disabled = true;
+
+                if (userIdDisplay) userIdDisplay.classList.add('hidden');
+                if (copyUserIdBtn) copyUserIdBtn.classList.add('hidden');
+                if (loginStatus) loginStatus.textContent = translations[currentLanguage].notesLoginStatus;
+            }
+        }
+
+        /**
+         * Handles copying the user ID to the clipboard (for modal context).
+         */
+        function copyUserIdToClipboardInModal() {
+            const userIdText = auth.currentUser?.uid;
+            const copyButton = document.getElementById('modalCopyUserIdBtn');
+            if (userIdText && copyButton) {
+                const tempInput = document.createElement('textarea');
+                tempInput.value = userIdText;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                try {
+                    document.execCommand('copy');
+                    copyButton.textContent = translations[currentLanguage].copied;
+                    setTimeout(() => { copyButton.textContent = translations[currentLanguage].copyUserId; }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                    copyButton.textContent = translations[currentLanguage].copyFailed;
+                }
+                document.body.removeChild(tempInput);
+            }
+        }
+
+        /**
+         * Initializes the Chatbot feature when its content is loaded into the modal.
+         */
+        function initChatbotFeature() {
+            const chatHistoryDiv = document.getElementById('chatbotHistory');
+            const sendBtn = document.getElementById('chatbotSendBtn');
+            const loadingIndicator = document.getElementById('chatbotLoadingIndicator');
+            const chatStatus = document.getElementById('chatbotStatus');
+            const aiFileInput = document.getElementById('chatbotFileInput');
+            const aiFileInputLabel = document.getElementById('chatbotFileInputLabel');
+            const aiInputText = document.getElementById('chatbotInputText');
+
+            // Reset chat history for new session in modal
+            chatHistoryDiv.innerHTML = `<p class="ai-message">${translations[currentLanguage].initialChatMessage}</p>`;
+            let chatHistory = []; // Reset chat history for this modal instance
+
+            // Set text content based on translations
+            document.querySelector('#chatbotContent h2').textContent = 'AI Chatbot 💬'; // Ensure title is set
+            document.querySelector('#chatbotContent p.text-sm').innerHTML = translations[currentLanguage].chatInstructions;
+            if (aiInputText) aiInputText.placeholder = translations[currentLanguage].typeMessagePlaceholder;
+            if (aiFileInputLabel) aiFileInputLabel.textContent = translations[currentLanguage].uploadButton;
+            if (sendBtn) sendBtn.textContent = translations[currentLanguage].sendButton;
+            if (loadingIndicator) loadingIndicator.querySelector('p').textContent = translations[currentLanguage].thinking;
+
+
+            // Auto-resize textarea
+            if (aiInputText) {
+                aiInputText.addEventListener('input', () => {
+                    aiInputText.style.height = 'auto';
+                    aiInputText.style.height = (aiInputText.scrollHeight) + 'px';
+                    if (aiInputText.scrollHeight > aiInputText.clientHeight) {
+                        aiInputText.style.overflowY = 'auto';
+                    } else {
+                        aiInputText.style.overflowY = 'hidden';
+                    }
+                });
+            }
+
+            /**
+             * Appends a message to the chat history display.
+             * @param {string} text - The message text.
+             * @param {string} sender - 'user' or 'ai'.
+             */
+            function appendMessage(text, sender) {
+                const p = document.createElement('p');
+                p.classList.add(`${sender}-message`);
+                p.textContent = text;
+                chatHistoryDiv.appendChild(p);
+                chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; // Scroll to bottom
+            }
+
+            /**
+             * Sends a message to the Gemini API and handles the response.
+             * @param {string} prompt - The user's message.
+             * @param {string|null} fileContent - Optional content from an uploaded file.
+             */
+            async function sendMessage(prompt, fileContent = null) {
+                appendMessage(prompt, 'user');
+                let userParts = [{ text: prompt }];
+
+                if (fileContent) {
+                    userParts.push({ text: `\n\n--- File Content ---\n${fileContent}\n--- End File Content ---` });
+                }
+
+                // OPTIONAL: Include project notes as context for the AI
+                // This would require fetching notes from Firestore first if not already loaded
+                // For simplicity in this combined example, we'll assume notes are loaded or skip if not.
+                // If you want to integrate notes, you'd fetch the content from `userNotesInput`
+                // after ensuring the user is logged in and notes are loaded.
+                // const currentProjectNotes = document.getElementById('modalUserNotesInput')?.value.trim();
+                // if (currentProjectNotes && userId) { // Only send if user is logged in and notes exist
+                //     userParts.push({ text: `\n\n--- My Project Notes ---\n${currentProjectNotes}\n--- End Project Notes ---` });
+                // }
+
+                chatHistory.push({ role: "user", parts: userParts });
+
+                aiInputText.value = ''; // Clear input
+                aiInputText.style.height = 'auto'; // Reset textarea height
+                sendBtn.disabled = true;
+                aiInputText.disabled = true;
+                aiFileInputLabel.classList.add('pointer-events-none', 'opacity-50');
+                loadingIndicator.classList.remove('hidden');
+                chatStatus.textContent = '';
+
+                try {
+                    const payload = { contents: chatHistory };
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const aiResponseText = result.candidates[0].content.parts[0].text;
+                        appendMessage(aiResponseText, 'ai');
+                        chatHistory.push({ role: "model", parts: [{ text: aiResponseText }] });
+                    } else {
+                        appendMessage(translations[currentLanguage].apiResponseError, 'ai');
+                        console.error('API response structure unexpected:', result);
+                    }
+                } catch (error) {
+                    appendMessage(translations[currentLanguage].apiConnectionError, 'ai');
+                    chatStatus.textContent = `Error: ${error.message}`;
+                    console.error('Error during API call:', error);
+                } finally {
+                    sendBtn.disabled = false;
+                    aiInputText.disabled = false;
+                    aiFileInputLabel.classList.remove('pointer-events-none', 'opacity-50');
+                    loadingIndicator.classList.add('hidden');
+                }
+            }
+
+            // Event listener for Send button
+            sendBtn.addEventListener('click', () => {
+                const prompt = aiInputText.value.trim();
+                if (prompt) {
+                    sendMessage(prompt);
+                } else {
+                    chatStatus.textContent = translations[currentLanguage].enterMessageOrUpload;
+                }
+            });
+
+            // Event listener for Enter key in textarea
+            aiInputText.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault(); // Prevent new line
+                    sendBtn.click(); // Trigger send button click
+                }
+            });
+
+            // Event listener for file upload
+            aiFileInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    chatStatus.textContent = translations[currentLanguage].fileReading;
+                    try {
+                        const reader = new FileReader();
+                        reader.onload = async (e) => {
+                            const fileContent = e.target.result;
+                            const prompt = `Analyze the following content from a file: ${file.name}`;
+                            await sendMessage(prompt, fileContent);
+                            chatStatus.textContent = translations[current.language].fileProcessed;
+                        };
+                        reader.onerror = (e) => {
+                            chatStatus.textContent = `${translations[currentLanguage].fileReadError} ${e.target.error.name}`;
+                            console.error('File reading error:', e.target.error);
+                        };
+                        reader.readAsText(file);
+                    } catch (error) {
+                        chatStatus.textContent = `Error processing file: ${error.message}`;
+                        console.error('File processing error:', error);
+                    }
+                }
+            });
+        }
+
+        /**
+         * Initializes the AI Image Generator feature when its content is loaded into the modal.
+         */
+        function initImageGeneratorFeature() {
+            const imageGenPromptInput = document.getElementById('imageGenPromptInput');
+            const imageGenGenerateBtn = document.getElementById('imageGenGenerateBtn');
+            const imageGenDisplayArea = document.getElementById('imageGenDisplayArea');
+            const imageGenGeneratedImage = document.getElementById('imageGenGeneratedImage');
+            const imageGenLoadingOverlay = document.getElementById('imageGenLoadingOverlay');
+            const imageGenStatus = document.getElementById('imageGenStatus');
+            const imageGenAspectRatioSelect = document.getElementById('imageGenAspectRatio');
+
+            // Set text content based on translations
+            document.querySelector('#imageGeneratorContent h2').textContent = 'AI Image Generator 🖼️';
+            document.querySelector('#imageGeneratorContent p.text-sm').textContent = 'Enter a prompt to generate an image.';
+            if (imageGenPromptInput) imageGenPromptInput.placeholder = translations[currentLanguage].imageGenPrompt;
+            if (imageGenGenerateBtn) imageGenGenerateBtn.textContent = translations[currentLanguage].generateImage;
+
+            // Auto-resize textarea
+            if (imageGenPromptInput) {
+                imageGenPromptInput.addEventListener('input', () => {
+                    imageGenPromptInput.style.height = 'auto';
+                    imageGenPromptInput.style.height = (imageGenPromptInput.scrollHeight) + 'px';
+                    if (imageGenPromptInput.scrollHeight > imageGenPromptInput.clientHeight) {
+                        imageGenPromptInput.style.overflowY = 'auto';
+                    } else {
+                        imageGenPromptInput.style.overflowY = 'hidden';
+                    }
+                });
+            }
+
+            imageGenGenerateBtn.addEventListener('click', async () => {
+                const prompt = imageGenPromptInput.value.trim();
+                const aspectRatio = imageGenAspectRatioSelect.value;
+
+                if (!prompt) {
+                    showStatusMessage(imageGenStatus, 'Please enter a prompt for the image.', 'error');
+                    imageGenDisplayArea.classList.add('hidden');
+                    return;
+                }
+
+                // Show loading indicator
+                imageGenDisplayArea.classList.remove('hidden');
+                imageGenLoadingOverlay.classList.remove('hidden');
+                imageGenStatus.textContent = translations[currentLanguage].imageGenerating;
+                imageGenGeneratedImage.src = ''; // Clear previous image
+                imageGenGeneratedImage.alt = 'Generating...';
+
+                // Adjust aspect ratio class on the container
+                imageGenDisplayArea.classList.remove('aspect-1-1', 'aspect-16-9', 'aspect-4-3', 'aspect-9-16');
+                imageGenDisplayArea.classList.add(`aspect-${aspectRatio}`);
+
+                try {
+                    const payload = { instances: { prompt: prompt }, parameters: { "sampleCount": 1 } };
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${GEMINI_API_KEY}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.predictions && result.predictions.length > 0 && result.predictions[0].bytesBase64Encoded) {
+                        const imageUrl = `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                        imageGenGeneratedImage.src = imageUrl;
+                        imageGenGeneratedImage.alt = `Generated image for prompt: ${prompt}`;
+                        showStatusMessage(imageGenStatus, translations[currentLanguage].imageGenSuccess, 'success');
+                    } else {
+                        showStatusMessage(imageGenStatus, translations[currentLanguage].imageGenFail, 'error');
+                        console.error('Image generation response missing expected data:', result);
+                    }
+                } catch (error) {
+                    showStatusMessage(imageGenStatus, `Error generating image: ${error.message}`, 'error');
+                    console.error('Error during image generation API call:', error);
+                } finally {
+                    imageGenLoadingOverlay.classList.add('hidden'); // Hide loading indicator
+                }
+            });
+        }
+
+        /**
+         * Initializes a Three.js 3D viewer instance.
+         * @param {HTMLCanvasElement} canvas - The HTML canvas element for rendering.
+         * @param {HTMLElement} container - The container element for the canvas, used for sizing.
+         * @param {HTMLElement} statusElement - Element to display loading status.
+         * @param {HTMLAudioElement} audioPlayerElement - The audio element for model-specific audio.
+         * @param {HTMLElement} audioControlsElement - The container for audio play/pause button.
+         * @returns {object} An object containing the Three.js scene, camera, renderer, controls, and other viewer state.
+         */
+        function init3DViewerInstance(canvas, container, statusElement, audioPlayerElement, audioControlsElement) {
+            const scene = new THREE.Scene();
+            scene.background = null; // Transparent background by default
+
+            const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 5);
+
+            const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setClearAlpha(0); // Ensure initial transparency
+
+            const controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.25;
+            controls.screenSpacePanning = false;
+            controls.maxPolarAngle = Math.PI / 2;
+
+            // Lighting setup
+            const ambientLight = new THREE.AmbientLight(0xffffff, 2.5); // Brighter ambient light
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.8);
+            directionalLight.position.set(0, 5, 5).normalize();
+            scene.add(directionalLight);
+
+            const pointLight = new THREE.PointLight(0x00FFFF, 2.0, 100); // Neon blue point light
+            pointLight.position.set(2, 2, 2);
+            scene.add(pointLight);
+
+            // Initial status message
+            statusElement.classList.remove('hidden');
+            statusElement.innerHTML = `<p>${translations[currentLanguage].uploadModelPrompt}</p><p>${translations[currentLanguage].useMouseToInteract}</p>`;
+
+            // Setup audio play/pause button listener
+            const playPauseButton = audioControlsElement.querySelector('[data-action="play-pause"]');
+            if (playPauseButton) {
+                audioPlayerElement.addEventListener('play', () => { playPauseButton.textContent = '⏸'; });
+                audioPlayerElement.addEventListener('pause', () => { playPauseButton.textContent = '▶'; });
+                audioPlayerElement.addEventListener('ended', () => { playPauseButton.textContent = '▶'; });
+                
+                playPauseButton.addEventListener('click', () => {
+                    if (audioPlayerElement.paused) {
+                        audioPlayerElement.play().catch(e => console.error("Audio playback error:", e));
+                    } else {
+                        audioPlayerElement.pause();
+                    }
+                });
+            }
+
+            return { 
+                scene, 
+                camera, 
+                renderer, 
+                controls, 
+                currentModel: null, 
+                mixer: null, 
+                clock: new THREE.Clock(), 
+                isCameraLocked: false,
+                autoRotate: true,
+                isBackgroundSolid: false,
+                isWireframe: false,
+                initialCameraPosition: camera.position.clone(),
+                initialControlsTarget: controls.target.clone(),
+                initialModelPosition: new THREE.Vector3(),
+                initialModelRotation: new THREE.Euler(),
+                initialModelScale: new THREE.Vector3(1,1,1),
+                audioPlayer: audioPlayerElement, 
+                audioControls: audioControlsElement,
+                hasAudioLoaded: false, // Track if audio has been loaded for this viewer
+            };
+        }
+
+        /**
+         * Handles window resizing to adjust camera aspect ratio and renderer size.
+         * @param {THREE.PerspectiveCamera} camera - The Three.js camera.
+         * @param {THREE.WebGLRenderer} renderer - The Three.js renderer.
+         * @param {HTMLElement} container - The container element of the canvas.
+         */
+        function onWindowResize3D(camera, renderer, container) {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        /**
+         * The main animation loop for the 3D viewer.
+         * @param {object} viewerInstance - The viewer instance object.
+         */
+        function animate3D(viewerInstance) {
+            if (!viewerInstance) return; // Stop animation if instance is null (e.g., modal closed)
+            requestAnimationFrame(() => animate3D(viewerInstance));
+
+            const delta = viewerInstance.clock.getDelta();
+
+            if (viewerInstance.mixer) {
+                viewerInstance.mixer.update(delta);
+            }
+
+            if (viewerInstance.currentModel && viewerInstance.autoRotate) {
+                viewerInstance.currentModel.rotation.y += 0.015;
+            }
+
+            viewerInstance.controls.update();
+            viewerInstance.renderer.render(viewerInstance.scene, viewerInstance.camera);
+        }
+
+        /**
+         * Loads a 3D model (GLTF/GLB) into the viewer.
+         * @param {string} modelPath - The URL or Blob URL of the model.
+         * @param {object} viewerInstance - The viewer instance object.
+         * @param {HTMLElement} statusElement - Element to display loading status.
+         * @param {HTMLElement} controlsElement - The container for model control buttons.
+         * @param {HTMLElement} fileInputLabelElement - The label for the file input.
+         * @param {HTMLElement} audioControlsElement - The container for audio play/pause button.
+         */
+        function loadModel(modelPath, viewerInstance, statusElement, controlsElement, fileInputLabelElement, audioControlsElement) {
+            statusElement.classList.remove('hidden');
+            statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>${translations[currentLanguage].loadingModel}</p>`;
+            
+            // Hide controls and input label during loading
+            if (fileInputLabelElement) fileInputLabelElement.classList.add('hidden');
+            if (controlsElement) controlsElement.classList.add('hidden');
+            if (audioControlsElement) audioControlsElement.classList.add('hidden');
+
+            const loader = new THREE.GLTFLoader();
+            loader.load(modelPath, (gltf) => {
+                // Remove previous model if exists
+                if (viewerInstance.currentModel) {
+                    viewerInstance.scene.remove(viewerInstance.currentModel);
+                    if (viewerInstance.mixer) {
+                        viewerInstance.mixer.stopAllAction();
+                        viewerInstance.mixer = null;
+                    }
+                }
+                viewerInstance.currentModel = gltf.scene;
+                viewerInstance.scene.add(viewerInstance.currentModel);
+
+                // Reset visual states
+                viewerInstance.isWireframe = false;
+                viewerInstance.isBackgroundSolid = false;
+                viewerInstance.renderer.setClearAlpha(0); // Ensure transparency
+                if(controlsElement) controlsElement.querySelector('[data-action="toggle-wireframe"]').textContent = 'Wireframe';
+                if(controlsElement) controlsElement.querySelector('[data-action="toggle-background"]').textContent = 'Toggle BG';
+
+                // Handle animations if present
+                if (gltf.animations && gltf.animations.length) {
+                    viewerInstance.mixer = new THREE.AnimationMixer(viewerInstance.currentModel);
+                    gltf.animations.forEach((clip) => {
+                        viewerInstance.mixer.clipAction(clip).play();
+                    });
+                }
+
+                // Adjust camera to fit the model
+                const box = new THREE.Box3().setFromObject(viewerInstance.currentModel);
+                const center = box.getCenter(new THREE.Vector3());
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const fov = viewerInstance.camera.fov * (Math.PI / 180);
+                let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+                cameraZ *= 1.5; // Add some padding
+
+                viewerInstance.camera.position.set(center.x, center.y, center.z + cameraZ);
+                viewerInstance.controls.target.set(center.x, center.y, center.z);
+                viewerInstance.controls.update();
+
+                // Store initial states for reset functionality
+                viewerInstance.initialCameraPosition.copy(viewerInstance.camera.position);
+                viewerInstance.initialControlsTarget.copy(viewerInstance.controls.target);
+                viewerInstance.initialModelPosition.copy(viewerInstance.currentModel.position);
+                viewerInstance.initialModelRotation.copy(viewerInstance.currentModel.rotation);
+                viewerInstance.initialModelScale.copy(viewerInstance.currentModel.scale);
+
+                // Hide status and show controls/input label
+                statusElement.classList.add('hidden');
+                if (fileInputLabelElement) fileInputLabelElement.classList.remove('hidden');
+                if (controlsElement) controlsElement.classList.remove('hidden');
+                if (viewerInstance.hasAudioLoaded) { // Only show audio controls if audio was loaded
+                    audioControlsElement.classList.remove('hidden');
+                }
+
+                // Revoke Blob URL if it was a local file upload
+                if (modelPath.startsWith('blob:')) {
+                    URL.revokeObjectURL(modelPath);
+                }
+
+            }, (xhr) => {
+                // Progress callback
+                const percent = (xhr.loaded / xhr.total * 100).toFixed(0);
+                statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>${translations[currentLanguage].loadingModel} ${percent}%</p>`;
+            }, (error) => {
+                // Error callback
+                statusElement.classList.remove('hidden');
+                statusElement.innerHTML = `<p class="text-red-500">${translations[currentLanguage].errorLoadingModel} ${error.message || 'Unknown error'}</p>`;
+                if (fileInputLabelElement) fileInputLabelElement.classList.remove('hidden');
+                if (controlsElement) controlsElement.classList.add('hidden');
+                if (audioControlsElement) audioControlsElement.classList.add('hidden');
+                if (modelPath.startsWith('blob:')) {
+                    URL.revokeObjectURL(modelPath);
+                }
+                console.error("Error loading 3D model:", error);
+            });
+        }
+
+        /**
+         * Sets up the resize handle for the model viewer container.
+         * @param {HTMLElement} handle - The resize handle element.
+         * @param {HTMLElement} container - The model viewer container.
+         * @param {THREE.PerspectiveCamera} camera - The Three.js camera.
+         * @param {THREE.WebGLRenderer} renderer - The Three.js renderer.
+         */
+        function setupResizeHandle3D(handle, container, camera, renderer) {
+            let isResizing = false;
+            let initialX, initialY, initialWidth, initialHeight;
+
+            handle.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                initialX = e.clientX;
+                initialY = e.clientY;
+                initialWidth = container.offsetWidth;
+                initialHeight = container.offsetHeight;
+
+                document.body.style.userSelect = 'none';
+                document.body.style.cursor = 'nwse-resize';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+
+                const minWidth = 300;
+                const minHeight = 200;
+                const maxWidth = window.innerWidth * 0.9;
+                const maxHeight = window.innerHeight * 0.8;
+
+                let newWidth = initialWidth + (e.clientX - initialX);
+                let newHeight = initialHeight + (e.clientY - initialY);
+
+                newWidth = Math.max(minWidth, Math.min(newWidth, maxWidth));
+                newHeight = Math.max(minHeight, Math.min(newHeight, maxHeight));
+
+                container.style.width = `${newWidth}px`;
+                container.style.height = `${newHeight}px`;
+
+                onWindowResize3D(camera, renderer, container);
+            });
+
+            document.addEventListener('mouseup', () => {
+                isResizing = false;
+                document.body.style.userSelect = '';
+                document.body.style.cursor = '';
+            });
+        }
+
+        /**
+         * Sets up interaction controls for the 3D model viewer.
+         * @param {HTMLElement} controlsElement - The container for model control buttons.
+         * @param {object} viewerInstance - The viewer instance object.
+         * @param {HTMLElement} containerElement - The model viewer container.
+         * @param {HTMLElement} fileInputLabelElement - The label for the file input.
+         * @param {HTMLElement} uploadMenuElement - The upload menu element.
+         */
+        function setupModelControls3D(controlsElement, viewerInstance, containerElement, fileInputLabelElement, uploadMenuElement) {
+            const movementStep = 0.1;
+            const scaleFactor = 1.05;
+
+            // Function to update visibility of overlays (controls, upload button)
+            const updateOverlayVisibility = () => {
+                const isHovering = containerElement.matches(':hover');
+                const isMenuOpen = !uploadMenuElement.classList.contains('hidden');
+
+                if (isHovering || isMenuOpen) {
+                    fileInputLabelElement.classList.remove('hidden');
+                    if (viewerInstance.currentModel) { // Only show controls if a model is loaded
+                        controlsElement.classList.remove('hidden');
+                    }
+                    if (viewerInstance.hasAudioLoaded) { // Only show audio controls if audio was loaded
+                        viewerInstance.audioControls.classList.remove('hidden');
+                    }
+                } else {
+                    fileInputLabelElement.classList.add('hidden');
+                    controlsElement.classList.add('hidden');
+                    viewerInstance.audioControls.classList.add('hidden');
+                }
+            };
+
+            // Event listeners for showing/hiding controls on hover
+            containerElement.addEventListener('mouseenter', updateOverlayVisibility);
+            containerElement.addEventListener('mouseleave', updateOverlayVisibility);
+
+            // Close upload menu if clicking outside
+            document.addEventListener('click', (event) => {
+                if (!uploadMenuElement.contains(event.target) && event.target !== fileInputLabelElement) {
+                    uploadMenuElement.classList.add('hidden');
+                    updateOverlayVisibility();
+                }
+            });
+
+            // Toggle upload menu visibility
+            fileInputLabelElement.addEventListener('click', (event) => {
+                event.stopPropagation(); // Prevent click from bubbling to document and closing immediately
+                uploadMenuElement.classList.toggle('hidden');
+                updateOverlayVisibility();
+            });
+
+            // Handle clicks within the upload menu
+            uploadMenuElement.addEventListener('click', (event) => {
+                if (event.target.classList.contains('upload-menu-button')) {
+                    const type = event.target.dataset.type;
+                    uploadMenuElement.classList.add('hidden'); // Hide menu after selection
+
+                    // Trigger the hidden file input click
+                    if (type === 'model') {
+                        fileInputLabelElement.closest('.model-viewer-container').querySelector('input[type="file"][accept=".gltf, .glb"]').click();
+                    } else if (type === 'audio') {
+                        fileInputLabelElement.closest('.model-viewer-container').querySelector('input[type="file"][accept=".mp3"]').click();
+                    }
+                    updateOverlayVisibility(); // Update visibility after action
+                }
+            });
+
+            // Event listeners for model control buttons
+            controlsElement.querySelectorAll('.model-control-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const action = button.dataset.action;
+                    if (!viewerInstance.currentModel) return; // Ensure a model is loaded
+
+                    switch (action) {
+                        case 'move-up':
+                            viewerInstance.currentModel.position.y += movementStep;
+                            break;
+                        case 'move-down':
+                            viewerInstance.currentModel.position.y -= movementStep;
+                            break;
+                        case 'move-left':
+                            viewerInstance.currentModel.position.x -= movementStep;
+                            break;
+                        case 'move-right':
+                            viewerInstance.currentModel.position.x += movementStep;
+                            break;
+                        case 'toggle-lock':
+                            viewerInstance.isCameraLocked = !viewerInstance.isCameraLocked;
+                            viewerInstance.controls.enabled = !viewerInstance.isCameraLocked; // Enable/disable orbit controls
+                            button.textContent = viewerInstance.isCameraLocked ? 'Unlock Cam' : 'Lock Cam';
+                            break;
+                        case 'reset-view':
+                            // Reset camera, controls target, and model transforms to initial states
+                            viewerInstance.camera.position.copy(viewerInstance.initialCameraPosition);
+                            viewerInstance.controls.target.copy(viewerInstance.initialControlsTarget);
+                            viewerInstance.currentModel.position.copy(viewerInstance.initialModelPosition);
+                            viewerInstance.currentModel.rotation.copy(viewerInstance.initialModelRotation);
+                            viewerInstance.currentModel.scale.copy(viewerInstance.initialModelScale);
+                            viewerInstance.controls.update(); // Update controls after changing target/position
+
+                            // Reset auto-rotate and wireframe/background states
+                            viewerInstance.autoRotate = true;
+                            controlsElement.querySelector('[data-action="toggle-rotation"]').textContent = 'Auto-Rotate';
+                            viewerInstance.isWireframe = false;
+                            viewerInstance.currentModel.traverse((node) => {
+                                if (node.isMesh) {
+                                    node.material.wireframe = false;
+                                }
+                            });
+                            controlsElement.querySelector('[data-action="toggle-wireframe"]').textContent = 'Wireframe';
+                            viewerInstance.isBackgroundSolid = false;
+                            viewerInstance.renderer.setClearAlpha(0); // Transparent background
+                            controlsElement.querySelector('[data-action="toggle-background"]').textContent = 'Toggle BG';
+                            break;
+                        case 'toggle-rotation':
+                            viewerInstance.autoRotate = !viewerInstance.autoRotate;
+                            button.textContent = viewerInstance.autoRotate ? 'Auto-Rotate (Off)' : 'Auto-Rotate (On)';
+                            break;
+                        case 'scale-up':
+                            viewerInstance.currentModel.scale.multiplyScalar(scaleFactor);
+                            break;
+                        case 'scale-down':
+                            viewerInstance.currentModel.scale.multiplyScalar(1 / scaleFactor);
+                            break;
+                        case 'toggle-background':
+                            viewerInstance.isBackgroundSolid = !viewerInstance.isBackgroundSolid;
+                            if (viewerInstance.isBackgroundSolid) {
+                                viewerInstance.renderer.setClearColor(0x333333, 1); // Solid dark gray background
+                                button.textContent = 'Toggle BG (Solid)';
+                            } else {
+                                viewerInstance.renderer.setClearAlpha(0); // Transparent background
+                                button.textContent = 'Toggle BG (Transparent)';
+                            }
+                            break;
+                        case 'toggle-wireframe':
+                            viewerInstance.isWireframe = !viewerInstance.isWireframe;
+                            viewerInstance.currentModel.traverse((node) => {
+                                if (node.isMesh) {
+                                    node.material.wireframe = viewerInstance.isWireframe;
+                                }
+                            });
+                            button.textContent = viewerInstance.isWireframe ? 'Wireframe (On)' : 'Wireframe (Off)';
+                            break;
+                        case 'screenshot':
+                            const canvas = viewerInstance.renderer.domElement;
+                            const link = document.createElement('a');
+                            link.download = 'model-screenshot.png';
+                            link.href = canvas.toDataURL('image/png'); // Get image data from canvas
+                            link.click(); // Trigger download
+                            link.remove(); // Clean up the temporary link element
+                            break;
+                    }
+                });
+            });
+        }
+
+        /**
+         * Initializes the 3D Viewer feature when its content is loaded into the modal.
+         */
+        function init3DViewerFeature() {
+            const modelContainer = document.getElementById('modalModelContainer');
+            const modelCanvas = document.getElementById('modalModelCanvas');
+            const modelStatus = document.getElementById('modalModelStatus');
+            const primaryAudioPlayer = document.getElementById('modalPrimaryAudioPlayer');
+            const audioControls = document.getElementById('modalAudioControls');
+            const resizeHandle = document.getElementById('modalResizeHandle');
+            const modelControls = document.getElementById('modalModelControls');
+            const modelFileInput = document.getElementById('modalModelFileInput');
+            const audioFileInput = document.getElementById('modalAudioFileInput');
+            const modelFileInputLabel = document.getElementById('modalModelFileInputLabel');
+            const uploadMenu = document.getElementById('modalUploadMenu');
+
+            // Initialize the 3D viewer instance for the modal
+            modalViewerInstance = init3DViewerInstance(modelCanvas, modelContainer, modelStatus, primaryAudioPlayer, audioControls);
+            
+            // Setup event listeners for the modal viewer's file inputs
+            modelFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    loadModel(URL.createObjectURL(file), modalViewerInstance, modelStatus, modelControls, modelFileInputLabel, audioControls);
+                }
+            });
+            audioFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const audioURL = URL.createObjectURL(file);
+                    modalViewerInstance.audioPlayer.src = audioURL;
+                    modalViewerInstance.audioPlayer.play().catch(e => console.error("Audio playback error:", e));
+                    modalViewerInstance.hasAudioLoaded = true;
+                    audioControls.classList.remove('hidden'); // Show audio controls once audio is loaded
+                }
+            });
+            // Setup resize handle and model controls for the modal viewer
+            setupResizeHandle3D(resizeHandle, modelContainer, modalViewerInstance.camera, modalViewerInstance.renderer);
+            setupModelControls3D(modelControls, modalViewerInstance, modelContainer, modelFileInputLabel, uploadMenu);
+
+            // Start animation loop for the modal viewer
+            animate3D(modalViewerInstance);
+
+            // Load a default model for the modal viewer (optional, can be removed)
+            loadModel('https://imelijah88.github.io/Avneed/friendlyrobot.glb', modalViewerInstance, modelStatus, modelControls, modelFileInputLabel, audioControls);
+        }
+
+        // --- MAIN PAGE INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme toggle for the main page
+            const toggleThemeBtn = document.getElementById('settingsBtn');
+            const settingsMenu = document.getElementById('settingsMenu');
+            let isSettingsMenuOpen = false;
+
+            toggleThemeBtn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                isSettingsMenuOpen = !isSettingsMenuOpen;
+                if (isSettingsMenuOpen) {
+                    settingsMenu.classList.remove('hidden');
+                } else {
+                    settingsMenu.classList.add('hidden');
+                }
+            });
+
+            document.addEventListener('click', (event) => {
+                if (isSettingsMenuOpen && !settingsMenu.contains(event.target) && event.target !== toggleThemeBtn) {
+                    settingsMenu.classList.add('hidden');
+                    isSettingsMenuOpen = false;
+                }
+            });
+
+            settingsMenu.querySelectorAll('.settings-menu-button[data-theme]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const theme = button.dataset.theme;
+                    document.body.classList.remove('dark-theme', 'light-theme');
+                    document.body.classList.add(theme + '-theme');
+                    localStorage.setItem('theme', theme);
+                    settingsMenu.classList.add('hidden');
+                    isSettingsMenuOpen = false;
+                });
+            });
+
+            // Apply initial theme from localStorage or default to dark
+            const storedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.classList.add(storedTheme + '-theme');
+
+            // --- Sphere Button Event Listeners to Open Modals ---
+            document.getElementById('openLoginNotesBtn').addEventListener('click', () => openModal('loginNotesContent'));
+            document.getElementById('openAvneedChatbotBtn').addEventListener('click', () => openModal('chatbotContent'));
+            document.getElementById('openImageGeneratorBtn').addEventListener('click', () => openModal('imageGeneratorContent'));
+            document.getElementById('open3DViewerBtn').addEventListener('click', () => openModal('threeDViewerContent'));
+        });
+    </script>
+</body>
+</html>

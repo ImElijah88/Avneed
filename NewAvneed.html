@@ -16,73 +16,95 @@
         import { getAuth, signInWithCustomToken, signInWithPopup, GithubAuthProvider, GoogleAuthProvider, signInAnonymously, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, query, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // IMPORTANT: These variables are provided by the Canvas environment.
+        // If deploying elsewhere (e.g., GitHub Pages), you MUST replace these with your actual Firebase config.
+        // Example: const firebaseConfig = { apiKey: "...", authDomain: "...", projectId: "...", ... };
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? initialAuthToken : null;
 
         let app;
         let db;
         let auth;
         let userId = null;
 
+        // Helper function to disable Firebase-dependent features and display a message
+        function disableFirebaseFeatures(message) {
+            const loginBtnModalGoogle = document.getElementById('loginBtnModalGoogle');
+            const loginBtnModalGithub = document.getElementById('loginBtnModalGithub');
+            const loginBtnModalGuest = document.getElementById('loginBtnModalGuest');
+            const logoutBtnModal = document.getElementById('logoutBtnModal');
+            const saveNotesBtn = document.getElementById('saveNotesBtn');
+            const userNotesInput = document.getElementById('userNotesInput');
+            const userNotesStatus = document.getElementById('userNotesStatus');
+
+            if (loginBtnModalGoogle) loginBtnModalGoogle.disabled = true;
+            if (loginBtnModalGithub) loginBtnModalGithub.disabled = true;
+            if (loginBtnModalGuest) loginBtnModalGuest.disabled = true;
+            if (logoutBtnModal) logoutBtnModal.disabled = true;
+            if (saveNotesBtn) saveNotesBtn.disabled = true;
+            if (userNotesInput) userNotesInput.disabled = true;
+            if (userNotesStatus) userNotesStatus.textContent = message;
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             if (Object.keys(firebaseConfig).length > 0) {
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
+                try {
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
 
-                if (initialAuthToken) {
-                    try {
-                        await signInWithCustomToken(auth, initialAuthToken);
-                        console.log("Signed in with custom token (Canvas environment).");
-                    } catch (error) {
-                        console.error("Error signing in with custom token:", error);
-                    }
-                } else {
-                    // Sign in anonymously if no custom token is provided (for local development/testing)
-                    try {
-                        await signInAnonymously(auth);
-                        console.log("Signed in anonymously (no custom token).");
-                    } catch (error) {
-                        console.error("Error signing in anonymously:", error);
-                    }
-                }
+                    // Ensure auth is initialized before proceeding with auth-dependent logic
+                    if (auth) {
+                        if (initialAuthToken) {
+                            try {
+                                await signInWithCustomToken(auth, initialAuthToken);
+                                console.log("Signed in with custom token (Canvas environment).");
+                            } catch (error) {
+                                console.error("Error signing in with custom token:", error);
+                                // Fallback to anonymous if custom token fails
+                                await signInAnonymously(auth);
+                                console.log("Signed in anonymously after custom token failure.");
+                            }
+                        } else {
+                            // Sign in anonymously if no custom token is provided (for local development/testing)
+                            try {
+                                await signInAnonymously(auth);
+                                console.log("Signed in anonymously (no custom token).");
+                            } catch (error) {
+                                console.error("Error signing in anonymously:", error);
+                            }
+                        }
 
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        console.log("User is logged in:", userId);
-                        updateLoginButtons(true, user.isAnonymous); // Pass isAnonymous status
-                        loadUserNotes();
+                        onAuthStateChanged(auth, (user) => {
+                            if (user) {
+                                userId = user.uid;
+                                console.log("User is logged in:", userId);
+                                // Pass user object directly to updateLoginButtons for safer access to isAnonymous
+                                updateLoginButtons(true, user);
+                                loadUserNotes();
+                            } else {
+                                userId = null;
+                                console.log("User is logged out.");
+                                updateLoginButtons(false, null); // Pass null for user object when logged out
+                                // Clear notes and status if user logs out
+                                const userNotesInput = document.getElementById('userNotesInput');
+                                const userNotesStatus = document.getElementById('userNotesStatus');
+                                if (userNotesInput) userNotesInput.value = '';
+                                if (userNotesStatus) userNotesStatus.textContent = translations[currentLanguage].notesLoginStatus;
+                            }
+                        });
                     } else {
-                        userId = null;
-                        console.log("User is logged out.");
-                        updateLoginButtons(false, false);
-                        // Clear notes and status if user logs out
-                        const userNotesInput = document.getElementById('userNotesInput');
-                        const userNotesStatus = document.getElementById('userNotesStatus');
-                        if (userNotesInput) userNotesInput.value = '';
-                        if (userNotesStatus) userNotesStatus.textContent = translations[currentLanguage].notesLoginStatus;
+                        console.error("Firebase Auth could not be initialized. Check your Firebase configuration.");
+                        disableFirebaseFeatures(translations[currentLanguage].firebaseInitError);
                     }
-                });
+                } catch (firebaseInitError) {
+                    console.error("Error initializing Firebase app:", firebaseInitError);
+                    disableFirebaseFeatures(translations[currentLanguage].firebaseInitError);
+                }
             } else {
-                console.warn("Firebase config not found. Firebase features will be disabled.");
-                // Disable login/logout/notes features if Firebase is not configured
-                const loginBtnModalGoogle = document.getElementById('loginBtnModalGoogle');
-                const loginBtnModalGithub = document.getElementById('loginBtnModalGithub');
-                const loginBtnModalGuest = document.getElementById('loginBtnModalGuest');
-                const logoutBtnModal = document.getElementById('logoutBtnModal');
-                const saveNotesBtn = document.getElementById('saveNotesBtn');
-                const userNotesInput = document.getElementById('userNotesInput');
-                const userNotesStatus = document.getElementById('userNotesStatus');
-
-                if (loginBtnModalGoogle) loginBtnModalGoogle.disabled = true;
-                if (loginBtnModalGithub) loginBtnModalGithub.disabled = true;
-                if (loginBtnModalGuest) loginBtnModalGuest.disabled = true;
-                if (logoutBtnModal) logoutBtnModal.disabled = true;
-                if (saveNotesBtn) saveNotesBtn.disabled = true;
-                if (userNotesInput) userNotesInput.disabled = true;
-                if (userNotesStatus) userNotesStatus.textContent = translations[currentLanguage].firebaseNotInit;
+                console.warn("Firebase config not found. Firebase features will be disabled. Please ensure __firebase_config is set in your environment.");
+                disableFirebaseFeatures(translations[currentLanguage].firebaseNotConfigured);
             }
         });
 
@@ -180,7 +202,8 @@
             });
         };
 
-        window.updateLoginButtons = (isLoggedIn, isAnonymous = false) => {
+        // Modified updateLoginButtons to accept the user object directly
+        window.updateLoginButtons = (isLoggedIn, user) => {
             const loginBtnModalGoogle = document.getElementById('loginBtnModalGoogle');
             const loginBtnModalGithub = document.getElementById('loginBtnModalGithub');
             const loginBtnModalGuest = document.getElementById('loginBtnModalGuest');
@@ -189,11 +212,21 @@
             const saveNotesBtn = document.getElementById('saveNotesBtn');
 
             if (isLoggedIn) {
+                // If logged in, hide all specific login buttons and show logout
                 if (loginBtnModalGoogle) loginBtnModalGoogle.classList.add('hidden');
                 if (loginBtnModalGithub) loginBtnModalGithub.classList.add('hidden');
-                if (loginBtnModalGuest) loginBtnModalGuest.classList.add('hidden');
+                
+                // Only hide guest login if it's not an anonymous user
+                if (loginBtnModalGuest) {
+                    if (user && user.isAnonymous) {
+                        loginBtnModalGuest.classList.remove('hidden'); // Still show guest if current is guest
+                    } else {
+                        loginBtnModalGuest.classList.add('hidden'); // Hide if authenticated with a provider
+                    }
+                }
                 if (logoutBtnModal) logoutBtnModal.classList.remove('hidden');
             } else {
+                // If logged out, show all specific login buttons and hide logout
                 if (loginBtnModalGoogle) loginBtnModalGoogle.classList.remove('hidden');
                 if (loginBtnModalGithub) loginBtnModalGithub.classList.remove('hidden');
                 if (loginBtnModalGuest) loginBtnModalGuest.classList.remove('hidden');
@@ -222,15 +255,20 @@
             --color-accent-yellow: #ffd700;
             --modal-bg: rgba(0, 0, 0, 0.8);
             --modal-content-bg: var(--bg-secondary);
+
+            /* Flame effect colors */
+            --flame-color-1: #00FFFF; /* Neon Blue */
+            --flame-color-2: #00BFFF; /* Deep Sky Blue */
+            --flame-color-3: #0080FF; /* Azure */
         }
 
         body.light-theme {
             --bg-primary: #f0f2f5;
             --bg-secondary: #ffffff;
             --bg-card: #e2e8f0;
-            --text-primary: #2d3748;
-            --text-secondary: #4a5568;
-            --text-light-gray: #718096;
+            --text-primary: #1a1a1a; /* Changed to very dark gray/black */
+            --text-secondary: #1a1a1a; /* Changed to very dark gray/black */
+            --text-light-gray: #1a1a1a; /* Changed to very dark gray/black */
             --border-color: #cbd5e1;
             --input-bg: #ffffff;
             --gradient-start: #e0e7ff;
@@ -240,6 +278,11 @@
             --color-accent-yellow: #ff9800;
             --modal-bg: rgba(255, 255, 255, 0.8);
             --modal-content-bg: var(--bg-secondary);
+
+            /* Flame effect colors for light theme (can be adjusted if needed) */
+            --flame-color-1: #007bff; /* Darker blue for light theme */
+            --flame-color-2: #0056b3;
+            --flame-color-3: #003366;
         }
 
         body {
@@ -295,6 +338,10 @@
 
         .sphere-button {
             @apply w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-base shadow-lg transition duration-300 ease-in-out transform hover:scale-110;
+            /* Explicitly setting width, height, and border-radius for robustness */
+            width: 80px;
+            height: 80px;
+            border-radius: 9999px; /* Ensures a perfect circle */
             background: #2d3748;
             border: 2px solid var(--border-color);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
@@ -342,6 +389,7 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Updated text colors to use theme variables */
         .text-gray-100 { color: var(--text-primary); }
         .text-gray-200 { color: var(--text-secondary); }
         .text-gray-300 { color: var(--text-light-gray); }
@@ -472,26 +520,29 @@
         .model-controls {
             position: absolute;
             bottom: 1.5rem;
-            left: 1.5rem;
+            right: 1.5rem; /* Changed from left to right */
+            left: auto; /* Ensure left is not set */
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.5rem; /* Increased gap between button groups */
             z-index: 15;
             background: rgba(45, 55, 72, 0.7);
-            padding: 0.5rem;
+            padding: 0.75rem; /* Increased padding around the controls */
             border-radius: 1rem;
             border: 1px solid rgba(74, 85, 104, 0.3);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
         }
 
         .model-control-button {
-            @apply px-1 py-0.5 rounded-md text-white font-bold text-xs transition duration-300 ease-in-out transform hover:scale-105;
+            @apply px-2 py-1 text-white font-bold text-xs transition duration-300 ease-in-out transform hover:scale-105;
             background: #2d3748;
             border: 1px solid #4a5568;
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
+            white-space: nowrap; /* Prevent text wrapping */
+            height: 35px; /* Consistent height for all buttons */
         }
         .model-control-button:hover {
             background: #374151;
@@ -499,14 +550,31 @@
             box-shadow: 0 0 10px 3px rgba(var(--color-neon-blue), 0.5);
             border-color: var(--color-neon-blue);
         }
-        .model-controls .grid-cols-3 .model-control-button {
-            width: 30px;
-            height: 30px;
-            font-size: 1rem;
+
+        /* Styles for circular arrow buttons */
+        .model-control-button.arrow-button {
+            width: 35px;
+            height: 35px;
+            border-radius: 9999px; /* Fully rounded */
+            font-size: 1.2rem; /* Larger font for arrows */
+            min-width: unset; /* Remove min-width override */
         }
-        .model-control-button.toggle-lock {
-            width: 100%;
+
+        /* Styles for rectangular text buttons */
+        .model-control-button.text-button {
+            min-width: 100px; /* Increased min-width for text buttons to fit text */
+            border-radius: 0.5rem; /* Slightly rounded corners */
+            font-size: 0.8rem; /* Keep font size small for fit */
         }
+
+        /* Adjustments for specific buttons (Lock Camera, Reset View) */
+        .model-control-button[data-action="toggle-lock"],
+        .model-control-button[data-action="reset-view"] {
+            min-width: unset; /* Remove min-width for these if they span columns */
+            width: 100%; /* Ensure they take full width of their grid cell */
+            border-radius: 0.5rem; /* Keep rectangular shape */
+        }
+
 
         .upload-menu {
             position: absolute;
@@ -690,6 +758,67 @@
                 transform: scale(1);
             }
         }
+
+        /* Neon Flame Effect for Avneed Name */
+        .flame-text {
+            color: var(--flame-color-1);
+            text-shadow: 
+                0 0 5px var(--flame-color-1),
+                0 0 10px var(--flame-color-2),
+                0 0 20px var(--flame-color-3),
+                0 0 30px var(--flame-color-1),
+                0 0 40px var(--flame-color-2);
+            animation: flame-flicker 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes flame-flicker {
+            0% {
+                text-shadow: 
+                    0 0 5px var(--flame-color-1),
+                    0 0 10px var(--flame-color-2),
+                    0 0 20px var(--flame-color-3),
+                    0 0 30px var(--flame-color-1),
+                    0 0 40px var(--flame-color-2);
+                transform: translateY(0) scale(1);
+            }
+            25% {
+                text-shadow: 
+                    0 0 6px var(--flame-color-1),
+                    0 0 12px var(--flame-color-2),
+                    0 0 22px var(--flame-color-3),
+                    0 0 32px var(--flame-color-1),
+                    0 0 42px var(--flame-color-2);
+                transform: translateY(-1px) scale(1.005);
+            }
+            50% {
+                text-shadow: 
+                    0 0 4px var(--flame-color-1),
+                    0 0 9px var(--flame-color-2),
+                    0 0 18px var(--flame-color-3),
+                    0 0 28px var(--flame-color-1),
+                    0 0 38px var(--flame-color-2);
+                transform: translateY(0) scale(1);
+            }
+            75% {
+                text-shadow: 
+                    0 0 7px var(--flame-color-1),
+                    0 0 14px var(--flame-color-2),
+                    0 0 25px var(--flame-color-3),
+                    0 0 35px var(--flame-color-1),
+                    0 0 45px var(--flame-color-2);
+                transform: translateY(-2px) scale(1.01);
+            }
+            100% {
+                text-shadow: 
+                    0 0 5px var(--flame-color-1),
+                    0 0 10px var(--flame-color-2),
+                    0 0 20px var(--flame-color-3),
+                    0 0 30px var(--flame-color-1),
+                    0 0 40px var(--flame-color-2);
+                transform: translateY(0) scale(1);
+            }
+        }
+
 
         .audio-play-toggle-btn {
             @apply w-16 h-16 rounded-full flex items-center justify-center text-3xl transition duration-300 ease-in-out transform hover:scale-110;
@@ -893,13 +1022,14 @@
             margin-bottom: 1rem;
         }
 
+        /* MODAL STYLES */
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: var(--modal-bg);
+            background-color: rgba(0, 0, 0, 0.3); /* More transparent background */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -915,21 +1045,26 @@
         }
 
         .modal-content {
-            background-color: var(--modal-content-bg);
+            background-color: var(--bg-secondary); /* Use theme background */
             padding: 1.5rem;
             border-radius: 2rem;
-            max-width: 600px; /* Reduced max-width for smaller modal */
+            max-width: 600px;
             max-height: 80vh;
-            overflow-y: auto;
+            overflow: hidden; /* Hide overflow initially, scroll on chat history */
             transform: translateY(-50px);
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
-            border: 1px solid var(--border-color);
-            position: relative; /* For close button positioning */
+            border: 2px solid var(--color-neon-blue); /* Neon blue border */
+            position: absolute; /* Changed to absolute for drag-and-drop */
+            box-shadow: 0 0 20px var(--color-neon-blue), 0 0 40px var(--color-neon-blue), 0 0 60px var(--color-neon-blue); /* Neon glow */
+            cursor: grab; /* Indicate draggable */
+            left: 50%; /* Center horizontally initially */
+            top: 50%; /* Center vertically initially */
+            transform: translate(-50%, -50%); /* Adjust for centering */
         }
 
         .modal-overlay.visible .modal-content {
-            transform: translateY(0);
+            transform: translate(-50%, -50%); /* Re-center on visibility */
             opacity: 1;
         }
 
@@ -961,6 +1096,8 @@
         .ai-feature-content h2 {
             font-size: 2.2rem; /* Adjusted font size for modal */
             margin-bottom: 1.5rem;
+            color: var(--color-neon-blue); /* Neon blue title */
+            text-shadow: 0 0 8px var(--color-neon-blue); /* Glow for title */
         }
 
         .ai-feature-content p {
@@ -975,6 +1112,14 @@
         .ai-feature-content .input-field {
             font-size: 0.9rem; /* Smaller font in input fields */
             padding: 0.75rem; /* Smaller padding */
+            border-radius: 0.75rem; /* More rounded */
+            border: 1px solid var(--color-neon-blue); /* Neon border for input */
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.5); /* Subtle glow */
+        }
+        .ai-feature-content #chatHistory {
+            background-color: var(--input-bg); /* Use input background for chat history */
+            border: 1px solid var(--border-color);
+            border-radius: 1rem; /* More rounded */
         }
         .ai-feature-content #chatHistory p {
             font-size: 0.85rem; /* Smaller chat history text */
@@ -988,6 +1133,22 @@
         .ai-feature-content .ai-button {
             font-size: 0.85rem; /* Smaller button text */
             padding: 0.6rem 1rem;
+            border-radius: 9999px; /* Fully rounded buttons */
+            background: var(--bg-card); /* Darker background for buttons */
+            border: 2px solid var(--color-neon-blue); /* Neon border */
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5); /* Neon glow */
+        }
+        .ai-feature-content .ai-button:hover {
+            background: var(--color-neon-blue); /* Light up neon blue on hover */
+            color: var(--bg-primary); /* Dark text on neon background */
+            box-shadow: 0 0 20px var(--color-neon-blue), 0 0 30px var(--color-neon-blue); /* Stronger glow */
+            border-color: var(--color-neon-blue);
+        }
+        .ai-feature-content .ai-button.selected-button {
+            background: var(--color-neon-blue);
+            color: var(--bg-primary);
+            border-color: var(--color-neon-blue);
+            box-shadow: 0 0 20px var(--color-neon-blue), 0 0 30px var(--color-neon-blue);
         }
 
         /* Responsive adjustments for modal content */
@@ -1020,7 +1181,7 @@
 <body>
     <header class="gradient-bg text-white py-6 shadow-lg">
         <div class="container mx-auto flex justify-between items-center px-6">
-            <h1 class="text-4xl font-extrabold tracking-tight text-neon-blue">Avneed</h1>
+            <h1 class="text-4xl font-extrabold tracking-tight"><span class="flame-text">Avneed</span></h1>
             <nav class="flex items-center space-x-8 text-lg font-semibold">
                 <ul class="flex space-x-8">
                     <li><a href="#vision" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">Vision</a></li>
@@ -1090,23 +1251,25 @@
 
                         <div id="resizeHandle" class="resize-handle"></div>
                         <div id="modelControls" class="model-controls hidden">
+                            <!-- Arrow Controls -->
                             <div class="grid grid-cols-3 gap-1">
                                 <div></div>
-                                <button class="model-control-button" data-action="move-up">↑</button>
+                                <button class="model-control-button arrow-button" data-action="move-up">↑</button>
                                 <div></div>
-                                <button class="model-control-button" data-action="move-left">←</button>
-                                <button class="model-control-button" data-action="move-down">↓</button>
-                                <button class="model-control-button" data-action="move-right">→</button>
+                                <button class="model-control-button arrow-button" data-action="move-left">←</button>
+                                <button class="model-control-button arrow-button" data-action="move-down">↓</button>
+                                <button class="model-control-button arrow-button" data-action="move-right">→</button>
                             </div>
-                            <div class="grid grid-cols-2 gap-1">
-                                <button class="model-control-button toggle-lock" data-action="toggle-lock">Lock Cam</button>
-                                <button class="model-control-button" data-action="reset-view">Reset</button>
-                                <button class="model-control-button" data-action="toggle-rotation">Auto-Rotate</button>
-                                <button class="model-control-button" data-action="toggle-background">Toggle BG</button>
-                                <button class="model-control-button" data-action="toggle-wireframe">Wireframe</button>
-                                <button class="model-control-button" data-action="screenshot">Screenshot</button>
-                                <button class="model-control-button" data-action="scale-up">Scale +</button>
-                                <button class="model-control-button" data-action="scale-down">Scale -</button>
+                            <!-- Action Buttons - Single Column for clarity or 2 columns with sufficient width -->
+                            <div class="grid grid-cols-2 gap-2"> <!-- Increased gap here -->
+                                <button class="model-control-button text-button col-span-2" data-action="toggle-lock">Lock Camera</button> <!-- Spanning 2 columns -->
+                                <button class="model-control-button text-button col-span-2" data-action="reset-view">Reset View</button> <!-- Spanning 2 columns -->
+                                <button class="model-control-button text-button" data-action="toggle-rotation">Auto-Rotate</button>
+                                <button class="model-control-button text-button" data-action="toggle-background">Toggle BG</button>
+                                <button class="model-control-button text-button" data-action="toggle-wireframe">Wireframe</button>
+                                <button class="model-control-button text-button" data-action="screenshot">Screenshot</button>
+                                <button class="model-control-button text-button" data-action="scale-up">Scale +</button>
+                                <button class="model-control-button text-button" data-action="scale-down">Scale -</button>
                             </div>
                         </div>
                     </div>
@@ -1218,23 +1381,25 @@
 
                         <div id="secondaryResizeHandle" class="resize-handle"></div>
                         <div id="secondaryModelControls" class="model-controls hidden">
+                            <!-- Arrow Controls -->
                             <div class="grid grid-cols-3 gap-1">
                                 <div></div>
-                                <button class="model-control-button" data-action="move-up">↑</button>
+                                <button class="model-control-button arrow-button" data-action="move-up">↑</button>
                                 <div></div>
-                                <button class="model-control-button" data-action="move-left">←</button>
-                                <button class="model-control-button" data-action="move-down">↓</button>
-                                <button class="model-control-button" data-action="move-right">→</button>
+                                <button class="model-control-button arrow-button" data-action="move-left">←</button>
+                                <button class="model-control-button arrow-button" data-action="move-down">↓</button>
+                                <button class="model-control-button arrow-button" data-action="move-right">→</button>
                             </div>
-                            <div class="grid grid-cols-2 gap-1">
-                                <button class="model-control-button toggle-lock" data-action="toggle-lock">Lock Cam</button>
-                                <button class="model-control-button" data-action="reset-view">Reset</button>
-                                <button class="model-control-button" data-action="toggle-rotation">Auto-Rotate</button>
-                                <button class="model-control-button" data-action="toggle-background">Toggle BG</button>
-                                <button class="model-control-button" data-action="toggle-wireframe">Wireframe</button>
-                                <button class="model-control-button" data-action="screenshot">Screenshot</button>
-                                <button class="model-control-button" data-action="scale-up">Scale +</button>
-                                <button class="model-control-button" data-action="scale-down">Scale -</button>
+                            <!-- Action Buttons - Single Column for clarity or 2 columns with sufficient width -->
+                            <div class="grid grid-cols-2 gap-2">
+                                <button class="model-control-button text-button col-span-2" data-action="toggle-lock">Lock Camera</button>
+                                <button class="model-control-button text-button col-span-2" data-action="reset-view">Reset View</button>
+                                <button class="model-control-button text-button" data-action="toggle-rotation">Auto-Rotate</button>
+                                <button class="model-control-button text-button" data-action="toggle-background">Toggle BG</button>
+                                <button class="model-control-button text-button" data-action="toggle-wireframe">Wireframe</button>
+                                <button class="model-control-button text-button" data-action="screenshot">Screenshot</button>
+                                <button class="model-control-button text-button" data-action="scale-up">Scale +</button>
+                                <button class="model-control-button text-button" data-action="scale-down">Scale -</button>
                             </div>
                         </div>
                     </div>
@@ -1501,6 +1666,8 @@
                 designMessage: 'Designed with precision for an enhanced user experience and a smarter future.',
                 language: 'Language',
                 firebaseNotInit: 'Firebase not initialized.',
+                firebaseInitError: 'Firebase initialization failed. Check console for details.',
+                firebaseNotConfigured: 'Firebase config not found. Features disabled. Please configure Firebase.',
 
                 // Modal specific translations (minimalist)
                 chatbotTitle: 'Chatbot',
@@ -1949,7 +2116,12 @@
                 });
             }
             // Ensure initial state is correct when modal opens
-            window.updateLoginButtons(userId !== null, auth.currentUser?.isAnonymous || false);
+            // Only update if auth is initialized, otherwise disable features
+            if (auth) {
+                window.updateLoginButtons(auth.currentUser !== null, auth.currentUser);
+            } else {
+                disableFirebaseFeatures(translations[currentLanguage].firebaseNotConfigured);
+            }
         }
 
         function setupLoginMenuListeners() {
@@ -1964,7 +2136,60 @@
             if (logoutBtnModal) logoutBtnModal.addEventListener('click', window.logoutUser);
 
             // Ensure initial state is correct when modal opens
-            window.updateLoginButtons(userId !== null, auth.currentUser?.isAnonymous || false);
+            // Only update if auth is initialized, otherwise disable features
+            if (auth) {
+                window.updateLoginButtons(auth.currentUser !== null, auth.currentUser);
+            } else {
+                disableFirebaseFeatures(translations[currentLanguage].firebaseNotConfigured);
+            }
+        }
+
+        let isDragging = false;
+        let offsetX, offsetY;
+
+        function makeModalDraggable(modalElement) {
+            const modalHeader = modalElement.querySelector('h2'); // Use the H2 as the drag handle
+            if (!modalHeader) return;
+
+            modalHeader.style.cursor = 'grab'; // Change cursor to indicate draggable
+
+            modalHeader.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                // Calculate offset relative to the modal's current position
+                const rect = modalElement.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+
+                modalElement.style.cursor = 'grabbing'; // Change cursor to indicate dragging
+                modalElement.style.transition = 'none'; // Disable transition during drag
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                // Calculate new position
+                let newX = e.clientX - offsetX;
+                let newY = e.clientY - offsetY;
+
+                // Keep modal within viewport boundaries
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                const modalWidth = modalElement.offsetWidth;
+                const modalHeight = modalElement.offsetHeight;
+
+                newX = Math.max(0, Math.min(newX, viewportWidth - modalWidth));
+                newY = Math.max(0, Math.min(newY, viewportHeight - modalHeight));
+
+                modalElement.style.left = `${newX}px`;
+                modalElement.style.top = `${newY}px`;
+                modalElement.style.transform = 'none'; // Remove translate to use direct top/left
+            });
+
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+                modalElement.style.cursor = 'grab';
+                modalElement.style.transition = 'transform 0.3s ease, opacity 0.3s ease'; // Re-enable transition
+            });
         }
 
 
@@ -1988,6 +2213,9 @@
             } else if (contentElement.id === 'login-menu-content') {
                 setupLoginMenuListeners();
             }
+
+            // Make the modal draggable after content is loaded
+            makeModalDraggable(aiModal.querySelector('.modal-content'));
         }
 
         function closeModal() {
@@ -2002,6 +2230,7 @@
 
         closeModalBtn.addEventListener('click', closeModal);
         aiModal.addEventListener('click', (event) => {
+            // Only close if the click is directly on the overlay, not the modal content itself
             if (event.target === aiModal) {
                 closeModal();
             }
@@ -2385,7 +2614,7 @@
                         case 'toggle-lock':
                             viewerInstance.isCameraLocked = !viewerInstance.isCameraLocked;
                             viewerInstance.controls.enabled = !viewerInstance.isCameraLocked;
-                            button.textContent = viewerInstance.isCameraLocked ? 'Unlock Cam' : 'Lock Cam';
+                            button.textContent = viewerInstance.isCameraLocked ? 'Unlock Cam' : 'Lock Camera'; // Updated text
                             break;
                         case 'reset-view':
                             viewerInstance.camera.position.copy(viewerInstance.initialCameraPosition);

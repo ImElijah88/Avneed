@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avneed AI Features</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -17,40 +17,51 @@
             --bg-primary: #333333;
             --bg-secondary: #1a1a2e;
             --bg-card: #121212;
+            --input-bg: #1a1a1a;
+
             --text-primary: #e2e8f0;
             --text-secondary: #cbd5e1;
             --text-light-gray: #a0aec0;
+
             --border-color: #4a5568;
-            --input-bg: #1a1a1a;
             --gradient-start: #0f172a;
             --gradient-mid: #1e293b;
             --gradient-end: #334155;
+
             --color-neon-blue: #00FFFF;
             --color-accent-yellow: #ffd700;
+
             --modal-bg: rgba(0, 0, 0, 0.8);
             --modal-content-bg: var(--bg-secondary);
+
+            --font-heading: 'Orbitron', sans-serif;
+            --font-body: 'Inter', sans-serif;
         }
 
         body.light-theme {
             --bg-primary: #f0f2f5;
             --bg-secondary: #ffffff;
             --bg-card: #e2e8f0;
+            --input-bg: #ffffff;
+
             --text-primary: #2d3748;
             --text-secondary: #4a5568;
             --text-light-gray: #718096;
+
             --border-color: #cbd5e1;
-            --input-bg: #ffffff;
             --gradient-start: #e0e7ff;
             --gradient-mid: #c3dafe;
             --gradient-end: #a7c5ff;
+
             --color-neon-blue: #007bff;
             --color-accent-yellow: #ff9800;
+
             --modal-bg: rgba(255, 255, 255, 0.8);
             --modal-content-bg: var(--bg-secondary);
         }
 
         body {
-            font-family: 'Orbitron', sans-serif;
+            font-family: var(--font-body);
             background-color: var(--bg-primary);
             color: var(--text-primary);
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -62,16 +73,77 @@
             padding: 2rem;
             box-sizing: border-box;
             gap: 2rem;
+            line-height: 1.6;
+            font-size: 1.05rem;
         }
         
+        h1, h2, h3 {
+            font-family: var(--font-heading);
+            line-height: 1.2;
+        }
+
         .text-neon-blue { color: var(--color-neon-blue); }
         .gradient-bg { background: linear-gradient(to right top, var(--gradient-start), var(--gradient-mid), var(--gradient-end)); }
         
+        .filter-drop-shadow-neon-blue {
+            filter: drop-shadow(0 0 5px var(--color-neon-blue)) drop-shadow(0 0 15px rgba(0, 255, 255, 0.5));
+        }
+
+        .avneed-neon-text {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 2.5rem;
+            color: var(--color-neon-blue);
+            text-shadow: 0 0 10px var(--color-neon-blue), 0 0 20px var(--color-neon-blue), 0 0 30px var(--color-neon-blue),
+                         0 0 40px rgba(0, 255, 255, 0.5), 0 0 70px rgba(0, 255, 255, 0.3);
+            animation: neon-pulse 1.5s ease-in-out infinite alternate,
+                       flame-flicker 0.5s infinite alternate;
+        }
+
+        @keyframes neon-pulse {
+            0% {
+                text-shadow: 0 0 10px var(--color-neon-blue), 0 0 20px var(--color-neon-blue), 0 0 30px var(--color-neon-blue),
+                             0 0 40px rgba(0, 255, 255, 0.5), 0 0 70px rgba(0, 255, 255, 0.3);
+                transform: scale(1);
+            }
+            100% {
+                text-shadow: 0 0 15px var(--color-neon-blue), 0 0 25px var(--color-neon-blue), 0 0 40px var(--color-neon-blue),
+                             0 0 50px rgba(0, 255, 255, 0.7), 0 0 80px rgba(0, 255, 255, 0.5);
+                transform: scale(1.02);
+            }
+        }
+
+        @keyframes flame-flicker {
+            0% {
+                transform: skewX(0deg) translateY(0);
+                text-shadow: 0 0 10px var(--color-neon-blue), 0 0 20px var(--color-neon-blue), 0 0 30px var(--color-neon-blue);
+            }
+            25% {
+                transform: skewX(0.5deg) translateY(-1px);
+                text-shadow: 0 0 8px var(--color-neon-blue), 0 0 18px var(--color-neon-blue), 0 0 28px var(--color-neon-blue);
+            }
+            50% {
+                transform: skewX(-0.5deg) translateY(1px);
+                text-shadow: 0 0 12px var(--color-neon-blue), 0 0 22px var(--color-neon-blue), 0 0 32px var(--color-neon-blue);
+            }
+            75% {
+                transform: skewX(0.3deg) translateY(-0.5px);
+                text-shadow: 0 0 9px var(--color-neon-blue), 0 0 19px var(--color-neon-blue), 0 0 29px var(--color-neon-blue);
+            }
+            100% {
+                transform: skewX(0deg) translateY(0);
+                text-shadow: 0 0 10px var(--color-neon-blue), 0 0 20px var(--color-neon-blue), 0 0 30px var(--color-neon-blue);
+            }
+        }
+
+
         .ai-button {
             @apply px-6 py-3 rounded-full text-white font-bold text-base shadow-lg transition duration-300 ease-in-out transform hover:scale-105;
             background: #2d3748;
             border: 2px solid var(--border-color);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            font-family: var(--font-body);
+            font-weight: 600;
         }
         .ai-button:hover {
             background: #374151;
@@ -103,6 +175,8 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
             cursor: pointer;
             flex-shrink: 0;
+            font-family: var(--font-body);
+            font-weight: 600;
         }
         .sphere-button:hover {
             background: #374151;
@@ -127,6 +201,8 @@
             color: var(--text-primary);
             @apply p-4 rounded-2xl border border-gray-700 focus:outline-none focus:ring-4 focus:ring-purple-600 transition duration-200 ease-in-out;
             border-color: var(--border-color);
+            font-family: var(--font-body);
+            font-size: 1rem;
         }
         
         .loading-spinner {
@@ -186,6 +262,7 @@
             font-weight: 600;
             text-align: center;
             z-index: 10;
+            font-family: var(--font-body);
         }
         .model-file-input-label {
             position: absolute;
@@ -209,7 +286,7 @@
         .model-file-input-label:hover {
             background: #374151;
             color: var(--color-neon-blue);
-            box-shadow: 0 0 25px 8px rgba(var(--color-neon-blue), 0.7), 0 0 10px 2px rgba(var(--color-neon-blue), 0.4);
+            box-shadow: 0 0 25px 8px rgba(0, 255, 255, 0.7), 0 0 10px 2px rgba(0, 255, 255, 0.4);
             border-color: var(--color-neon-blue);
             transform: scale(1.1);
         }
@@ -253,16 +330,18 @@
         .model-control-button {
             @apply px-1 py-0.5 rounded-md text-white font-bold text-xs transition duration-300 ease-in-out transform hover:scale-105;
             background: #2d3748;
-            border: 1px solid #4a5568;
+            border: 1px solid var(--border-color);
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
+            font-family: var(--font-body);
+            font-weight: 500;
         }
         .model-control-button:hover {
             background: #374151;
             color: var(--color-neon-blue);
-            box-shadow: 0 0 10px 3px rgba(var(--color-neon-blue), 0.5);
+            box-shadow: 0 0 10px 3px rgba(0, 255, 255, 0.5);
             border-color: var(--color-neon-blue);
         }
         .model-controls .grid-cols-3 .model-control-button {
@@ -294,11 +373,13 @@
             background: #2d3748;
             border: 1px solid #4a5568;
             cursor: pointer;
+            font-family: var(--font-body);
+            font-weight: 600;
         }
         .upload-menu-button:hover {
             background: #374151;
             color: var(--color-neon-blue);
-            box-shadow: 0 0 10px 3px rgba(var(--color-neon-blue), 0.5);
+            box-shadow: 0 0 10px 3px rgba(0, 255, 255, 0.5);
             border-color: var(--color-neon-blue);
         }
 
@@ -324,7 +405,7 @@
         .audio-controls:hover {
             background: #374151;
             color: var(--color-neon-blue);
-            box-shadow: 0 0 25px 8px rgba(var(--color-neon-blue), 0.7), 0 0 10px 2px rgba(var(--color-neon-blue), 0.4);
+            box-shadow: 0 0 25px 8px rgba(0, 255, 255, 0.7), 0 0 10px 2px rgba(0, 255, 255, 0.4);
             border-color: var(--color-neon-blue);
             transform: scale(1.1);
         }
@@ -345,7 +426,7 @@
 
         .settings-menu {
             position: absolute;
-            top: 70px;
+            top: 80px;
             right: 20px;
             background: rgba(45, 55, 72, 0.95);
             padding: 1rem;
@@ -365,11 +446,13 @@
             cursor: pointer;
             width: 100%;
             text-align: left;
+            font-family: var(--font-body);
+            font-weight: 600;
         }
         .settings-menu-button:hover {
             background: #374151;
             color: var(--color-neon-blue);
-            box-shadow: 0 0 10px 3px rgba(var(--color-neon-blue), 0.5);
+            box-shadow: 0 0 10px 3px rgba(0, 255, 255, 0.5);
             border-color: var(--color-neon-blue);
         }
 
@@ -380,6 +463,7 @@
             padding: 0.75rem;
             border-radius: 0.75rem;
             max-width: 75%;
+            font-family: var(--font-body);
         }
 
         #chatHistory p.user-message {
@@ -396,11 +480,13 @@
             border-bottom-left-radius: 0.25rem;
         }
 
-        #aiInputText, #imagePromptInput, #videoPromptInput, #userNotesInput {
+        #aiInputText, #imagePromptInput, #videoPromptInput, #userNotesInput, #chatbotInputText, #imageGenPromptInput {
             min-height: 2.5rem;
             max-height: 152px;
             overflow-y: hidden;
             box-sizing: border-box;
+            font-family: var(--font-body);
+            font-size: 1rem;
         }
 
         .glitch-text {
@@ -431,24 +517,6 @@
             75% {
                 text-shadow: 0.025em 0.01em 0 var(--color-accent-yellow), -0.05em -0.025em 0 var(--color-neon-blue), -0.01em 0.05em 0 var(--color-accent-yellow);
                 transform: translate(-0.02em, 0.01em);
-            }
-            100% {
-                color: var(--text-primary);
-                text-shadow: none;
-                transform: scale(1);
-            }
-        }
-
-        @keyframes neon-pulse {
-            0% {
-                color: var(--text-primary);
-                text-shadow: none;
-                transform: scale(1);
-            }
-            50% {
-                color: var(--color-neon-blue);
-                text-shadow: 0 0 10px var(--color-neon-blue), 0 0 20px var(--color-neon-blue), 0 0 30px var(--color-neon-blue);
-                transform: scale(1.02);
             }
             100% {
                 color: var(--text-primary);
@@ -543,6 +611,7 @@
             font-size: 1.2rem;
             border-radius: 1rem;
             z-index: 10;
+            font-family: var(--font-body);
         }
 
         .image-loading-spinner, .video-loading-spinner {
@@ -588,6 +657,8 @@
             transition: transform 0.3s ease, opacity 0.3s ease;
             border: 1px solid var(--border-color);
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .modal-overlay.visible .modal-content {
@@ -626,8 +697,9 @@
         }
 
         .ai-feature-content p {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             margin-bottom: 1rem;
+            line-height: 1.6;
         }
 
         .ai-feature-content .card {
@@ -635,11 +707,11 @@
             border-radius: 1.5rem;
         }
         .ai-feature-content .input-field {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             padding: 0.75rem;
         }
         .ai-feature-content #chatHistory p {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             padding: 0.6rem;
             margin-bottom: 0.3rem;
         }
@@ -648,11 +720,14 @@
             height: 25px;
         }
         .ai-feature-content .ai-button {
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             padding: 0.6rem 1rem;
         }
 
         @media (max-width: 640px) {
+            body {
+                font-size: 0.95rem;
+            }
             .modal-content {
                 max-width: 95%;
                 padding: 1rem;
@@ -662,91 +737,96 @@
                 font-size: 1.8rem;
             }
             .ai-feature-content p {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
             }
             .ai-feature-content .input-field {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
             }
             .ai-feature-content #chatHistory p {
-                font-size: 0.75rem;
+                font-size: 0.8rem;
             }
             .ai-feature-content .ai-button {
-                font-size: 0.75rem;
+                font-size: 0.8rem;
                 padding: 0.5rem 0.8rem;
+            }
+            .avneed-neon-text {
+                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <header class="gradient-bg text-white py-6 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center px-6">
-            <h1 class="text-4xl font-extrabold tracking-tight text-neon-blue">Avneed</h1>
-            <nav class="flex items-center space-x-8 text-lg font-semibold">
-                <ul class="flex space-x-8">
-                    <li><a href="#ai-features" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">Features</a></li>
-                </ul>
-                <button id="settingsBtn" class="ml-4" aria-label="Settings">⚙️</button>
-            </nav>
-        </div>
-        <div id="settingsMenu" class="settings-menu hidden" role="menu" aria-labelledby="settingsBtn">
-            <button class="settings-menu-button" data-theme="dark" role="menuitem">Dark Theme</button>
-            <button class="settings-menu-button" data-theme="light" role="menuitem">Light Theme</button>
-            <div class="border-t border-gray-600 my-2"></div>
-        </div>
-    </header>
-
-    <section id="ai-features" class="py-20 px-6 bg-[#1a1a2e] shadow-inner text-center">
-        <div class="container mx-auto">
-            <h3 class="text-5xl font-bold mb-16 text-gray-100 leading-tight">Explore Avneed's AI Capabilities</h3>
-            <div class="flex flex-col md:flex-row justify-center gap-8">
-                <button id="openLoginNotesBtn" class="sphere-button neon-hover" aria-label="Open Login & Notes">Login & Notes</button>
-                <button id="openAvneedChatbotBtn" class="sphere-button neon-hover" aria-label="Open Chatbot">Chatbot</button>
-                <button id="openImageGeneratorBtn" class="sphere-button neon-hover" aria-label="Open Image Generator">Image</button>
-                <button id="open3DViewerBtn" class="sphere-button neon-hover" aria-label="Open 3D Model Viewer">3D Viewer</button>
+    <section id="ai-features" class="py-20 px-6 bg-[#1a1a2e] shadow-inner text-center flex flex-col items-center justify-center">
+        <div id="sectionHeader" class="gradient-bg text-white p-6 rounded-[2.5rem] shadow-lg mb-16 w-full max-w-4xl relative">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <img src="https://imelijah88.github.io/Avneed/logo.png" alt="Avneed AI Logo" class="h-10 md:h-12 lg:h-14 w-auto object-contain filter-drop-shadow-neon-blue">
+                    <span class="avneed-neon-text">Avneed</span>
+                </div>
+                <nav class="flex items-center space-x-8 text-lg font-semibold">
+                    <ul class="flex space-x-8">
+                        <li><a href="#ai-features" class="hover:text-yellow-300 transition duration-300 transform hover:scale-105">Features</a></li>
+                    </ul>
+                    <button id="settingsBtn" class="ml-4" aria-label="Settings">⚙️</button>
+                </nav>
+            </div>
+            <div id="settingsMenu" class="settings-menu hidden" role="menu" aria-labelledby="settingsBtn">
+                <button class="settings-menu-button" data-theme="dark" role="menuitem">Dark Theme</button>
+                <button class="settings-menu-button" data-theme="light" role="menuitem">Light Theme</button>
+                <div class="border-t border-gray-600 my-2"></div>
             </div>
         </div>
-    </section>
-
-    <footer class="bg-gray-950 text-white py-10 px-6">
-        <div class="container mx-auto text-center text-gray-500">
-            <p class="text-lg" id="copyrightText">&copy; 2025 <span class="text-neon-blue">Avneed</span>. All rights reserved.</p>
-            <p class="mt-4 text-md" id="designMessage">Designed with precision for a smarter future.</p>
+        <div class="flex flex-col md:flex-row justify-center gap-8">
+            <button id="openLoginNotesBtn" class="sphere-button neon-hover" aria-label="Open Login & Notes">Login & Notes</button>
+            <button id="openAvneedChatbotBtn" class="sphere-button neon-hover" aria-label="Open Chatbot">Chatbot</button>
+            <button id="openImageGeneratorBtn" class="sphere-button neon-hover" aria-label="Open Image Generator">Image</button>
+            <button id="open3DViewerBtn" class="sphere-button neon-hover" aria-label="Open 3D Model Viewer">3D Viewer</button>
         </div>
-    </footer>
+    </section>
 
     <div id="aiModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal-content">
             <button class="modal-close-button" id="closeModalBtn" aria-label="Close Modal">&times;</button>
-            <div id="modalContentArea">
+            <div id="modalContentArea" class="flex flex-col flex-grow">
             </div>
         </div>
     </div>
 
     <div id="loginNotesContent" class="ai-feature-content hidden">
-        <div class="max-w-md mx-auto bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700 text-center">
+        <div class="max-w-md mx-auto bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700 text-center mb-8">
             <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight" id="modalLoginTitle">Account</h2>
             <p class="text-sm text-gray-300 mb-4" id="modalManageAccountText">
                 Manage your Avneed account.
             </p>
-            <div class="flex flex-col gap-4 mb-6">
+
+            <div id="loginButtonsContainer" class="flex flex-col gap-4 mb-6">
                 <button id="modalLoginBtnGoogle" class="ai-button" aria-label="Log In with Google">Log In with Google</button>
                 <button id="modalLoginBtnGithub" class="ai-button" aria-label="Log In with GitHub">Log In with GitHub</button>
                 <button id="modalLoginBtnGuest" class="ai-button" aria-label="Continue as Guest">Continue as Guest</button>
-                <button id="modalLogoutBtn" class="ai-button hidden" aria-label="Log Out">Log Out</button>
             </div>
-            <p id="modalUserIdDisplay" class="text-sm text-gray-400 hidden"></p>
-            <button id="modalCopyUserIdBtn" class="ai-button text-xs mt-2 hidden" aria-label="Copy User ID">Copy User ID</button>
+
+            <div id="loggedInStatusContainer" class="hidden flex items-center justify-between bg-gray-800 p-3 rounded-xl shadow-inner">
+                <p id="modalUserIdDisplay" class="text-sm text-gray-400 truncate mr-2"></p>
+                <div class="flex gap-2">
+                    <button id="modalCopyUserIdBtn" class="ai-button text-xs px-3 py-1" aria-label="Copy User ID">Copy ID</button>
+                    <button id="modalLogoutBtn" class="ai-button text-xs px-3 py-1" aria-label="Log Out">Log Out</button>
+                </div>
+            </div>
             <p id="modalLoginStatus" class="mt-2 text-center text-yellow-400 text-xs"></p>
         </div>
 
-        <div class="max-w-md mx-auto bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700 text-center mt-8">
+        <div class="max-w-md mx-auto bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700 text-center flex flex-col flex-grow">
             <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight" id="modalNotesTitle">Your Project Notes 📝</h2>
             <p class="text-sm text-gray-300 mb-4" id="modalNotesLoginPrompt">
                 Log in to save and load your personal project notes. These notes are private to your account.
             </p>
-            <div class="flex flex-col gap-4 mb-6">
-                <textarea id="modalUserNotesInput" class="flex-grow input-field resize-none" placeholder="Type your private project notes here..." disabled aria-label="Your private project notes"></textarea>
-                <button id="modalSaveNotesBtn" class="ai-button" disabled aria-label="Save Notes">Save Project Notes</button>
+            <div class="flex flex-col gap-4 mb-6 flex-grow">
+                <textarea id="modalUserNotesInput" class="flex-grow input-field resize-none h-48" placeholder="Type your private project notes here..." disabled aria-label="Your private project notes"></textarea>
+                <div class="flex gap-2">
+                    <button id="modalSaveNotesBtn" class="ai-button flex-grow" disabled aria-label="Save Notes">Save Project Notes</button>
+                    <label for="notesFileInput" class="ai-button flex-shrink-0 flex items-center justify-center cursor-pointer">Upload Notes</label>
+                    <input type="file" id="notesFileInput" accept=".txt" class="hidden-file-input">
+                </div>
             </div>
             <p id="modalUserNotesStatus" class="mt-2 text-center text-gray-400 text-xs">Please log in to save notes.</p>
         </div>
@@ -862,7 +942,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInWithPopup, GithubAuthProvider, GoogleAuthProvider, signInAnonymously, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInWithCustomToken, signInWithPopup, GithubAuthProvider, GoogleAuthProvider, signInAnonymously, signOut, onAuthStateChanged, fetchSignInMethodsForEmail, linkWithCredential } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = 'avneed-github-pages'; 
@@ -888,8 +968,6 @@
         let modalViewerInstance = null; 
 
         let unsubscribeProjectNotes = null;
-
-        // Removed translations object
 
         function disableFirebaseFeatures(message) {
             console.warn("Firebase features disabled:", message);
@@ -960,21 +1038,21 @@
                                 if (document.getElementById('modalLoginBtnGoogle') && document.getElementById('aiModal').classList.contains('visible')) {
                                     updateLoginButtonsInModal(false, null);
                                     document.getElementById('modalUserNotesInput').value = '';
-                                    document.getElementById('modalUserNotesStatus').textContent = 'Please log in to save notes.'; // Hardcoded
+                                    document.getElementById('modalUserNotesStatus').textContent = 'Please log in to save notes.';
                                 }
                             }
                         });
                     } else {
                         console.error("Firebase Auth could not be initialized. Check your Firebase configuration.");
-                        disableFirebaseFeatures('Firebase initialization failed. Check console for details.'); // Hardcoded
+                        disableFirebaseFeatures('Firebase initialization failed. Check console for details.');
                     }
                 } catch (firebaseInitError) {
                     console.error("Error initializing Firebase app:", firebaseInitError);
-                    disableFirebaseFeatures('Firebase initialization failed. Check console for details.'); // Hardcoded
+                    disableFirebaseFeatures('Firebase initialization failed. Check console for details.');
                 }
             } else {
                 console.warn("Firebase config not found or incomplete. Firebase features will be disabled. Please ensure firebaseConfig is correctly set in your script.");
-                disableFirebaseFeatures('Firebase config not found. Features disabled. Please configure Firebase.'); // Hardcoded
+                disableFirebaseFeatures('Firebase config not found. Features disabled. Please configure Firebase.');
             }
         });
 
@@ -1036,6 +1114,8 @@
         }
 
         function initLoginNotesFeature() {
+            const loginButtonsContainer = document.getElementById('loginButtonsContainer');
+            const loggedInStatusContainer = document.getElementById('loggedInStatusContainer');
             const loginBtnGoogle = document.getElementById('modalLoginBtnGoogle');
             const loginBtnGithub = document.getElementById('modalLoginBtnGithub');
             const loginBtnGuest = document.getElementById('modalLoginBtnGuest');
@@ -1049,38 +1129,83 @@
             const notesTitle = document.getElementById('modalNotesTitle');
             const manageAccountText = document.getElementById('modalManageAccountText');
             const userNotesStatus = document.getElementById('modalUserNotesStatus');
+            const notesFileInput = document.getElementById('notesFileInput');
 
-            if (notesTitle) notesTitle.textContent = 'Your Project Notes 📝'; // Hardcoded
-            if (notesLoginPrompt) notesLoginPrompt.textContent = 'Log in to save and load your personal project notes. These notes are private to your account.'; // Hardcoded
-            if (userNotesInput) userNotesInput.placeholder = 'Type your private project notes here...'; // Hardcoded
-            if (saveNotesBtn) saveNotesBtn.textContent = 'Save Project Notes'; // Hardcoded
-            if (manageAccountText) manageAccountText.textContent = 'Manage your Avneed account.'; // Hardcoded
-            if (loginBtnGoogle) loginBtnGoogle.textContent = 'Log In with Google'; // Hardcoded
-            if (loginBtnGithub) loginBtnGithub.textContent = 'Log In with GitHub'; // Hardcoded
-            if (loginBtnGuest) loginBtnGuest.textContent = 'Continue as Guest'; // Hardcoded
-            if (logoutBtn) logoutBtn.textContent = 'Log Out'; // Hardcoded
-            if (copyUserIdBtn) copyUserIdBtn.textContent = 'Copy User ID'; // Hardcoded
-            if (userNotesStatus) userNotesStatus.textContent = 'Please log in to save notes.'; // Hardcoded
+            if (notesTitle) notesTitle.textContent = 'Your Project Notes 📝';
+            if (notesLoginPrompt) notesLoginPrompt.textContent = 'Log in to save and load your personal project notes. These notes are private to your account.';
+            if (userNotesInput) userNotesInput.placeholder = 'Type your private project notes here...';
+            if (saveNotesBtn) saveNotesBtn.textContent = 'Save Project Notes';
+            if (manageAccountText) manageAccountText.textContent = 'Manage your Avneed account.';
+            if (loginBtnGoogle) loginBtnGoogle.textContent = 'Log In with Google';
+            if (loginBtnGithub) loginBtnGithub.textContent = 'Log In with GitHub';
+            if (loginBtnGuest) loginBtnGuest.textContent = 'Continue as Guest';
+            if (logoutBtn) logoutBtn.textContent = 'Log Out';
+            if (copyUserIdBtn) copyUserIdBtn.textContent = 'Copy ID';
+            if (userNotesStatus) userNotesStatus.textContent = 'Please log in to save notes.';
 
             if (loginBtnGoogle) loginBtnGoogle.addEventListener('click', async () => {
-                if (!auth) { showStatusMessage(loginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; } // Hardcoded
+                if (!auth) { showStatusMessage(loginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; }
                 const provider = new GoogleAuthProvider();
                 try { await signInWithPopup(auth, provider); console.log("Signed in with Google!"); }
-                catch (error) { console.error("Error signing in with Google:", error); if (loginStatus) loginStatus.textContent = `Google login failed: ${error.message}`; }
+                catch (error) { 
+                    console.error("Error signing in with Google:", error); 
+                    if (error.code === 'auth/account-exists-with-different-credential') {
+                        const pendingCred = error.credential;
+                        const email = error.email;
+                        try {
+                            const methods = await fetchSignInMethodsForEmail(auth, email);
+                            const firstMethod = methods[0];
+                            if (auth.currentUser) {
+                                await linkWithCredential(auth.currentUser, pendingCred);
+                                showStatusMessage(loginStatus, `Account linked successfully!`, 'success');
+                                console.log("Account linked with Google!");
+                            } else {
+                                showStatusMessage(loginStatus, `Account with ${email} already exists. Please sign in with ${firstMethod} first.`, 'error');
+                            }
+                        } catch (linkError) {
+                            console.error("Error linking account:", linkError);
+                            showStatusMessage(loginStatus, `Error linking account: ${linkError.message}`, 'error');
+                        }
+                    } else {
+                        if (loginStatus) loginStatus.textContent = `Google login failed: ${error.message}`; 
+                    }
+                }
             });
             if (loginBtnGithub) loginBtnGithub.addEventListener('click', async () => {
-                if (!auth) { showStatusMessage(loginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; } // Hardcoded
+                if (!auth) { showStatusMessage(loginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; }
                 const provider = new GithubAuthProvider();
                 try { await signInWithPopup(auth, provider); console.log("Signed in with GitHub!"); }
-                catch (error) { console.error("Error signing in with GitHub:", error); if (loginStatus) loginStatus.textContent = `GitHub login failed: ${error.message}`; }
+                catch (error) { 
+                    console.error("Error signing in with GitHub:", error); 
+                    if (error.code === 'auth/account-exists-with-different-credential') {
+                        const pendingCred = error.credential;
+                        const email = error.email;
+                        try {
+                            const methods = await fetchSignInMethodsForEmail(auth, email);
+                            const firstMethod = methods[0];
+                            if (auth.currentUser) {
+                                await linkWithCredential(auth.currentUser, pendingCred);
+                                showStatusMessage(loginStatus, `Account linked successfully!`, 'success');
+                                console.log("Account linked with GitHub!");
+                            } else {
+                                showStatusMessage(loginStatus, `Account with ${email} already exists. Please sign in with ${firstMethod} first.`, 'error');
+                            }
+                        } catch (linkError) {
+                            console.error("Error linking account:", linkError);
+                            showStatusMessage(loginStatus, `Error linking account: ${linkError.message}`, 'error');
+                        }
+                    } else {
+                        if (loginStatus) loginStatus.textContent = `GitHub login failed: ${error.message}`; 
+                    }
+                }
             });
             if (loginBtnGuest) loginBtnGuest.addEventListener('click', async () => {
-                if (!auth) { showStatusMessage(loginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; } // Hardcoded
+                if (!auth) { showStatusMessage(loginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; }
                 try { await signInAnonymously(auth); console.log("Signed in as Guest!"); }
                 catch (error) { console.error("Error signing in anonymously:", error); if (loginStatus) loginStatus.textContent = `Guest login failed: ${error.message}`; }
             });
             if (logoutBtn) logoutBtn.addEventListener('click', async () => {
-                if (!auth) { showStatusMessage(loginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; } // Hardcoded
+                if (!auth) { showStatusMessage(loginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; }
                 try { await signOut(auth); console.log("User signed out."); }
                 catch (error) { console.error("Error signing out:", error); if (loginStatus) loginStatus.textContent = `Logout failed: ${error.message}`; }
             });
@@ -1099,6 +1224,38 @@
                 });
             }
 
+            if (notesFileInput) {
+                notesFileInput.addEventListener('change', async (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        if (file.type !== 'text/plain') {
+                            showStatusMessage(userNotesStatus, 'Please upload a plain text (.txt) file.', 'error');
+                            return;
+                        }
+                        showStatusMessage(userNotesStatus, 'Reading file...', 'info');
+                        try {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                userNotesInput.value = e.target.result;
+                                userNotesInput.style.height = 'auto';
+                                userNotesInput.style.height = (userNotesInput.scrollHeight) + 'px';
+                                showStatusMessage(userNotesStatus, 'Notes loaded from file!', 'success');
+                                saveProjectNotesInModal();
+                            };
+                            reader.onerror = (e) => {
+                                showStatusMessage(userNotesStatus, `Error reading file: ${e.target.error.name}`, 'error');
+                                console.error('File reading error:', e.target.error);
+                            };
+                            reader.readAsText(file);
+                        } catch (error) {
+                            showStatusMessage(userNotesStatus, `Error processing file: ${error.message}`, 'error');
+                            console.error('File processing error:', error);
+                        }
+                    }
+                });
+            }
+
+
             updateLoginButtonsInModal(!!userId, auth?.currentUser);
             if (userId) {
                 loadProjectNotesInModal();
@@ -1109,19 +1266,19 @@
             const userNotesInput = document.getElementById('modalUserNotesInput');
             const userNotesStatus = document.getElementById('modalUserNotesStatus');
 
-            if (!userId) { showStatusMessage(userNotesStatus, 'Please log in to save notes.', 'error'); return; } // Hardcoded
-            if (!db) { showStatusMessage(userNotesStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; } // Hardcoded
+            if (!userId) { showStatusMessage(userNotesStatus, 'Please log in to save notes.', 'error'); return; }
+            if (!db) { showStatusMessage(userNotesStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; }
 
             const projectNotes = userNotesInput.value;
             const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'private', 'my-project-notes');
 
             try {
                 await setDoc(userDocRef, { content: projectNotes, timestamp: new Date() }, { merge: true });
-                showStatusMessage(userNotesStatus, 'Project notes saved successfully!', 'success'); // Hardcoded
+                showStatusMessage(userNotesStatus, 'Project notes saved successfully!', 'success');
                 console.log("User project notes saved.");
             } catch (error) {
                 console.error("Error saving project notes:", error);
-                showStatusMessage(userNotesStatus, `Error saving project notes: ${error.message}`, 'error'); // Hardcoded
+                showStatusMessage(userNotesStatus, `Error saving project notes: ${error.message}`, 'error');
             }
         }
 
@@ -1133,7 +1290,7 @@
                 unsubscribeProjectNotes();
             }
 
-            if (!userId || !db) { showStatusMessage(userNotesStatus, 'Please log in to save notes.', 'error'); return; } // Hardcoded
+            if (!userId || !db) { showStatusMessage(userNotesStatus, 'Please log in to save notes.', 'error'); return; }
 
             const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'private', 'my-project-notes');
 
@@ -1141,60 +1298,58 @@
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     if (userNotesInput) userNotesInput.value = data.content || '';
-                    if (userNotesStatus) userNotesStatus.textContent = 'Project notes loaded.'; // Hardcoded
+                    if (userNotesStatus) userNotesStatus.textContent = 'Project notes loaded.';
                 } else {
                     if (userNotesInput) userNotesInput.value = '';
-                    if (userNotesStatus) userNotesStatus.textContent = 'No project notes found. Start typing!'; // Hardcoded
+                    if (userNotesStatus) userNotesStatus.textContent = 'No project notes found. Start typing!';
                 }
                 console.log("User project notes loaded/updated from Firestore.");
             }, (error) => {
                 console.error("Error loading project notes:", error);
-                showStatusMessage(userNotesStatus, `Error loading project notes: ${error.message}`, 'error'); // Hardcoded
+                showStatusMessage(userNotesStatus, `Error loading project notes: ${error.message}`, 'error');
             });
         }
 
         function updateLoginButtonsInModal(isLoggedIn, user) {
-            const loginBtnGoogle = document.getElementById('modalLoginBtnGoogle');
-            const loginBtnGithub = document.getElementById('modalLoginBtnGithub');
-            const loginBtnGuest = document.getElementById('modalLoginBtnGuest');
+            const loginButtonsContainer = document.getElementById('loginButtonsContainer');
+            const loggedInStatusContainer = document.getElementById('loggedInStatusContainer');
             const logoutBtn = document.getElementById('modalLogoutBtn');
             const userNotesInput = document.getElementById('modalUserNotesInput');
             const saveNotesBtn = document.getElementById('modalSaveNotesBtn');
             const userIdDisplay = document.getElementById('modalUserIdDisplay');
             const copyUserIdBtn = document.getElementById('modalCopyUserIdBtn');
             const loginStatus = document.getElementById('modalLoginStatus');
+            const modalLoginTitle = document.getElementById('modalLoginTitle');
+            const modalManageAccountText = document.getElementById('modalManageAccountText');
 
             if (isLoggedIn) {
-                if (loginBtnGoogle) loginBtnGoogle.classList.add('hidden');
-                if (loginBtnGithub) loginBtnGithub.classList.add('hidden');
-                if (loginBtnGuest) {
-                    if (user && user.isAnonymous) { loginBtnGuest.classList.remove('hidden'); }
-                    else { loginBtnGuest.classList.add('hidden'); }
-                }
-                if (logoutBtn) logoutBtn.classList.remove('hidden');
+                if (loginButtonsContainer) loginButtonsContainer.classList.add('hidden');
+                if (loggedInStatusContainer) loggedInStatusContainer.classList.remove('hidden');
+                if (modalLoginTitle) modalLoginTitle.classList.add('hidden');
+                if (modalManageAccountText) modalManageAccountText.classList.add('hidden');
+
                 if (userNotesInput) userNotesInput.disabled = false;
                 if (saveNotesBtn) saveNotesBtn.disabled = false;
 
                 if (userIdDisplay) {
-                    userIdDisplay.textContent = `Logged in as: ${user.isAnonymous ? 'Guest User' : user.uid}`; // Hardcoded
-                    userIdDisplay.classList.remove('hidden');
+                    const displayId = user.isAnonymous ? 'Guest User' : user.uid;
+                    userIdDisplay.textContent = `Logged in as: ${displayId.length > 20 ? displayId.substring(0, 10) + '...' + displayId.substring(displayId.length - 10) : displayId}`;
                 }
                 if (copyUserIdBtn) {
-                    copyUserIdBtn.classList.remove('hidden');
-                    copyUserIdBtn.textContent = 'Copy User ID'; // Hardcoded
+                    copyUserIdBtn.textContent = 'Copied!';
+                    setTimeout(() => { copyUserIdBtn.textContent = 'Copy ID'; }, 2000);
                 }
                 if (loginStatus) loginStatus.textContent = '';
             } else {
-                if (loginBtnGoogle) loginBtnGoogle.classList.remove('hidden');
-                if (loginBtnGithub) loginBtnGithub.classList.remove('hidden');
-                if (loginBtnGuest) loginBtnGuest.classList.remove('hidden');
-                if (logoutBtn) logoutBtn.classList.add('hidden');
+                if (loginButtonsContainer) loginButtonsContainer.classList.remove('hidden');
+                if (loggedInStatusContainer) loggedInStatusContainer.classList.add('hidden');
+                if (modalLoginTitle) modalLoginTitle.classList.remove('hidden');
+                if (modalManageAccountText) modalManageAccountText.classList.remove('hidden');
+
                 if (userNotesInput) userNotesInput.disabled = true;
                 if (saveNotesBtn) saveNotesBtn.disabled = true;
 
-                if (userIdDisplay) userIdDisplay.classList.add('hidden');
-                if (copyUserIdBtn) copyUserIdBtn.classList.add('hidden');
-                if (loginStatus) loginStatus.textContent = 'Please log in to save notes.'; // Hardcoded
+                if (loginStatus) loginStatus.textContent = 'Please log in to save notes.';
             }
         }
 
@@ -1208,11 +1363,11 @@
                 tempInput.select();
                 try {
                     document.execCommand('copy');
-                    copyButton.textContent = 'Copied!'; // Hardcoded
-                    setTimeout(() => { copyButton.textContent = 'Copy User ID'; }, 2000); // Hardcoded
+                    copyButton.textContent = 'Copied!';
+                    setTimeout(() => { copyButton.textContent = 'Copy ID'; }, 2000);
                 } catch (err) {
                     console.error('Failed to copy text: ', err);
-                    copyButton.textContent = 'Failed to copy!'; // Hardcoded
+                    copyButton.textContent = 'Failed to copy!';
                 }
                 document.body.removeChild(tempInput);
             }
@@ -1227,15 +1382,15 @@
             const aiFileInputLabel = document.getElementById('chatbotFileInputLabel');
             const aiInputText = document.getElementById('chatbotInputText');
 
-            chatHistoryDiv.innerHTML = `<p class="ai-message">Hello! How can I assist?</p>`; // Hardcoded
+            chatHistoryDiv.innerHTML = `<p class="ai-message">Hello! How can I assist?</p>`;
             let chatHistory = []; 
 
-            document.querySelector('#chatbotContent h2').textContent = 'AI Chatbot 💬'; // Hardcoded
-            document.querySelector('#chatbotContent p.text-sm').innerHTML = 'Chat or upload a file (.txt, .doc, .pdf).<br><span class="text-xs text-gray-400">(Plain text only from files.)</span>'; // Hardcoded
-            if (aiInputText) aiInputText.placeholder = 'Type message...'; // Hardcoded
-            if (aiFileInputLabel) aiFileInputLabel.textContent = 'Upload'; // Hardcoded
-            if (sendBtn) sendBtn.textContent = 'Send'; // Hardcoded
-            if (loadingIndicator) loadingIndicator.querySelector('p').textContent = 'Thinking...'; // Hardcoded
+            document.querySelector('#chatbotContent h2').textContent = 'AI Chatbot 💬';
+            document.querySelector('#chatbotContent p.text-sm').innerHTML = 'Chat or upload a file (.txt, .doc, .pdf).<br><span class="text-xs text-gray-400">(Plain text only from files.)</span>';
+            if (aiInputText) aiInputText.placeholder = 'Type message...';
+            if (aiFileInputLabel) aiFileInputLabel.textContent = 'Upload';
+            if (sendBtn) sendBtn.textContent = 'Send';
+            if (loadingIndicator) loadingIndicator.querySelector('p').textContent = 'Thinking...';
 
 
             if (aiInputText) {
@@ -1295,11 +1450,11 @@
                         appendMessage(aiResponseText, 'ai');
                         chatHistory.push({ role: "model", parts: [{ text: aiResponseText }] });
                     } else {
-                        appendMessage("Sorry, I couldn't generate a response. Please try again.", 'ai'); // Hardcoded
+                        appendMessage("Sorry, I couldn't generate a response. Please try again.", 'ai');
                         console.error('API response structure unexpected:', result);
                     }
                 } catch (error) {
-                    appendMessage("An error occurred while connecting to the AI. Please check your internet connection or try again later.", 'ai'); // Hardcoded
+                    appendMessage("An error occurred while connecting to the AI. Please check your internet connection or try again later.", 'ai');
                     chatStatus.textContent = `Error: ${error.message}`;
                     console.error('Error during API call:', error);
                 } finally {
@@ -1315,7 +1470,7 @@
                 if (prompt) {
                     sendMessage(prompt);
                 } else {
-                    chatStatus.textContent = 'Please enter a message or upload a file.'; // Hardcoded
+                    chatStatus.textContent = 'Please enter a message or upload a file.';
                 }
             });
 
@@ -1329,17 +1484,17 @@
             aiFileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
                 if (file) {
-                    chatStatus.textContent = 'Reading file...'; // Hardcoded
+                    chatStatus.textContent = 'Reading file...';
                     try {
                         const reader = new FileReader();
                         reader.onload = async (e) => {
                             const fileContent = e.target.result;
                             const prompt = `Analyze the following content from a file: ${file.name}`;
                             await sendMessage(prompt, fileContent);
-                            chatStatus.textContent = 'File processed and message sent.'; // Hardcoded
+                            chatStatus.textContent = 'File processed and message sent.';
                         };
                         reader.onerror = (e) => {
-                            chatStatus.textContent = `Error reading file: ${e.target.error.name}`; // Hardcoded
+                            chatStatus.textContent = `Error reading file: ${e.target.error.name}`;
                             console.error('File reading error:', e.target.error);
                         };
                         reader.readAsText(file);
@@ -1360,10 +1515,10 @@
             const imageGenStatus = document.getElementById('imageGenStatus');
             const imageGenAspectRatioSelect = document.getElementById('imageGenAspectRatio');
 
-            document.querySelector('#imageGeneratorContent h2').textContent = 'AI Image Generator 🖼️'; // Hardcoded
-            document.querySelector('#imageGeneratorContent p.text-sm').textContent = 'Enter a prompt to generate an image.'; // Hardcoded
-            if (imageGenPromptInput) imageGenPromptInput.placeholder = 'Describe the image you want to generate...'; // Hardcoded
-            if (imageGenGenerateBtn) imageGenGenerateBtn.textContent = 'Generate Image'; // Hardcoded
+            document.querySelector('#imageGeneratorContent h2').textContent = 'AI Image Generator 🖼️';
+            document.querySelector('#imageGeneratorContent p.text-sm').textContent = 'Enter a prompt to generate an image.';
+            if (imageGenPromptInput) imageGenPromptInput.placeholder = 'Describe the image you want to generate...';
+            if (imageGenGenerateBtn) imageGenGenerateBtn.textContent = 'Generate Image';
 
             if (imageGenPromptInput) {
                 imageGenPromptInput.addEventListener('input', () => {
@@ -1389,7 +1544,7 @@
 
                 imageGenDisplayArea.classList.remove('hidden');
                 imageGenLoadingOverlay.classList.remove('hidden');
-                imageGenStatus.textContent = 'Generating image... This may take a moment.'; // Hardcoded
+                imageGenStatus.textContent = 'Generating image... This may take a moment.';
                 imageGenGeneratedImage.src = '';
                 imageGenGeneratedImage.alt = 'Generating...';
 
@@ -1412,9 +1567,9 @@
                         const imageUrl = `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
                         imageGenGeneratedImage.src = imageUrl;
                         imageGenGeneratedImage.alt = `Generated image for prompt: ${prompt}`;
-                        showStatusMessage(imageGenStatus, 'Image generated successfully!', 'success'); // Hardcoded
+                        showStatusMessage(imageGenStatus, 'Image generated successfully!', 'success');
                     } else {
-                        showStatusMessage(imageGenStatus, 'Failed to generate image. Please try a different prompt.', 'error'); // Hardcoded
+                        showStatusMessage(imageGenStatus, 'Failed to generate image. Please try a different prompt.', 'error');
                         console.error('Image generation response missing expected data:', result);
                     }
                 } catch (error) {
@@ -1456,8 +1611,8 @@
             scene.add(pointLight);
 
             statusElement.classList.remove('hidden');
-            statusElement.innerHTML = `<p>Upload a 3D model (.gltf, .glb)</p><p>Use mouse to interact</p>`; // Hardcoded
-
+            statusElement.innerHTML = `<p>Upload a 3D model (.gltf, .glb)</p><p>Use mouse to interact</p>`;
+            
             const playPauseButton = audioControlsElement.querySelector('[data-action="play-pause"]');
             if (playPauseButton) {
                 audioPlayerElement.addEventListener('play', () => { playPauseButton.textContent = '⏸'; });
@@ -1522,7 +1677,7 @@
 
         function loadModel(modelPath, viewerInstance, statusElement, controlsElement, fileInputLabelElement, audioControlsElement) {
             statusElement.classList.remove('hidden');
-            statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>Loading 3D Model...</p>`; // Hardcoded
+            statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>Loading 3D Model... </p>`;
             
             if (fileInputLabelElement) fileInputLabelElement.classList.add('hidden');
             if (controlsElement) controlsElement.classList.add('hidden');
@@ -1584,10 +1739,10 @@
 
             }, (xhr) => {
                 const percent = (xhr.loaded / xhr.total * 100).toFixed(0);
-                statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>Loading 3D Model... ${percent}%</p>`; // Hardcoded
+                statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>Loading 3D Model... ${percent}%</p>`;
             }, (error) => {
                 statusElement.classList.remove('hidden');
-                statusElement.innerHTML = `<p class="text-red-500">Error loading model: ${error.message || 'Unknown error'}</p>`; // Hardcoded
+                statusElement.innerHTML = `<p class="text-red-500">Error loading model: ${error.message || 'Unknown error'}</p>`;
                 if (fileInputLabelElement) fileInputLabelElement.classList.remove('hidden');
                 if (controlsElement) controlsElement.classList.add('hidden');
                 if (audioControlsElement) audioControlsElement.classList.add('hidden');

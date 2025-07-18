@@ -13,6 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/pmrem/PMREMGenerator.js"></script>
 
     <style>
+        /* CSS Variables for Theming */
         :root {
             --bg-primary: #333333;
             --bg-secondary: #1a1a2e;
@@ -38,6 +39,7 @@
             --font-body: 'Inter', sans-serif;
         }
 
+        /* Light Theme Overrides */
         body.light-theme {
             --bg-primary: #f0f2f5;
             --bg-secondary: #ffffff;
@@ -60,6 +62,7 @@
             --modal-content-bg: var(--bg-secondary);
         }
 
+        /* Global Body and Heading Styles */
         body {
             font-family: var(--font-body);
             background-color: var(--bg-primary);
@@ -81,6 +84,7 @@
             line-height: 1.2;
         }
 
+        /* Neon Text and Gradient Backgrounds */
         .text-neon-blue { color: var(--color-neon-blue); }
         .gradient-bg { background: linear-gradient(to right top, var(--gradient-start), var(--gradient-mid), var(--gradient-end)); }
         
@@ -135,7 +139,7 @@
             }
         }
 
-
+        /* AI Button Styles */
         .ai-button {
             @apply px-6 py-3 rounded-full text-white font-bold text-base shadow-lg transition duration-300 ease-in-out transform hover:scale-105;
             background: #2d3748;
@@ -164,10 +168,36 @@
             border-color: var(--color-neon-blue);
         }
 
+        /* Adjustments for .ai-button in Light Theme */
+        body.light-theme .ai-button {
+            background-color: #e2e8f0; /* Explicitly set a light background */
+            color: var(--text-primary); /* Use dark text color */
+            border-color: var(--border-color); /* Adjust border for light theme */
+        }
+        body.light-theme .ai-button:hover {
+            background-color: var(--color-neon-blue); /* Keep neon hover for consistency */
+            color: var(--bg-primary); /* Keep dark text on neon hover */
+            border-color: var(--color-neon-blue);
+        }
+        body.light-theme .ai-button.selected-button {
+            background-color: var(--color-neon-blue); /* Neon blue background */
+            color: var(--bg-primary); /* Dark text on neon blue */
+            border-color: var(--color-neon-blue);
+            box-shadow: 0 0 20px var(--color-neon-blue), 0 0 30px var(--color-neon-blue);
+        }
+        body.light-theme .ai-button.selected-button:hover {
+            background-color: var(--color-neon-blue);
+            color: var(--bg-primary);
+            box-shadow: 0 0 25px var(--color-neon-blue), 0 0 40px var(--color-neon-blue);
+            border-color: var(--color-neon-blue);
+        }
+
+
+        /* Sphere Button Styles (Floating Buttons) */
         .sphere-button {
-            @apply w-15 h-15 rounded-full flex items-center justify-center text-white font-bold text-base shadow-lg transition duration-300 ease-in-out transform hover:scale-110;
-            width: 60px; /* Reduced size */
-            height: 60px; /* Reduced size */
+            @apply w-15 h-15 rounded-full text-white font-bold text-base shadow-lg transition duration-300 ease-in-out transform hover:scale-110;
+            width: 90px; /* Adjusted size */
+            height: 90px; /* Adjusted size */
             border-radius: 9999px;
             background: #2d3748;
             border: 2px solid var(--border-color);
@@ -177,6 +207,7 @@
             font-family: var(--font-body);
             font-weight: 600;
             position: absolute; /* Crucial for independent movement */
+            font-size: 0.8rem; /* Adjusted font size for smaller buttons */
         }
         .sphere-button:hover {
             background: #374151;
@@ -190,6 +221,7 @@
             border-color: var(--color-neon-blue);
         }
 
+        /* Card and Input Field Styles */
         .card {
             background-color: var(--bg-card);
             @apply p-8 rounded-[2.5rem] shadow-xl transition duration-300 ease-in-out hover:shadow-2xl hover:translate-y-[-5px];
@@ -205,6 +237,7 @@
             font-size: 1rem;
         }
         
+        /* Loading Spinner */
         .loading-spinner {
             border: 4px solid rgba(255, 255, 255, 0.2);
             border-top: 4px solid var(--color-accent-yellow);
@@ -220,6 +253,7 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Tailwind Color Variable Mapping */
         .text-gray-100 { color: var(--text-primary); }
         .text-gray-200 { color: var(--text-secondary); }
         .text-gray-300 { color: var(--text-light-gray); }
@@ -232,6 +266,7 @@
         .bg-[#1a1a1a] { background-color: var(--input-bg); }
         .text-yellow-400 { color: var(--color-accent-yellow); }
 
+        /* 3D Viewer Specific Styles */
         .model-viewer-container {
             position: relative;
             width: 100%;
@@ -420,22 +455,40 @@
             line-height: 1;
         }
 
+        /* New style for the plus button */
+        .audio-add-button {
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 1.5rem; /* Smaller than play/pause, but still visible */
+            cursor: inherit;
+            padding: 0;
+            margin-left: 0.25rem; /* Small spacing */
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+        .audio-add-button:hover {
+            color: var(--color-accent-yellow); /* Different hover color for distinction */
+        }
+
+
+        /* Settings Button */
         #settingsBtn {
-            /* Adjusted font-size for smaller button */
-            font-size: 2.5rem; /* Reduced from 3.5rem */
+            font-size: 2.5rem;
             cursor: pointer;
-            transition: duration-300 ease-in-out transform hover:rotate-90;
+            transition: transform 0.3s ease-in-out;
             color: var(--color-neon-blue);
             text-shadow: 0 0 8px var(--color-neon-blue), 0 0 15px rgba(0, 255, 255, 0.7);
-            filter: drop-shadow(0 0 6px var(--color-neon-blue)) drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+            filter: drop_shadow(0 0 6px var(--color-neon-blue)) drop_shadow(0 0 10px rgba(0, 255, 255, 0.5));
         }
         #settingsBtn:hover {
             color: var(--color-neon-blue);
             text-shadow: 0 0 12px var(--color-neon-blue), 0 0 20px rgba(0, 255, 255, 0.9);
-            filter: drop-shadow(0 0 8px var(--color-neon-blue)) drop-shadow(0 0 15px rgba(0, 255, 255, 0.7));
+            filter: drop_shadow(0 0 8px var(--color-neon-blue)) drop_shadow(0 0 15px rgba(0, 255, 255, 0.7));
+            transform: rotate(90deg); /* Added rotate on hover */
         }
 
-
+        /* Settings Menu */
         .settings-menu {
             position: absolute;
             top: 80px;
@@ -499,7 +552,7 @@
             flex-grow: 1;
         }
 
-        /* Styles for the new login options modal */
+        /* Login Options Modal Styles (Kept as a modal for now, separate from feature content) */
         #loginOptionsModal .modal-content {
             max-width: 400px;
             padding: 1.5rem;
@@ -522,8 +575,8 @@
             margin-bottom: 0;
         }
 
-
-        #chatHistory p {
+        /* Chat History Styles */
+        #chatbotHistory p {
             font-size: 1rem;
             line-height: 1.5;
             margin-bottom: 0.5rem;
@@ -533,21 +586,22 @@
             font-family: var(--font-body);
         }
 
-        #chatHistory p.user-message {
+        #chatbotHistory p.user-message {
             margin-left: auto;
             background-color: var(--color-neon-blue);
             color: var(--bg-primary);
             font-weight: 600;
             border-bottom-right-radius: 0.25rem;
         }
-        #chatHistory p.ai-message {
+        #chatbotHistory p.ai-message {
             margin-right: auto;
-            background-color: var(--bg-card);
-            color: var(--text-primary);
+            background-color: var(--color-accent-yellow);
+            color: var(--color-black);
             border-bottom-left-radius: 0.25rem;
         }
 
-        #aiInputText, #imagePromptInput, #videoPromptInput, #userNotesInput, #chatbotInputText, #imageGenPromptInput {
+        /* Textarea and Input Field Sizing */
+        #aiInputText, #imagePromptInput, #videoPromptInput, #userNotesInput, #chatbotInputText, #imageGenPromptInput, #imageAnalysisPromptInput, #audioTranscriptionOutput {
             min-height: 2.5rem;
             max-height: 152px;
             overflow-y: hidden;
@@ -556,6 +610,7 @@
             font-size: 1rem;
         }
 
+        /* Glitch Text Animation */
         .glitch-text {
             animation: glitch 0.8s linear infinite alternate, neon-pulse 0.8s ease-in-out forwards;
         }
@@ -592,6 +647,7 @@
             }
         }
 
+        /* Image Frame and Loading Styles */
         .image-frame-container, .video-player-container {
             background-color: var(--bg-card);
             border: 5px solid var(--color-neon-blue);
@@ -691,6 +747,7 @@
             margin-bottom: 1rem;
         }
 
+        /* Modal Overlays (Only for Login Modal now) */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -758,14 +815,33 @@
             transform: scale(1.1);
         }
 
+        /* AI Feature Content General Styles */
+        .ai-feature-content {
+            width: 100%; /* Take full width of its container */
+            max-width: 100%; /* Ensure it doesn't overflow */
+            margin-left: auto;
+            margin-right: auto;
+            background-color: var(--bg-secondary); /* Use secondary background for features */
+            padding: 2rem;
+            border-radius: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease-in-out;
+            display: flex; /* Make it a flex container */
+            flex-direction: column; /* Stack children vertically */
+            gap: 1rem; /* Spacing between elements */
+            min-height: 400px; /* Minimum height for features */
+            position: relative; /* Needed for close button positioning */
+        }
+
         .ai-feature-content h2 {
             font-size: 2.2rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem; /* Adjusted margin */
+            text-align: center;
         }
 
         .ai-feature-content p {
             font-size: 0.95rem;
-            margin-bottom: 1rem;
             line-height: 1.6;
         }
 
@@ -791,6 +867,7 @@
             padding: 0.6rem 1rem;
         }
 
+        /* Responsive Adjustments */
         @media (max-width: 640px) {
             body {
                 font-size: 0.95rem;
@@ -799,6 +876,11 @@
                 max-width: 95%;
                 padding: 1rem;
                 border-radius: 1.5rem;
+            }
+            .ai-feature-content {
+                padding: 1rem;
+                border-radius: 1.5rem;
+                min-height: 300px;
             }
             .ai-feature-content h2 {
                 font-size: 1.8rem;
@@ -819,15 +901,164 @@
             .avneed-neon-text {
                 font-size: 2rem;
             }
-            /* Adjusted for mobile too */
             #settingsBtn {
-                font-size: 2.2rem; /* Adjusted for smaller screens */
+                font-size: 2.2rem;
+            }
+            .sphere-button {
+                width: 70px; /* Further adjusted for smaller screens */
+                height: 70px;
+                font-size: 0.7rem;
             }
         }
         /* New style for bigger Features text */
         .features-text {
-            font-size: 1.5rem; /* Increased from 1.125rem (text-lg) */
-            font-weight: 700; /* Make it bold */
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Global Music Controls Styles */
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(45, 55, 72, 0.7);
+            padding: 0.5rem 0.75rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(74, 85, 104, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+        .music-controls button {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .music-controls button:hover {
+            color: var(--color-neon-blue);
+        }
+        .music-controls input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 80px;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 5px;
+            outline: none;
+            transition: background 0.2s ease-in-out;
+        }
+        .music-controls input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--color-neon-blue);
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
+        }
+        .music-controls input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--color-neon-blue);
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
+        }
+
+        /* Full Screen Mode Styles */
+        body.full-screen-active {
+            overflow: hidden; /* Prevent scrolling of the main page */
+        }
+
+        body.full-screen-active #sectionHeader {
+            display: none; /* Hide the header in full screen */
+        }
+
+        body.full-screen-active #featureDisplayArea {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 999; /* Below the settings/login modals, but above everything else */
+            margin: 0 !important; /* Override any margins */
+            padding: 0 !important; /* Override any padding */
+            background-color: var(--bg-primary); /* Ensure background is consistent */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Adjust the content inside the full-screen feature */
+        body.full-screen-active #featureDisplayArea > div { /* Target the cloned feature content */
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 0; /* Remove rounded corners in full screen */
+            padding: 1rem; /* Adjust padding for full screen */
+            box-shadow: none; /* Remove shadows in full screen */
+            overflow: auto; /* Allow internal scrolling if content is large */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        /* Repurpose modal-close-button for full screen exit */
+        body.full-screen-active .full-screen-toggle-button {
+            position: fixed; /* Keep it fixed relative to viewport */
+            top: 1rem;
+            right: 1rem;
+            z-index: 1001;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        body.full-screen-active .full-screen-toggle-button:hover {
+            background: var(--color-neon-blue);
+            color: var(--bg-primary);
+            border-color: var(--color-neon-blue);
+            transform: scale(1.1);
+        }
+
+        /* Hide the music controls and settings button when in full screen */
+        body.full-screen-active .music-controls,
+        body.full-screen-active #settingsBtn {
+            display: none;
+        }
+
+        /* Styles for expanded header (where balls move) */
+        #sectionHeader {
+            /* Initial state */
+            min-height: 200px; /* Default height to contain balls comfortably */
+            transition: all 0.5s ease-in-out; /* Smooth transition for size changes */
+        }
+
+        #sectionHeader.expanded-header {
+            max-width: 90%; /* Make it wider */
+            width: 100%; /* Ensure it takes full width up to max-width */
+            min-height: 600px; /* Make it significantly taller when expanded */
+            height: auto; /* Allow height to adjust based on content */
+            padding-bottom: 2rem; /* Ensure enough space at the bottom for balls */
+        }
+
+        @media (max-width: 768px) {
+            #sectionHeader.expanded-header {
+                max-width: 95%; /* Adjust for smaller screens */
+                min-height: 400px; /* Smaller height for mobile */
+            }
         }
     </style>
 </head>
@@ -844,6 +1075,15 @@
                     <ul class="flex space-x-8">
                         <li><a href="#ai-features" class="features-text hover:text-yellow-300 transition duration-300 transform hover:scale-105">Features</a></li>
                     </ul>
+                    <!-- Global Music Controls -->
+                    <div class="music-controls">
+                        <audio id="backgroundMusicPlayer" loop>
+                            <!-- Default background music. You can change this URL. -->
+                            <source src="https://imelijah88.github.io/Avneed/live1day.mp3" type="audio/mpeg">
+                        </audio>
+                        <button id="playPauseMusicBtn" aria-label="Play/Pause Background Music">▶</button>
+                        <input type="range" id="musicVolumeSlider" min="0" max="1" step="0.01" value="0.5" aria-label="Music Volume">
+                    </div>
                     <button id="settingsBtn" class="ml-4" aria-label="Settings">⚙️</button>
                 </nav>
             </div>
@@ -857,23 +1097,21 @@
             </div>
 
             <!-- Floating buttons are now directly inside sectionHeader, below fixedHeaderContent -->
-            <button id="openProjectNotesBtn" class="sphere-button neon-hover" aria-label="Open Project Notes">Notes</button>
-            <button id="openAvneedChatbotBtn" class="sphere-button neon-hover" aria-label="Open Chatbot">Chat</button>
-            <button id="openImageGeneratorBtn" class="sphere-button neon-hover" aria-label="Open Image Generator">Image</button>
-            <button id="open3DViewerBtn" class="sphere-button neon-hover" aria-label="Open 3D Model Viewer">3D Viewer</button>
+            <button id="openProjectNotesBtn" class="sphere-button neon-hover" aria-label="Open Project Notes" data-feature-id="projectNotesContent">Notes</button>
+            <button id="openAvneedChatbotBtn" class="sphere-button neon-hover" aria-label="Open Chatbot" data-feature-id="chatbotContent">Chat</button>
+            <button id="openImageGeneratorBtn" class="sphere-button neon-hover" aria-label="Open Image Generator" data-feature-id="imageGeneratorContent">Image Gen</button>
+            <button id="openImageAnalysisBtn" class="sphere-button neon-hover" aria-label="Open Image Analysis" data-feature-id="imageAnalysisContent">Image Analysis</button>
+            <button id="openAudioTranscriptionBtn" class="sphere-button neon-hover" aria-label="Open Audio Transcription" data-feature-id="audioTranscriptionContent">Audio Trans</button>
+            <button id="open3DViewerBtn" class="sphere-button neon-hover" aria-label="Open 3D Model Viewer" data-feature-id="threeDViewerContent">3D Viewer</button>
+        </div>
+
+        <!-- New Feature Display Area -->
+        <div id="featureDisplayArea" class="mt-8 w-full max-w-4xl px-6">
+            <!-- Feature content will be loaded here dynamically -->
         </div>
     </section>
 
-    <!-- Main AI Features Modal -->
-    <div id="aiModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <div class="modal-content">
-            <button class="modal-close-button" id="closeModalBtn" aria-label="Close Modal">&times;</button>
-            <div id="modalContentArea" class="flex flex-col flex-grow">
-            </div>
-        </div>
-    </div>
-
-    <!-- Login Options Modal -->
+    <!-- Login Options Modal (Kept as a modal for now) -->
     <div id="loginOptionsModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
         <div class="modal-content">
             <button class="modal-close-button" id="closeLoginModalBtn" aria-label="Close Login Modal">&times;</button>
@@ -891,128 +1129,189 @@
     </div>
 
 
+    <!-- Feature Templates (hidden, cloned and inserted into featureDisplayArea) -->
     <div id="projectNotesContent" class="ai-feature-content hidden">
-        <div class="max-w-md mx-auto bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700 text-center flex flex-col flex-grow">
-            <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight flex items-center justify-center gap-2">
-                <img src="https://imelijah88.github.io/Avneed/logo.png" alt="Avneed AI Logo" class="h-8 w-auto object-contain filter-drop-shadow-neon-blue">
-                Avneed Notes
-            </h2>
-            <div class="flex flex-col gap-4 mb-6 flex-grow">
-                <textarea id="modalUserNotesInput" class="flex-grow input-field resize-none h-48" placeholder="Type your private project notes here..." aria-label="Your private project notes"></textarea>
-                <div class="flex gap-2">
-                    <button id="modalSaveNotesBtn" class="ai-button flex-grow" disabled aria-label="Save Notes">Save Project Notes</button>
-                    <label for="notesFileInput" class="ai-button flex-shrink-0 flex items-center justify-center cursor-pointer">Upload Notes</label>
-                    <input type="file" id="notesFileInput" accept=".txt" class="hidden-file-input">
-                </div>
+        <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight flex items-center justify-center gap-2">
+            <img src="https://imelijah88.github.io/Avneed/logo.png" alt="Avneed AI Logo" class="h-8 w-auto object-contain filter-drop-shadow-neon-blue">
+            Avneed Notes
+        </h2>
+        <div class="flex flex-col gap-4 mb-6 flex-grow">
+            <textarea id="modalUserNotesInput" class="flex-grow input-field resize-none h-48" placeholder="Type your private project notes here..." aria-label="Your private project notes"></textarea>
+            <div class="flex gap-2">
+                <button id="modalSaveNotesBtn" class="ai-button flex-grow" disabled aria-label="Save Notes">Save Project Notes</button>
+                <label for="notesFileInput" class="ai-button flex-shrink-0 flex items-center justify-center cursor-pointer">Upload Notes</label>
+                <input type="file" id="notesFileInput" accept=".txt" class="hidden-file-input">
             </div>
-            <p id="modalUserNotesStatus" class="mt-2 text-center text-gray-400 text-xs">Please log in to save notes.</p>
         </div>
+        <p id="modalUserNotesStatus" class="mt-2 text-center text-gray-400 text-xs">Please log in to save notes.</p>
+        <button class="full-screen-toggle-button" aria-label="Toggle Full Screen">⤢</button>
+        <button class="modal-close-button close-feature-button" aria-label="Close Feature">&times;</button>
     </div>
 
     <div id="chatbotContent" class="ai-feature-content hidden">
-        <div class="max-w-4xl mx-auto bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700 text-center">
-            <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight flex items-center justify-center gap-2">
-                <img src="https://imelijah88.github.io/Avneed/logo.png" alt="Avneed AI Logo" class="h-8 w-auto object-contain filter-drop-shadow-neon-blue">
-                Avneed Chat
-            </h2>
-            <div id="chatbotHistory" class="bg-[#1a1a1a] p-4 rounded-xl shadow-md text-left text-gray-200 min-h-[200px] max-h-[300px] overflow-y-auto mb-4 border border-gray-700" aria-live="polite" aria-atomic="false">
-                <p class="ai-message">Hello! How can I assist?</p>
-            </div>
-            
-            <div class="flex gap-2 mb-2">
-                <textarea id="chatbotInputText" class="flex-grow input-field resize-none" placeholder="Type message or upload a file (.txt, .doc, .pdf)..." aria-label="Chat message input"></textarea>
-                <label for="chatbotFileInput" id="chatbotFileInputLabel" class="ai-button flex-shrink-0 flex items-center justify-center" tabindex="0" role="button" aria-controls="chatbotInputText">Upload</label>
-                <input type="file" id="chatbotFileInput" accept=".txt, .doc, .docx, .pdf" class="hidden-file-input">
-                <button id="chatbotSendBtn" class="ai-button flex-shrink-0" aria-label="Send Message">Send</button>
-            </div>
-
-            <div id="chatbotLoadingIndicator" class="mt-2 text-center hidden" aria-live="polite" aria-busy="true">
-                <div class="loading-spinner"></div>
-                <p class="ml-1 text-gray-300 inline-block">Thinking...</p>
-            </div>
-            <p id="chatbotStatus" class="mt-2 text-center text-yellow-400 text-xs"></p>
+        <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight flex items-center justify-center gap-2">
+            <img src="https://imelijah88.github.io/Avneed/logo.png" alt="Avneed AI Logo" class="h-8 w-auto object-contain filter-drop-shadow-neon-blue">
+            Avneed Chat
+        </h2>
+        <div class="flex flex-col md:flex-row gap-4 mb-4">
+            <select id="aiPersonaSelect" class="input-field flex-grow md:flex-grow-0 md:w-auto" aria-label="Select AI Persona">
+                <option value="">Default Persona</option>
+                <option value="therapist">Aether Therapist</option>
+                <option value="business-consultant">Aether Business Consultant</option>
+                <option value="study-buddy">Aether Study Buddy</option>
+                <option value="creativity-coach">Aether Creativity Coach</option>
+                <option value="fun-mode">Aether Fun Mode</option>
+            </select>
+            <label for="chatbotDocumentFileInput" class="ai-button flex-shrink-0 flex items-center justify-center cursor-pointer">Upload Document (.txt)</label>
+            <input type="file" id="chatbotDocumentFileInput" accept=".txt" class="hidden-file-input">
         </div>
+        <div id="chatbotHistory" class="bg-[#1a1a1a] p-4 rounded-xl shadow-md text-left text-gray-200 min-h-[200px] max-h-[300px] overflow-y-auto mb-4 border border-gray-700" aria-live="polite" aria-atomic="false">
+            <p class="ai-message">Hello! How can I assist?</p>
+        </div>
+        
+        <div class="flex gap-2 mb-2 items-end">
+            <textarea id="chatbotInputText" class="flex-grow input-field resize-none" placeholder="Type message or ask about the uploaded document..." aria-label="Chat message input"></textarea>
+            <button id="chatbotSendBtn" class="ai-button flex-shrink-0" aria-label="Send Message">Send</button>
+        </div>
+
+        <div id="chatbotLoadingIndicator" class="mt-2 text-center hidden" aria-live="polite" aria-busy="true">
+            <div class="loading-spinner"></div>
+            <p class="ml-1 text-gray-300 inline-block">Thinking...</p>
+        </div>
+        <p id="chatbotStatus" class="mt-2 text-center text-yellow-400 text-xs"></p>
+        <button class="full-screen-toggle-button" aria-label="Toggle Full Screen">⤢</button>
+        <button class="modal-close-button close-feature-button" aria-label="Close Feature">&times;</button>
     </div>
 
     <div id="imageGeneratorContent" class="ai-feature-content hidden">
-        <div class="max-w-4xl mx-auto bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700 text-center">
-            <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight flex items-center justify-center gap-2">
-                <img src="https://imelijah88.github.io/Avneed/logo.png" alt="Avneed AI Logo" class="h-8 w-auto object-contain filter-drop-shadow-neon-blue">
-                Avneed Imagine
-            </h2>
-            <div class="flex flex-col gap-4 mb-6">
-                <textarea id="imageGenPromptInput" class="flex-grow input-field resize-none" placeholder="Describe the image you want to generate..." aria-label="Image prompt input"></textarea>
-                <div class="flex justify-center gap-4">
-                    <button id="imageGenGenerateBtn" class="ai-button" aria-label="Generate Image">Generate Image</button>
-                    <select id="imageGenAspectRatio" class="ai-button bg-gray-800" aria-label="Image Aspect Ratio">
-                        <option value="1-1">1:1 (Square)</option>
-                        <option value="16-9">16:9 (Landscape)</option>
-                        <option value="4-3">4:3 (Traditional)</option>
-                        <option value="9-16">9:16 (Portrait)</option>
-                    </select>
-                </div>
+        <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight flex items-center justify-center gap-2">
+            <img src="https://imelijah88.github.io/Avneed/logo.png" alt="Avneed AI Logo" class="h-8 w-auto object-contain filter-drop-shadow-neon-blue">
+            Avneed Imagine
+        </h2>
+        <div class="flex flex-col gap-4 mb-6">
+            <textarea id="imageGenPromptInput" class="flex-grow input-field resize-none" placeholder="Describe the image you want to generate..." aria-label="Image prompt input"></textarea>
+            <div class="flex justify-center gap-4">
+                <button id="imageGenGenerateBtn" class="ai-button" aria-label="Generate Image">Generate Image</button>
+                <select id="imageGenAspectRatio" class="ai-button bg-gray-800" aria-label="Image Aspect Ratio">
+                    <option value="1-1">1:1 (Square)</option>
+                    <option value="16-9">16:9 (Landscape)</option>
+                    <option value="4-3">4:3 (Traditional)</option>
+                    <option value="9-16">9:16 (Portrait)</option>
+                </select>
             </div>
-
-            <div id="imageGenDisplayArea" class="image-frame-container aspect-1-1 relative mx-auto mt-8 hidden">
-                <div id="imageGenLoadingOverlay" class="image-loading-overlay hidden">
-                    <div class="image-loading-spinner"></div>
-                    <p>Generating Image...</p>
-                </div>
-                <img id="imageGenGeneratedImage" class="generated-image" src="" alt="Generated AI Image" onerror="this.onerror=null;this.src='https://placehold.co/400x400/333333/FFFFFF?text=Image+Load+Error';" />
-            </div>
-            <p id="imageGenStatus" class="mt-4 text-center text-yellow-400 text-xs"></p>
         </div>
+
+        <div id="imageGenDisplayArea" class="image-frame-container aspect-1-1 relative mx-auto mt-8 hidden">
+            <div id="imageGenLoadingOverlay" class="image-loading-overlay hidden">
+                <div class="image-loading-spinner"></div>
+                <p>Generating Image...</p>
+            </div>
+            <img id="imageGenGeneratedImage" class="generated-image" src="" alt="Generated AI Image" onerror="this.onerror=null;this.src='https://placehold.co/400x400/333333/FFFFFF?text=Image+Load+Error';" />
+        </div>
+        <p id="imageGenStatus" class="mt-4 text-center text-yellow-400 text-xs"></p>
+        <button class="full-screen-toggle-button" aria-label="Toggle Full Screen">⤢</button>
+        <button class="modal-close-button close-feature-button" aria-label="Close Feature">&times;</button>
+    </div>
+
+    <div id="imageAnalysisContent" class="ai-feature-content hidden">
+        <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight flex items-center justify-center gap-2">
+            <img src="https://imelijah88.github.io/Avneed/logo.png" alt="Avneed AI Logo" class="h-8 w-auto object-contain filter-drop-shadow-neon-blue">
+            Avneed Analyze
+        </h2>
+        <div class="flex flex-col gap-4 mb-6">
+            <label for="imageAnalysisFileInput" class="ai-button flex-shrink-0 flex items-center justify-center cursor-pointer">Upload Image for Analysis</label>
+            <input type="file" id="imageAnalysisFileInput" accept="image/*" class="hidden-file-input">
+            <textarea id="imageAnalysisPromptInput" class="flex-grow input-field resize-none" placeholder="Ask a question about the image, or leave blank for a general description..." aria-label="Image analysis prompt"></textarea>
+            <button id="imageAnalysisAnalyzeBtn" class="ai-button" disabled>Analyze Image</button>
+        </div>
+
+        <div id="imageAnalysisDisplayArea" class="image-frame-container aspect-1-1 relative mx-auto mt-8 hidden">
+            <div id="imageAnalysisLoadingOverlay" class="image-loading-overlay hidden">
+                <div class="image-loading-spinner"></div>
+                <p>Analyzing Image...</p>
+            </div>
+            <img id="imageAnalysisUploadedImage" class="generated-image" src="" alt="Uploaded Image for Analysis" onerror="this.onerror=null;this.src='https://placehold.co/400x400/333333/FFFFFF?text=Image+Load+Error';" />
+        </div>
+        <p id="imageAnalysisResult" class="mt-4 text-left text-gray-200"></p>
+        <p id="imageAnalysisStatus" class="mt-2 text-center text-yellow-400 text-xs"></p>
+        <button class="full-screen-toggle-button" aria-label="Toggle Full Screen">⤢</button>
+        <button class="modal-close-button close-feature-button" aria-label="Close Feature">&times;</button>
+    </div>
+
+    <!-- New Audio Transcription Content -->
+    <div id="audioTranscriptionContent" class="ai-feature-content hidden">
+        <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight flex items-center justify-center gap-2">
+            <img src="https://imelijah88.github.io/Avneed/logo.png" alt="Avneed AI Logo" class="h-8 w-auto object-contain filter-drop-shadow-neon-blue">
+            Avneed Transcribe
+        </h2>
+        <div class="flex flex-col gap-4 mb-6">
+            <label for="audioTranscriptionFileInput" class="ai-button flex-shrink-0 flex items-center justify-center cursor-pointer">Upload Audio File (.mp3, .wav)</label>
+            <input type="file" id="audioTranscriptionFileInput" accept=".mp3, .wav" class="hidden-file-input">
+            <button id="transcribeAudioBtn" class="ai-button" disabled>Transcribe Audio</button>
+        </div>
+
+        <div id="audioTranscriptionLoadingIndicator" class="mt-2 text-center hidden" aria-live="polite" aria-busy="true">
+            <div class="loading-spinner"></div>
+            <p class="ml-1 text-gray-300 inline-block">Transcribing...</p>
+        </div>
+        
+        <textarea id="audioTranscriptionOutput" class="input-field w-full h-48 resize-none mt-4 text-left" placeholder="Transcription will appear here..." readonly aria-label="Audio Transcription Output"></textarea>
+        <p id="audioTranscriptionStatus" class="mt-2 text-center text-yellow-400 text-xs"></p>
+        <button class="full-screen-toggle-button" aria-label="Toggle Full Screen">⤢</button>
+        <button class="modal-close-button close-feature-button" aria-label="Close Feature">&times;</button>
     </div>
 
     <div id="threeDViewerContent" class="ai-feature-content hidden">
-        <div class="max-w-4xl mx-auto bg-gray-900 p-6 rounded-2xl shadow-xl border border-gray-700 text-center">
-            <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight flex items-center justify-center gap-2">
-                <img src="https://imelijah88.github.io/Avneed/logo.png" alt="Avneed AI Logo" class="h-8 w-auto object-contain filter-drop-shadow-neon-blue">
-                Avneed 3D
-            </h2>
-            <div id="modalModelContainer" class="model-viewer-container mx-auto">
-                <canvas id="modalModelCanvas" class="model-viewer-canvas"></canvas>
-                <div id="modalModelStatus" class="model-status hidden" aria-live="polite">
-                    <div class="loading-spinner mb-4"></div>
-                    <p>Loading 3D Model...</p>
-                </div>
-                <label for="modalModelFileInput" id="modalModelFileInputLabel" class="model-file-input-label">+</label>
-                <input type="file" id="modalModelFileInput" accept=".gltf, .glb" class="hidden-file-input">
-                <input type="file" id="modalAudioFileInput" accept=".mp3" class="hidden-file-input">
+        <h2 class="text-4xl font-bold mb-6 text-gray-100 leading-tight flex items-center justify-center gap-2">
+            <img src="https://imelijah88.github.io/Avneed/logo.png" alt="Avneed AI Logo" class="h-8 w-auto object-contain filter-drop-shadow-neon-blue">
+            Avneed 3D
+        </h2>
+        <div id="modalModelContainer" class="model-viewer-container mx-auto">
+            <canvas id="modalModelCanvas" class="model-viewer-canvas"></canvas>
+            <div id="modalModelStatus" class="model-status hidden" aria-live="polite">
+                <div class="loading-spinner mb-4"></div>
+                <p>Loading 3D Model...</p>
+            </div>
+            <label for="modalModelFileInput" id="modalModelFileInputLabel" class="model-file-input-label">+</label>
+            <input type="file" id="modalModelFileInput" accept=".gltf, .glb" class="hidden-file-input">
+            <input type="file" id="modalAudioFileInput" accept=".mp3" class="hidden-file-input">
 
-                <div id="modalUploadMenu" class="upload-menu hidden" role="menu" aria-labelledby="modalModelFileInputLabel">
-                    <button class="upload-menu-button" data-type="model" role="menuitem">Upload 3D Model</button>
-                    <button class="upload-menu-button" data-type="audio" role="menuitem">Upload MP3</button>
-                </div>
+            <div id="modalUploadMenu" class="upload-menu hidden" role="menu" aria-labelledby="modalModelFileInputLabel">
+                <button class="upload-menu-button" data-type="model" role="menuitem">Upload 3D Model</button>
+                <button class="upload-menu-button" data-type="audio" role="menuitem">Upload MP3</button>
+            </div>
 
-                <div id="modalAudioControls" class="audio-controls hidden">
-                    <button class="audio-play-pause-button" data-action="play-pause" aria-label="Play/Pause Model Audio">▶</button>
-                </div>
-                <audio id="modalPrimaryAudioPlayer" class="hidden"></audio>
+            <div id="modalAudioControls" class="audio-controls hidden">
+                <button class="audio-play-pause-button" data-action="play-pause" aria-label="Play/Pause Model Audio">▶</button>
+                <!-- New plus sign button for uploading audio -->
+                <button class="audio-add-button" data-action="add-audio" aria-label="Add Audio File">+</button>
+            </div>
+            <audio id="modalPrimaryAudioPlayer" class="hidden"></audio>
 
-                <div id="modalResizeHandle" class="resize-handle" aria-label="Resize 3D Viewer"></div>
-                <div id="modalModelControls" class="model-controls hidden">
-                    <div class="grid grid-cols-3 gap-1">
-                        <div></div>
-                        <button class="model-control-button" data-action="move-up" aria-label="Move Model Up">↑</button>
-                        <div></div>
-                        <button class="model-control-button" data-action="move-left" aria-label="Move Model Left">←</button>
-                        <button class="model-control-button" data-action="move-down" aria-label="Move Model Down">↓</button>
-                        <button class="model-control-button" data-action="move-right" aria-label="Move Model Right">→</button>
-                    </div>
-                    <div class="grid grid-cols-2 gap-1">
-                        <button class="model-control-button toggle-lock" data-action="toggle-lock" aria-label="Toggle Camera Lock">Lock Cam</button>
-                        <button class="model-control-button" data-action="reset-view" aria-label="Reset View">Reset</button>
-                        <button class="model-control-button" data-action="toggle-rotation" aria-label="Toggle Auto Rotation">Auto-Rotate</button>
-                        <button class="model-control-button" data-action="toggle-background" aria-label="Toggle Background">Toggle BG</button>
-                        <button class="model-control-button" data-action="toggle-wireframe" aria-label="Toggle Wireframe">Wireframe</button>
-                        <button class="model-control-button" data-action="screenshot" aria-label="Take Screenshot">Screenshot</button>
-                        <button class="model-control-button" data-action="scale-up" aria-label="Scale Up">Scale +</button>
-                        <button class="model-control-button" data-action="scale-down" aria-label="Scale Down">Scale -</button>
-                    </div>
+            <div id="modalResizeHandle" class="resize-handle" aria-label="Resize 3D Viewer"></div>
+            <div id="modalModelControls" class="model-controls hidden">
+                <div class="grid grid-cols-3 gap-1">
+                    <div></div>
+                    <button class="model-control-button" data-action="move-up" aria-label="Move Model Up">↑</button>
+                    <div></div>
+                    <button class="model-control-button" data-action="move-left" aria-label="Move Model Left">←</button>
+                    <button class="model-control-button" data-action="move-down" aria-label="Move Model Down">↓</button>
+                    <button class="model-control-button" data-action="move-right" aria-label="Move Model Right">→</button>
+                </div>
+                <div class="grid grid-cols-2 gap-1">
+                    <button class="model-control-button toggle-lock" data-action="toggle-lock" aria-label="Toggle Camera Lock">Lock Cam</button>
+                    <button class="model-control-button" data-action="reset-view" aria-label="Reset View">Reset</button>
+                    <button class="model-control-button" data-action="toggle-rotation" aria-label="Toggle Auto Rotation">Auto-Rotate</button>
+                    <button class="model-control-button" data-action="toggle-background" aria-label="Toggle Background">Toggle BG</button>
+                    <button class="model-control-button" data-action="toggle-wireframe" aria-label="Toggle Wireframe">Wireframe</button>
+                    <button class="model-control-button" data-action="screenshot" aria-label="Take Screenshot">Screenshot</button>
+                    <button class="model-control-button" data-action="scale-up" aria-label="Scale Up">Scale +</button>
+                    <button class="model-control-button" data-action="scale-down" aria-label="Scale Down">Scale -</button>
                 </div>
             </div>
         </div>
+        <button class="full-screen-toggle-button" aria-label="Toggle Full Screen">⤢</button>
+        <button class="modal-close-button close-feature-button" aria-label="Close Feature">&times;</button>
     </div>
 
 
@@ -1021,8 +1320,10 @@
         import { getAuth, signInWithCustomToken, signInWithPopup, GithubAuthProvider, GoogleAuthProvider, signInAnonymously, signOut, onAuthStateChanged, fetchSignInMethodsForEmail, linkWithCredential } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // Firebase App ID (replace with your actual app ID if different)
         const appId = 'avneed-github-pages'; 
 
+        // Firebase Configuration (replace with your actual Firebase project config)
         const firebaseConfig = {
             apiKey: "AIzaSyCda21nbBWaYKe4K_YndLmz06FdTv7b-Hk",
             authDomain: "avneed.firebaseapp.com",
@@ -1032,35 +1333,44 @@
             appId: "1:862015532884:web:3c1731e57a678d0d3322c1",
             measurementId: "G-N31V5YXL47"
         };
+        // Initial Auth Token (provided by Canvas environment, or null for anonymous sign-in)
         const initialAuthToken = null; 
 
+        // Gemini API Key (replace with your actual Gemini API key)
         const GEMINI_API_KEY = "AIzaSyCGGbogRbxQQg7p_2SYhT-U6APOJKnq-3M"; 
 
         let app;
         let db;
         let auth;
-        let userId = null; 
+        let userId = null; // Stores the current user's ID
 
-        let modalViewerInstance = null; 
+        let modalViewerInstance = null; // Instance for the 3D viewer
+        let unsubscribeProjectNotes = null; // Firestore unsubscribe function for project notes
 
-        let unsubscribeProjectNotes = null;
+        // Global background music player instance
+        let backgroundMusicPlayer = null;
+        let isBackgroundMusicPlaying = false; // To track state for play/pause button
 
+        // Utility function to disable Firebase-related features and log a warning
         function disableFirebaseFeatures(message) {
             console.warn("Firebase features disabled:", message);
+            // Optionally update UI elements to reflect disabled state
         }
 
+        // Utility function to append messages to the chatbot history
         function appendChatMessage(chatHistoryDiv, text, sender) {
             const p = document.createElement('p');
             p.classList.add(`${sender}-message`);
             p.textContent = text;
             chatHistoryDiv.appendChild(p);
-            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+            chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight; // Auto-scroll to latest message
         }
 
+        // Utility function to display temporary status messages
         function showStatusMessage(statusElement, message, type = 'info', duration = 3000) {
             if (!statusElement) return;
             statusElement.textContent = message;
-            statusElement.className = 'mt-2 text-center text-xs';
+            statusElement.className = 'mt-2 text-center text-xs'; // Reset classes
             if (type === 'success') {
                 statusElement.classList.add('text-green-400');
             } else if (type === 'error') {
@@ -1068,20 +1378,24 @@
             } else {
                 statusElement.classList.add('text-yellow-400');
             }
+            // Clear message after a duration
             setTimeout(() => {
                 statusElement.textContent = '';
-                statusElement.className = 'mt-2 text-center text-yellow-400 text-xs';
+                statusElement.className = 'mt-2 text-center text-yellow-400 text-xs'; // Reset to default status style
             }, duration);
         }
 
+        // Initialize Firebase when the DOM is fully loaded
         document.addEventListener('DOMContentLoaded', async () => {
+            // Check if firebaseConfig is valid before initializing
             if (Object.keys(firebaseConfig).length > 0 && firebaseConfig.projectId) {
                 try {
-                    app = initializeApp(firebaseConfig);
-                    db = getFirestore(app);
-                    auth = getAuth(app);
+                    app = initializeApp(firebaseConfig); // Initialize Firebase app
+                    db = getFirestore(app); // Get Firestore instance
+                    auth = getAuth(app); // Get Auth instance
 
                     if (auth) {
+                        // Attempt to sign in with custom token (for Canvas) or anonymously
                         if (initialAuthToken) {
                              try {
                                 await signInWithCustomToken(auth, initialAuthToken);
@@ -1100,15 +1414,16 @@
                             }
                         }
 
+                        // Listen for authentication state changes
                         onAuthStateChanged(auth, (user) => {
                             if (user) {
-                                userId = user.uid;
+                                userId = user.uid; // Set userId if logged in
                                 console.log("User is logged in:", userId);
-                                updateLoginStatusInSettingsMenu(true, user);
+                                updateLoginStatusInSettingsMenu(true, user); // Update UI
                             } else {
-                                userId = null;
+                                userId = null; // Clear userId if logged out
                                 console.log("User is logged out.");
-                                updateLoginStatusInSettingsMenu(false, null);
+                                updateLoginStatusInSettingsMenu(false, null); // Update UI
                             }
                         });
                     } else {
@@ -1123,111 +1438,213 @@
                 console.warn("Firebase config not found or incomplete. Firebase features will be disabled. Please ensure firebaseConfig is correctly set in your script.");
                 disableFirebaseFeatures('Firebase config not found. Features disabled. Please configure Firebase.');
             }
-        });
 
-        const aiModal = document.getElementById('aiModal');
-        const modalContentArea = document.getElementById('modalContentArea');
-        const closeModalBtn = document.getElementById('closeModalBtn');
+            // Initialize global background music player
+            backgroundMusicPlayer = document.getElementById('backgroundMusicPlayer');
+            const playPauseMusicBtn = document.getElementById('playPauseMusicBtn');
+            const musicVolumeSlider = document.getElementById('musicVolumeSlider');
 
-        const loginOptionsModal = document.getElementById('loginOptionsModal');
-        const closeLoginModalBtn = document.getElementById('closeLoginModalBtn');
+            if (backgroundMusicPlayer && playPauseMusicBtn && musicVolumeSlider) {
+                // Set initial volume
+                backgroundMusicPlayer.volume = parseFloat(musicVolumeSlider.value);
 
-        closeModalBtn.addEventListener('click', closeModal);
-        aiModal.addEventListener('click', (e) => {
-            if (e.target === aiModal) {
-                closeModal();
+                // Play/Pause button functionality
+                playPauseMusicBtn.addEventListener('click', () => {
+                    if (backgroundMusicPlayer.paused) {
+                        backgroundMusicPlayer.play()
+                            .then(() => {
+                                playPauseMusicBtn.textContent = '⏸';
+                                isBackgroundMusicPlaying = true;
+                                console.log("Background music playing.");
+                            })
+                            .catch(error => {
+                                console.error("Error playing background music:", error);
+                                // Most common error is Autoplay Policy, inform user
+                                showStatusMessage(document.getElementById('settingsMenu').querySelector('.account-section') || settingsMenu, 'Browser blocked autoplay. Please click play again.', 'error', 5000);
+                            });
+                    } else {
+                        backgroundMusicPlayer.pause();
+                        playPauseMusicBtn.textContent = '▶';
+                        isBackgroundMusicPlaying = false;
+                        console.log("Background music paused.");
+                    }
+                });
+
+                // Volume slider functionality
+                musicVolumeSlider.addEventListener('input', () => {
+                    backgroundMusicPlayer.volume = parseFloat(musicVolumeSlider.value);
+                });
+
+                // Handle browser autoplay policy: try to play on user interaction
+                // (e.g., when clicking any button to open a modal)
+                document.body.addEventListener('click', () => {
+                    if (backgroundMusicPlayer.paused && !isBackgroundMusicPlaying) {
+                        backgroundMusicPlayer.play().then(() => {
+                            playPauseMusicBtn.textContent = '⏸';
+                            isBackgroundMusicPlaying = true;
+                        }).catch(error => {
+                            // Still might be blocked, but we tried
+                            console.warn("Autoplay still blocked on general click:", error);
+                        });
+                    }
+                }, { once: true }); // Only try once on first click
             }
         });
 
+        // Login modal elements (main AI features modal removed)
+        const loginOptionsModal = document.getElementById('loginOptionsModal');
+        const closeLoginModalBtn = document.getElementById('closeLoginModalBtn');
+        const sectionHeader = document.getElementById('sectionHeader'); // Get reference to the header
+
+        // Event listeners for closing login modal
         closeLoginModalBtn.addEventListener('click', closeLoginModal);
         loginOptionsModal.addEventListener('click', (e) => {
-            if (e.target === loginOptionsModal) {
+            if (e.target === loginOptionsModal) { // Close login modal only if clicking on the overlay
                 closeLoginModal();
             }
         });
 
-        function openModal(featureId) {
-            modalContentArea.innerHTML = '';
-            modalContentArea.scrollTop = 0;
+        // New feature display area
+        const featureDisplayArea = document.getElementById('featureDisplayArea');
+        let activeFeatureId = null; // To keep track of the currently displayed feature
 
+        // Function to show a specific AI feature content directly on the page
+        function showFeatureContent(featureId) {
+            // Clear previous content
+            featureDisplayArea.innerHTML = '';
+            
             const templateContent = document.getElementById(featureId);
             if (!templateContent) {
                 console.error(`Feature content with ID '${featureId}' not found.`);
                 return;
             }
+            
+            // Clone the hidden feature content and append it to the display area
             const clonedContent = templateContent.cloneNode(true);
-            clonedContent.classList.remove('hidden');
+            clonedContent.classList.remove('hidden'); // Make it visible
+            clonedContent.id = `active-${featureId}`; // Give it a unique ID when active
 
-            modalContentArea.appendChild(clonedContent);
+            featureDisplayArea.appendChild(clonedContent);
+            activeFeatureId = featureId; // Set the active feature
 
-            aiModal.classList.add('visible');
-            document.body.style.overflow = 'hidden';
+            // Add expanded-header class to sectionHeader
+            sectionHeader.classList.add('expanded-header');
+            // Re-initialize floating balls to adjust to the new, larger container size
+            initFloatingBalls();
 
+
+            // Add full screen toggle button listener
+            const fullScreenToggleBtn = clonedContent.querySelector('.full-screen-toggle-button');
+            if (fullScreenToggleBtn) {
+                fullScreenToggleBtn.addEventListener('click', toggleFullScreen);
+            }
+
+            // Add close feature button listener
+            const closeFeatureBtn = clonedContent.querySelector('.close-feature-button');
+            if (closeFeatureBtn) {
+                closeFeatureBtn.addEventListener('click', closeFeatureContent);
+            }
+
+            // Initialize specific feature's JavaScript logic
             if (featureId === 'projectNotesContent') {
                 initProjectNotesFeature();
             } else if (featureId === 'chatbotContent') {
                 initChatbotFeature();
             } else if (featureId === 'imageGeneratorContent') {
                 initImageGeneratorFeature();
+            } else if (featureId === 'imageAnalysisContent') {
+                initImageAnalysisFeature();
+            } else if (featureId === 'audioTranscriptionContent') {
+                initAudioTranscriptionFeature();
             } else if (featureId === 'threeDViewerContent') {
                 init3DViewerFeature();
+                // Pause background music when 3D viewer is active and has its own audio
+                if (backgroundMusicPlayer && !backgroundMusicPlayer.paused) {
+                    backgroundMusicPlayer.pause();
+                    isBackgroundMusicPlaying = true; // Keep track that it was playing
+                }
             }
         }
 
-        function closeModal() {
-            aiModal.classList.remove('visible');
-            document.body.style.overflow = '';
+        // Function to close the currently displayed AI feature content
+        function closeFeatureContent() {
+            featureDisplayArea.innerHTML = ''; // Clear the feature display area
+            activeFeatureId = null; // Reset active feature
+            sectionHeader.classList.remove('expanded-header'); // Shrink header back
+            // Re-initialize floating balls to adjust to the original container size
+            initFloatingBalls();
 
-            if (modalViewerInstance && modalViewerInstance.audioPlayer) {
-                modalViewerInstance.audioPlayer.pause();
-                modalViewerInstance.audioPlayer.currentTime = 0;
-            }
-            if (unsubscribeProjectNotes) {
-                unsubscribeProjectNotes();
-                unsubscribeProjectNotes = null;
+            // Ensure full screen mode is exited if active
+            if (document.body.classList.contains('full-screen-active')) {
+                toggleFullScreen(); // This will remove the class and reset the button text
             }
 
-            setTimeout(() => {
-                modalContentArea.innerHTML = '';
-            }, 300);
+            // Resume background music if it was playing before the 3D viewer was active
+            if (backgroundMusicPlayer && isBackgroundMusicPlaying) {
+                backgroundMusicPlayer.play().catch(e => console.error("Error resuming background music:", e));
+                document.getElementById('playPauseMusicBtn').textContent = '⏸'; // Update main page button
+            }
         }
 
+        // Function to toggle full screen mode
+        function toggleFullScreen() {
+            document.body.classList.toggle('full-screen-active');
+            const fullScreenToggleBtn = document.querySelector('.full-screen-toggle-button');
+            if (fullScreenToggleBtn) {
+                if (document.body.classList.contains('full-screen-active')) {
+                    fullScreenToggleBtn.textContent = ' shrink'; // Change icon for exit
+                    fullScreenToggleBtn.setAttribute('aria-label', 'Exit Full Screen');
+                } else {
+                    fullScreenToggleBtn.textContent = '⤢'; // Change icon for enter
+                    fullScreenToggleBtn.setAttribute('aria-label', 'Toggle Full Screen');
+                }
+            }
+
+            // Re-render 3D viewer on full screen toggle to adjust canvas size
+            if (activeFeatureId === 'threeDViewerContent' && modalViewerInstance) {
+                const modelContainer = document.getElementById('modalModelContainer');
+                onWindowResize3D(modalViewerInstance.camera, modalViewerInstance.renderer, modelContainer);
+            }
+        }
+
+        // Function to open the login options modal
         function openLoginModal() {
-            loginOptionsModal.classList.add('visible');
-            document.body.style.overflow = 'hidden';
-            initLoginOptionsModal();
+            loginOptionsModal.classList.add('visible'); // Show login modal
+            document.body.style.overflow = 'hidden'; // Prevent body scrolling
+            initLoginOptionsModal(); // Initialize login modal logic
         }
 
+        // Function to close the login options modal
         function closeLoginModal() {
-            loginOptionsModal.classList.remove('visible');
-            document.body.style.overflow = '';
-            // No need to clear content, it's static
+            loginOptionsModal.classList.remove('visible'); // Hide login modal
+            document.body.style.overflow = ''; // Re-enable body scrolling
         }
 
+        // --- Project Notes Feature Logic ---
         function initProjectNotesFeature() {
             const userNotesInput = document.getElementById('modalUserNotesInput');
             const saveNotesBtn = document.getElementById('modalSaveNotesBtn');
             const userNotesStatus = document.getElementById('modalUserNotesStatus');
             const notesFileInput = document.getElementById('notesFileInput');
 
+            // Set placeholders/initial text
             if (userNotesInput) userNotesInput.placeholder = 'Type your private project notes here...';
             if (saveNotesBtn) saveNotesBtn.textContent = 'Save Project Notes';
             if (userNotesStatus) userNotesStatus.textContent = 'Please log in to save notes.';
 
+            // Add event listener for saving notes
             if (saveNotesBtn) saveNotesBtn.addEventListener('click', saveProjectNotesInModal);
 
+            // Auto-resize textarea on input
             if (userNotesInput) {
                 userNotesInput.addEventListener('input', () => {
                     userNotesInput.style.height = 'auto';
                     userNotesInput.style.height = (userNotesInput.scrollHeight) + 'px';
-                    if (userNotesInput.scrollHeight > userNotesInput.clientHeight) {
-                        userNotesInput.style.overflowY = 'auto';
-                    } else {
-                        userNotesInput.style.overflowY = 'hidden';
-                    }
+                    userNotesInput.style.overflowY = userNotesInput.scrollHeight > userNotesInput.clientHeight ? 'auto' : 'hidden';
                 });
             }
 
+            // Handle file input for notes
             if (notesFileInput) {
                 notesFileInput.addEventListener('change', async (event) => {
                     const file = event.target.files[0];
@@ -1244,7 +1661,7 @@
                                 userNotesInput.style.height = 'auto';
                                 userNotesInput.style.height = (userNotesInput.scrollHeight) + 'px';
                                 showStatusMessage(userNotesStatus, 'Notes loaded from file!', 'success');
-                                saveProjectNotesInModal();
+                                saveProjectNotesInModal(); // Auto-save after loading
                             };
                             reader.onerror = (e) => {
                                 showStatusMessage(userNotesStatus, `Error reading file: ${e.target.error.name}`, 'error');
@@ -1259,10 +1676,11 @@
                 });
             }
 
+            // Enable/disable features based on login status
             if (userId) {
                 userNotesInput.disabled = false;
                 saveNotesBtn.disabled = false;
-                loadProjectNotesInModal();
+                loadProjectNotesInModal(); // Load notes if logged in
             } else {
                 userNotesInput.disabled = true;
                 saveNotesBtn.disabled = true;
@@ -1270,18 +1688,20 @@
             }
         }
 
+        // Function to save project notes to Firestore
         async function saveProjectNotesInModal() {
             const userNotesInput = document.getElementById('modalUserNotesInput');
             const userNotesStatus = document.getElementById('modalUserNotesStatus');
 
             if (!userId) { showStatusMessage(userNotesStatus, 'Please log in to save notes.', 'error'); return; }
-            if (!db) { showStatusMessage(userNotesStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; }
+            if (!db) { showStatusMessage(userNotesStatus, 'Firebase not initialized. Cannot save notes.', 'error'); return; }
 
             const projectNotes = userNotesInput.value;
+            // Define Firestore document reference for private user notes
             const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'private', 'my-project-notes');
 
             try {
-                await setDoc(userDocRef, { content: projectNotes, timestamp: new Date() }, { merge: true });
+                await setDoc(userDocRef, { content: projectNotes, timestamp: new Date() }, { merge: true }); // Save/update document
                 showStatusMessage(userNotesStatus, 'Project notes saved successfully!', 'success');
                 console.log("User project notes saved.");
             } catch (error) {
@@ -1290,11 +1710,12 @@
             }
         }
 
+        // Function to load project notes from Firestore
         function loadProjectNotesInModal() {
             const userNotesInput = document.getElementById('modalUserNotesInput');
             const userNotesStatus = document.getElementById('modalUserNotesStatus');
 
-            if (unsubscribeProjectNotes) {
+            if (unsubscribeProjectNotes) { // Clear previous listener if any
                 unsubscribeProjectNotes();
             }
 
@@ -1302,6 +1723,7 @@
 
             const userDocRef = doc(db, 'artifacts', appId, 'users', userId, 'private', 'my-project-notes');
 
+            // Listen for real-time updates to the document
             unsubscribeProjectNotes = onSnapshot(userDocRef, (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -1318,6 +1740,8 @@
             });
         }
 
+        // --- Authentication & Settings Menu Logic ---
+        // Updates the login/logout status and displays user ID in the settings menu
         function updateLoginStatusInSettingsMenu(isLoggedIn, user) {
             const loginLogoutContainer = document.getElementById('loginLogoutContainer');
             if (!loginLogoutContainer) return;
@@ -1335,9 +1759,10 @@
                         </div>
                     </div>
                 `;
+                // Add event listeners for copy and logout buttons
                 document.getElementById('settingsCopyUserIdBtn').addEventListener('click', copyUserIdToClipboardInSettingsMenu);
                 document.getElementById('settingsLogoutBtn').addEventListener('click', async () => {
-                    if (!auth) { showStatusMessage(document.getElementById('modalLoginStatus'), 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; }
+                    if (!auth) { showStatusMessage(document.getElementById('modalLoginStatus'), 'Firebase not initialized. Cannot log out.', 'error'); return; }
                     try { await signOut(auth); console.log("User signed out."); }
                     catch (error) { console.error("Error signing out:", error); showStatusMessage(document.getElementById('modalLoginStatus'), `Logout failed: ${error.message}`, 'error'); }
                 });
@@ -1345,38 +1770,41 @@
                 loginLogoutContainer.innerHTML = `
                     <button id="settingsLoginBtn" class="settings-menu-button" role="menuitem">Log In</button>
                 `;
-                document.getElementById('settingsLoginBtn').addEventListener('click', openLoginModal);
+                document.getElementById('settingsLoginBtn').addEventListener('click', openLoginModal); // Open login modal
             }
         }
 
+        // Copies the current user's ID to the clipboard
         function copyUserIdToClipboardInSettingsMenu() {
             const userIdText = auth.currentUser?.uid;
             const copyButton = document.getElementById('settingsCopyUserIdBtn');
             if (userIdText && copyButton) {
-                const tempInput = document.createElement('textarea');
+                const tempInput = document.createElement('textarea'); // Use a temporary textarea for copying
                 tempInput.value = userIdText;
                 document.body.appendChild(tempInput);
                 tempInput.select();
                 try {
-                    document.execCommand('copy');
+                    document.execCommand('copy'); // Execute copy command
                     copyButton.textContent = 'Copied!';
-                    setTimeout(() => { copyButton.textContent = 'Copy ID'; }, 2000);
+                    setTimeout(() => { copyButton.textContent = 'Copy ID'; }, 2000); // Reset button text
                 } catch (err) {
                     console.error('Failed to copy text: ', err);
                     copyButton.textContent = 'Failed to copy!';
                 }
-                document.body.removeChild(tempInput);
+                document.body.removeChild(tempInput); // Clean up temporary textarea
             }
         }
 
+        // Initializes the login options modal with Google, GitHub, and Guest sign-in
         function initLoginOptionsModal() {
             const modalLoginBtnGoogle = document.getElementById('modalLoginBtnGoogle');
             const modalLoginBtnGithub = document.getElementById('modalLoginBtnGithub');
             const modalLoginBtnGuest = document.getElementById('modalLoginBtnGuest');
             const modalLoginStatus = document.getElementById('modalLoginStatus');
 
+            // Google Sign-in
             if (modalLoginBtnGoogle) modalLoginBtnGoogle.addEventListener('click', async () => {
-                if (!auth) { showStatusMessage(modalLoginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; }
+                if (!auth) { showStatusMessage(modalLoginStatus, 'Firebase not initialized. Cannot log in.', 'error'); return; }
                 const provider = new GoogleAuthProvider();
                 try { 
                     await signInWithPopup(auth, provider); 
@@ -1391,12 +1819,12 @@
                         try {
                             const methods = await fetchSignInMethodsForEmail(auth, email);
                             const firstMethod = methods[0];
-                            if (auth.currentUser) {
+                            if (auth.currentUser) { // If user is already logged in with another provider, link accounts
                                 await linkWithCredential(auth.currentUser, pendingCred);
                                 showStatusMessage(modalLoginStatus, `Account linked successfully!`, 'success');
                                 console.log("Account linked with Google!");
                                 closeLoginModal();
-                            } else {
+                            } else { // If not logged in, prompt to sign in with existing method
                                 showStatusMessage(modalLoginStatus, `Account with ${email} already exists. Please sign in with ${firstMethod} first.`, 'error');
                             }
                         } catch (linkError) {
@@ -1408,8 +1836,9 @@
                     }
                 }
             });
+            // GitHub Sign-in
             if (modalLoginBtnGithub) modalLoginBtnGithub.addEventListener('click', async () => {
-                if (!auth) { showStatusMessage(modalLoginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; }
+                if (!auth) { showStatusMessage(modalLoginStatus, 'Firebase not initialized. Cannot log in.', 'error'); return; }
                 const provider = new GithubAuthProvider();
                 try { 
                     await signInWithPopup(auth, provider); 
@@ -1424,12 +1853,12 @@
                         try {
                             const methods = await fetchSignInMethodsForEmail(auth, email);
                             const firstMethod = methods[0];
-                            if (auth.currentUser) {
+                            if (auth.currentUser) { // If user is already logged in with another provider, link accounts
                                 await linkWithCredential(auth.currentUser, pendingCred);
                                 showStatusMessage(modalLoginStatus, `Account linked successfully!`, 'success');
                                 console.log("Account linked with GitHub!");
                                 closeLoginModal();
-                            } else {
+                            } else { // If not logged in, prompt to sign in with existing method
                                 showStatusMessage(modalLoginStatus, `Account with ${email} already exists. Please sign in with ${firstMethod} first.`, 'error');
                             }
                         } catch (linkError) {
@@ -1441,8 +1870,9 @@
                     }
                 }
             });
+            // Anonymous (Guest) Sign-in
             if (modalLoginBtnGuest) modalLoginBtnGuest.addEventListener('click', async () => {
-                if (!auth) { showStatusMessage(modalLoginStatus, 'Firebase config not found. Features disabled. Please configure Firebase.', 'error'); return; }
+                if (!auth) { showStatusMessage(modalLoginStatus, 'Firebase not initialized. Cannot log in.', 'error'); return; }
                 try { 
                     await signInAnonymously(auth); 
                     console.log("Signed in as Guest!"); 
@@ -1455,62 +1885,73 @@
             });
         }
 
+        // --- Chatbot Feature Logic (Enhanced for Document & Personas) ---
         function initChatbotFeature() {
             const chatHistoryDiv = document.getElementById('chatbotHistory');
             const sendBtn = document.getElementById('chatbotSendBtn');
             const loadingIndicator = document.getElementById('chatbotLoadingIndicator');
             const chatStatus = document.getElementById('chatbotStatus');
-            const aiFileInput = document.getElementById('chatbotFileInput');
-            const aiFileInputLabel = document.getElementById('chatbotFileInputLabel');
+            const chatbotDocumentFileInput = document.getElementById('chatbotDocumentFileInput');
             const aiInputText = document.getElementById('chatbotInputText');
+            const aiPersonaSelect = document.getElementById('aiPersonaSelect');
 
             chatHistoryDiv.innerHTML = `<p class="ai-message">Hello! How can I assist?</p>`;
-            let chatHistory = []; 
+            let chatHistory = []; // Stores the conversation history for the AI
+            let uploadedDocumentContent = null; // Stores content of uploaded document
 
-            // Removed descriptive text, updated placeholder
-            if (aiInputText) aiInputText.placeholder = 'Type message or upload a file (.txt, .doc, .pdf)...';
-            if (aiFileInputLabel) aiFileInputLabel.textContent = 'Upload';
+            // Set placeholders/initial text
+            if (aiInputText) aiInputText.placeholder = 'Type message or ask about the uploaded document...';
             if (sendBtn) sendBtn.textContent = 'Send';
             if (loadingIndicator) loadingIndicator.querySelector('p').textContent = 'Thinking...';
 
-
+            // Auto-resize textarea on input
             if (aiInputText) {
                 aiInputText.addEventListener('input', () => {
                     aiInputText.style.height = 'auto';
                     aiInputText.style.height = (aiInputText.scrollHeight) + 'px';
-                    if (aiInputText.scrollHeight > aiInputText.clientHeight) {
-                        aiInputText.style.overflowY = 'auto';
-                    } else {
-                        aiInputText.style.overflowY = 'hidden';
-                    }
+                    aiInputText.style.overflowY = aiInputText.scrollHeight > aiInputText.clientHeight ? 'auto' : 'hidden';
                 });
             }
 
-            function appendMessage(text, sender) {
-                const p = document.createElement('p');
-                p.classList.add(`${sender}-message`);
-                p.textContent = text;
-                chatHistoryDiv.appendChild(p);
-                chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
-            }
-
+            // Function to send message to Gemini API
             async function sendMessage(prompt, fileContent = null) {
-                appendMessage(prompt, 'user');
-                let userParts = [{ text: prompt }];
-
-                if (fileContent) {
-                    userParts.push({ text: `\n\n--- File Content ---\n${fileContent}\n--- End File Content ---` });
+                // Determine the AI persona and add a system instruction
+                let personaInstruction = "";
+                const selectedPersona = aiPersonaSelect.value;
+                if (selectedPersona === "therapist") {
+                    personaInstruction = "You are a compassionate and empathetic therapist. Respond with supportive and guiding language.";
+                } else if (selectedPersona === "business-consultant") {
+                    personaInstruction = "You are a sharp and strategic business consultant. Provide actionable insights and professional advice.";
+                } else if (selectedPersona === "study-buddy") {
+                    personaInstruction = "You are a helpful and clear study buddy. Explain concepts simply and provide learning tips.";
+                } else if (selectedPersona === "creativity-coach") {
+                    personaInstruction = "You are an inspiring creativity coach. Encourage innovative thinking and provide prompts for creative writing/ideas.";
+                } else if (selectedPersona === "fun-mode") {
+                    personaInstruction = "You are in fun mode! Respond with jokes, stories, or engage in playful role-playing.";
                 }
 
-                chatHistory.push({ role: "user", parts: userParts });
+                // Append user message to chat history display
+                appendChatMessage(chatHistoryDiv, prompt, 'user');
 
-                aiInputText.value = '';
-                aiInputText.style.height = 'auto';
-                sendBtn.disabled = true;
-                aiInputText.disabled = true;
-                aiFileInputLabel.classList.add('pointer-events-none', 'opacity-50');
-                loadingIndicator.classList.remove('hidden');
-                chatStatus.textContent = '';
+                let userParts = [{ text: prompt }];
+                if (fileContent) {
+                    userParts.push({ text: `\n\n--- Document Content ---\n${fileContent}\n--- End Document Content ---` });
+                }
+                
+                // Add persona instruction to the first turn if not already present
+                if (chatHistory.length === 0 && personaInstruction) {
+                    chatHistory.push({ role: "user", parts: [{ text: personaInstruction + "\n\n" + prompt }] });
+                } else {
+                    chatHistory.push({ role: "user", parts: userParts });
+                }
+
+                aiInputText.value = ''; // Clear input
+                aiInputText.style.height = 'auto'; // Reset textarea height
+                sendBtn.disabled = true; // Disable send button
+                aiInputText.disabled = true; // Disable input
+                chatbotDocumentFileInput.disabled = true; // Disable file input
+                loadingIndicator.classList.remove('hidden'); // Show loading indicator
+                chatStatus.textContent = ''; // Clear status message
 
                 try {
                     const payload = { contents: chatHistory };
@@ -1528,65 +1969,74 @@
                         result.candidates[0].content && result.candidates[0].content.parts &&
                         result.candidates[0].content.parts.length > 0) {
                         const aiResponseText = result.candidates[0].content.parts[0].text;
-                        appendMessage(aiResponseText, 'ai');
-                        chatHistory.push({ role: "model", parts: [{ text: aiResponseText }] });
+                        appendChatMessage(chatHistoryDiv, aiResponseText, 'ai'); // Append AI response
+                        chatHistory.push({ role: "model", parts: [{ text: aiResponseText }] }); // Add to history
                     } else {
-                        appendMessage("Sorry, I couldn't generate a response. Please try again.", 'ai');
+                        appendChatMessage(chatHistoryDiv, "Sorry, I couldn't generate a response. Please try again.", 'ai');
                         console.error('API response structure unexpected:', result);
                     }
                 } catch (error) {
-                    appendMessage("An error occurred while connecting to the AI. Please check your internet connection or try again later.", 'ai');
+                    appendChatMessage(chatHistoryDiv, "An error occurred while connecting to the AI. Please check your internet connection or try again later.", 'ai');
                     chatStatus.textContent = `Error: ${error.message}`;
                     console.error('Error during API call:', error);
                 } finally {
-                    sendBtn.disabled = false;
-                    aiInputText.disabled = false;
-                    aiFileInputLabel.classList.remove('pointer-events-none', 'opacity-50');
-                    loadingIndicator.classList.add('hidden');
+                    sendBtn.disabled = false; // Re-enable send button
+                    aiInputText.disabled = false; // Re-enable input
+                    chatbotDocumentFileInput.disabled = false; // Re-enable file input
+                    loadingIndicator.classList.add('hidden'); // Hide loading indicator
                 }
             }
 
+            // Send button click listener
             sendBtn.addEventListener('click', () => {
                 const prompt = aiInputText.value.trim();
-                if (prompt) {
-                    sendMessage(prompt);
+                if (prompt || uploadedDocumentContent) { // Allow sending if there's text or uploaded content
+                    sendMessage(prompt, uploadedDocumentContent);
+                    uploadedDocumentContent = null; // Clear document content after sending
+                    chatbotDocumentFileInput.value = ''; // Clear file input
                 } else {
-                    chatStatus.textContent = 'Please enter a message or upload a file.';
+                    showStatusMessage(chatStatus, 'Please enter a message or upload a document.', 'error');
                 }
             });
 
+            // Enter key listener for text input
             aiInputText.addEventListener('keypress', (event) => {
-                if (event.key === 'Enter' && !event.shiftKey) {
+                if (event.key === 'Enter' && !event.shiftKey) { // Send on Enter, new line on Shift+Enter
                     event.preventDefault();
                     sendBtn.click();
                 }
             });
 
-            aiFileInput.addEventListener('change', async (event) => {
+            // Document file input listener
+            chatbotDocumentFileInput.addEventListener('change', async (event) => {
                 const file = event.target.files[0];
                 if (file) {
-                    chatStatus.textContent = 'Reading file...';
+                    if (file.type !== 'text/plain') {
+                        showStatusMessage(chatStatus, 'Please upload a plain text (.txt) file for document analysis.', 'error');
+                        return;
+                    }
+                    showStatusMessage(chatStatus, 'Reading document...', 'info');
                     try {
                         const reader = new FileReader();
-                        reader.onload = async (e) => {
-                            const fileContent = e.target.result;
-                            const prompt = `Analyze the following content from a file: ${file.name}`;
-                            await sendMessage(prompt, fileContent);
-                            chatStatus.textContent = 'File processed and message sent.';
+                        reader.onload = (e) => {
+                            uploadedDocumentContent = e.target.result; // Store content
+                            showStatusMessage(chatStatus, `Document '${file.name}' loaded. Ask your question!`, 'success');
+                            aiInputText.placeholder = `Ask a question about '${file.name}' or type a new message...`;
                         };
                         reader.onerror = (e) => {
-                            chatStatus.textContent = `Error reading file: ${e.target.error.name}`;
+                            showStatusMessage(chatStatus, `Error reading file: ${e.target.error.name}`, 'error');
                             console.error('File reading error:', e.target.error);
                         };
                         reader.readAsText(file);
                     } catch (error) {
-                        chatStatus.textContent = `Error processing file: ${error.message}`;
+                        showStatusMessage(chatStatus, `Error processing file: ${error.message}`, 'error');
                         console.error('File processing error:', error);
                     }
                 }
             });
         }
 
+        // --- Image Generator Feature Logic ---
         function initImageGeneratorFeature() {
             const imageGenPromptInput = document.getElementById('imageGenPromptInput');
             const imageGenGenerateBtn = document.getElementById('imageGenGenerateBtn');
@@ -1596,38 +2046,37 @@
             const imageGenStatus = document.getElementById('imageGenStatus');
             const imageGenAspectRatioSelect = document.getElementById('imageGenAspectRatio');
 
-            // Removed descriptive text
+            // Set placeholders/initial text
             if (imageGenPromptInput) imageGenPromptInput.placeholder = 'Describe the image you want to generate...';
             if (imageGenGenerateBtn) imageGenGenerateBtn.textContent = 'Generate Image';
 
+            // Auto-resize textarea on input
             if (imageGenPromptInput) {
                 imageGenPromptInput.addEventListener('input', () => {
                     imageGenPromptInput.style.height = 'auto';
                     imageGenPromptInput.style.height = (imageGenPromptInput.scrollHeight) + 'px';
-                    if (imageGenPromptInput.scrollHeight > imageGenPromptInput.clientHeight) {
-                        imageGenPromptInput.style.overflowY = 'auto';
-                    } else {
-                        imageGenPromptInput.style.overflowY = 'hidden';
-                    }
+                    imageGenPromptInput.style.overflowY = imageGenPromptInput.scrollHeight > imageGenPromptInput.clientHeight ? 'auto' : 'hidden';
                 });
             }
 
+            // Generate button click listener
             imageGenGenerateBtn.addEventListener('click', async () => {
                 const prompt = imageGenPromptInput.value.trim();
                 const aspectRatio = imageGenAspectRatioSelect.value;
 
                 if (!prompt) {
                     showStatusMessage(imageGenStatus, 'Please enter a prompt for the image.', 'error');
-                    imageGenDisplayArea.classList.add('hidden');
+                    imageGenDisplayArea.classList.add('hidden'); // Hide display area if no prompt
                     return;
                 }
 
-                imageGenDisplayArea.classList.remove('hidden');
-                imageGenLoadingOverlay.classList.remove('hidden');
+                imageGenDisplayArea.classList.remove('hidden'); // Show display area
+                imageGenLoadingOverlay.classList.remove('hidden'); // Show loading overlay
                 imageGenStatus.textContent = 'Generating image... This may take a moment.';
-                imageGenGeneratedImage.src = '';
+                imageGenGeneratedImage.src = ''; // Clear previous image
                 imageGenGeneratedImage.alt = 'Generating...';
 
+                // Apply aspect ratio class to the container
                 imageGenDisplayArea.classList.remove('aspect-1-1', 'aspect-16-9', 'aspect-4-3', 'aspect-9-16');
                 imageGenDisplayArea.classList.add(`aspect-${aspectRatio}`);
 
@@ -1656,29 +2105,271 @@
                     showStatusMessage(imageGenStatus, `Error generating image: ${error.message}`, 'error');
                     console.error('Error during image generation API call:', error);
                 } finally {
-                    imageGenLoadingOverlay.classList.add('hidden');
+                    imageGenLoadingOverlay.classList.add('hidden'); // Hide loading overlay
                 }
             });
         }
 
+        // --- Image Analysis Feature Logic (New) ---
+        function initImageAnalysisFeature() {
+            const imageAnalysisFileInput = document.getElementById('imageAnalysisFileInput');
+            const imageAnalysisPromptInput = document.getElementById('imageAnalysisPromptInput');
+            const imageAnalysisAnalyzeBtn = document.getElementById('imageAnalysisAnalyzeBtn');
+            const imageAnalysisDisplayArea = document.getElementById('imageAnalysisDisplayArea');
+            const imageAnalysisUploadedImage = document.getElementById('imageAnalysisUploadedImage');
+            const imageAnalysisLoadingOverlay = document.getElementById('imageAnalysisLoadingOverlay');
+            const imageAnalysisResult = document.getElementById('imageAnalysisResult');
+            const imageAnalysisStatus = document.getElementById('imageAnalysisStatus');
+
+            let uploadedImageBase64 = null; // To store the base64 encoded image
+
+            // Set initial states
+            imageAnalysisAnalyzeBtn.disabled = true;
+            imageAnalysisResult.textContent = '';
+            imageAnalysisDisplayArea.classList.add('hidden');
+
+            // Auto-resize textarea on input
+            if (imageAnalysisPromptInput) {
+                imageAnalysisPromptInput.addEventListener('input', () => {
+                    imageAnalysisPromptInput.style.height = 'auto';
+                    imageAnalysisPromptInput.style.height = (imageAnalysisPromptInput.scrollHeight) + 'px';
+                    imageAnalysisPromptInput.style.overflowY = imageAnalysisPromptInput.scrollHeight > imageAnalysisPromptInput.clientHeight ? 'auto' : 'hidden';
+                });
+            }
+
+            // Handle image file input
+            imageAnalysisFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    if (!file.type.startsWith('image/')) {
+                        showStatusMessage(imageAnalysisStatus, 'Please upload an image file.', 'error');
+                        imageAnalysisAnalyzeBtn.disabled = true;
+                        imageAnalysisDisplayArea.classList.add('hidden');
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        uploadedImageBase64 = e.target.result.split(',')[1]; // Get base64 part
+                        imageAnalysisUploadedImage.src = e.target.result;
+                        imageAnalysisUploadedImage.alt = 'Uploaded image';
+                        imageAnalysisDisplayArea.classList.remove('hidden');
+                        imageAnalysisAnalyzeBtn.disabled = false;
+                        showStatusMessage(imageAnalysisStatus, 'Image uploaded. Click Analyze or ask a question!', 'success');
+                        imageAnalysisResult.textContent = ''; // Clear previous result
+                    };
+                    reader.onerror = (e) => {
+                        showStatusMessage(imageAnalysisStatus, `Error reading file: ${e.target.error.name}`, 'error');
+                        console.error('File reading error:', e.target.error);
+                        imageAnalysisAnalyzeBtn.disabled = true;
+                        imageAnalysisDisplayArea.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file); // Read file as Data URL (base64)
+                } else {
+                    imageAnalysisAnalyzeBtn.disabled = true;
+                    imageAnalysisDisplayArea.classList.add('hidden');
+                    uploadedImageBase64 = null;
+                }
+            });
+
+            // Analyze button click listener
+            imageAnalysisAnalyzeBtn.addEventListener('click', async () => {
+                if (!uploadedImageBase64) {
+                    showStatusMessage(imageAnalysisStatus, 'Please upload an image first.', 'error');
+                    return;
+                }
+
+                imageAnalysisLoadingOverlay.classList.remove('hidden');
+                imageAnalysisResult.textContent = '';
+                imageAnalysisStatus.textContent = 'Analyzing image...';
+                imageAnalysisAnalyzeBtn.disabled = true;
+                imageAnalysisFileInput.disabled = true;
+                imageAnalysisPromptInput.disabled = true;
+
+                const prompt = imageAnalysisPromptInput.value.trim() || "Describe this image."; // Default prompt
+
+                try {
+                    const chatHistory = [
+                        {
+                            role: "user",
+                            parts: [
+                                { text: prompt },
+                                {
+                                    inlineData: {
+                                        mimeType: "image/png", // Assuming PNG, adjust if needed for other types
+                                        data: uploadedImageBase64
+                                    }
+                                }
+                            ]
+                        }
+                    ];
+
+                    const payload = { contents: chatHistory };
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const analysisText = result.candidates[0].content.parts[0].text;
+                        imageAnalysisResult.textContent = analysisText;
+                        showStatusMessage(imageAnalysisStatus, 'Image analysis complete!', 'success');
+                    } else {
+                        imageAnalysisResult.textContent = "Could not analyze image. Please try again.";
+                        showStatusMessage(imageAnalysisStatus, 'Analysis failed.', 'error');
+                        console.error('Image analysis response structure unexpected:', result);
+                    }
+                } catch (error) {
+                    imageAnalysisResult.textContent = "An error occurred during analysis.";
+                    showStatusMessage(imageAnalysisStatus, `Error: ${error.message}`, 'error');
+                    console.error('Error during image analysis API call:', error);
+                } finally {
+                    imageAnalysisLoadingOverlay.classList.add('hidden');
+                    imageAnalysisAnalyzeBtn.disabled = false;
+                    imageAnalysisFileInput.disabled = false;
+                    imageAnalysisPromptInput.disabled = false;
+                }
+            });
+        }
+
+        // --- Audio Transcription Feature Logic (New) ---
+        function initAudioTranscriptionFeature() {
+            const audioTranscriptionFileInput = document.getElementById('audioTranscriptionFileInput');
+            const transcribeAudioBtn = document.getElementById('transcribeAudioBtn');
+            const audioTranscriptionOutput = document.getElementById('audioTranscriptionOutput');
+            const audioTranscriptionLoadingIndicator = document.getElementById('audioTranscriptionLoadingIndicator');
+            const audioTranscriptionStatus = document.getElementById('audioTranscriptionStatus');
+
+            let uploadedAudioFile = null; // To store the uploaded audio file
+
+            // Set initial states
+            transcribeAudioBtn.disabled = true;
+            audioTranscriptionOutput.value = '';
+            audioTranscriptionOutput.placeholder = "Transcription will appear here...";
+
+            // Auto-resize textarea on input (though it's readonly, useful if content is set programmatically)
+            if (audioTranscriptionOutput) {
+                audioTranscriptionOutput.addEventListener('input', () => {
+                    audioTranscriptionOutput.style.height = 'auto';
+                    audioTranscriptionOutput.style.height = (audioTranscriptionOutput.scrollHeight) + 'px';
+                    audioTranscriptionOutput.style.overflowY = audioTranscriptionOutput.scrollHeight > audioTranscriptionOutput.clientHeight ? 'auto' : 'hidden';
+                });
+            }
+
+            // Handle audio file input
+            audioTranscriptionFileInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    if (!file.type.startsWith('audio/')) {
+                        showStatusMessage(audioTranscriptionStatus, 'Please upload an audio file (.mp3, .wav).', 'error');
+                        transcribeAudioBtn.disabled = true;
+                        audioTranscriptionOutput.value = '';
+                        uploadedAudioFile = null;
+                        return;
+                    }
+                    uploadedAudioFile = file;
+                    transcribeAudioBtn.disabled = false;
+                    audioTranscriptionOutput.value = ''; // Clear previous transcription
+                    showStatusMessage(audioTranscriptionStatus, `Audio file '${file.name}' loaded. Click Transcribe Audio.`, 'success');
+                } else {
+                    transcribeAudioBtn.disabled = true;
+                    audioTranscriptionOutput.value = '';
+                    uploadedAudioFile = null;
+                }
+            });
+
+            // Transcribe button click listener
+            transcribeAudioBtn.addEventListener('click', async () => {
+                if (!uploadedAudioFile) {
+                    showStatusMessage(audioTranscriptionStatus, 'Please upload an audio file first.', 'error');
+                    return;
+                }
+
+                audioTranscriptionLoadingIndicator.classList.remove('hidden');
+                audioTranscriptionOutput.value = '';
+                audioTranscriptionStatus.textContent = 'Transcribing audio... (This is a simulated transcription)';
+                transcribeAudioBtn.disabled = true;
+                audioTranscriptionFileInput.disabled = true;
+
+                try {
+                    // --- SIMULATED AUDIO TRANSCRIPTION ---
+                    // In a real application, you would send the audio file to a Vertex AI Speech-to-Text API
+                    // For example:
+                    // const audioBase64 = await new Promise((resolve, reject) => {
+                    //     const reader = new FileReader();
+                    //     reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                    //     reader.onerror = reject;
+                    //     reader.readAsDataURL(uploadedAudioFile);
+                    // });
+                    //
+                    // const audioPayload = {
+                    //     audioContent: audioBase66,
+                    //     config: {
+                    //         encoding: 'LINEAR16', // Or 'MP3', 'FLAC', etc. based on your audio
+                    //         sampleRateHertz: 16000, // Adjust based on your audio
+                    //         languageCode: 'en-US',
+                    //     },
+                    // };
+                    //
+                    // const transcriptionApiUrl = `YOUR_VERTEX_AI_SPEECH_TO_TEXT_API_ENDPOINT?key=${GEMINI_API_KEY}`;
+                    // const response = await fetch(transcriptionApiUrl, {
+                    //     method: 'POST',
+                    //     headers: { 'Content-Type': 'application/json' },
+                    //     body: JSON.stringify(audioPayload),
+                    // });
+                    // const result = await response.json();
+                    // const transcribedText = result.results[0].alternatives[0].transcript;
+                    // --- END SIMULATED AUDIO TRANSCRIPTION ---
+
+                    // For demonstration, we'll use a placeholder text after a delay
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate network delay
+
+                    const transcribedText = `[Simulated Transcription of "${uploadedAudioFile.name}"]: This is a placeholder for the actual audio transcription. In a real application, a Vertex AI Speech-to-Text model would process the uploaded audio file and convert spoken words into text here. For example, if you uploaded a song, you might see lyrics. If it was a meeting, you'd see the dialogue. You can now copy this text and use it in the Avneed Chat for summarization or translation!`;
+                    
+                    audioTranscriptionOutput.value = transcribedText;
+                    audioTranscriptionOutput.style.height = 'auto'; // Recalculate height
+                    audioTranscriptionOutput.style.height = (audioTranscriptionOutput.scrollHeight) + 'px';
+                    showStatusMessage(audioTranscriptionStatus, 'Transcription complete (simulated)!', 'success');
+
+                } catch (error) {
+                    audioTranscriptionOutput.value = "Error during transcription.";
+                    showStatusMessage(audioTranscriptionStatus, `Error: ${error.message}`, 'error');
+                    console.error('Error during audio transcription:', error);
+                } finally {
+                    audioTranscriptionLoadingIndicator.classList.add('hidden');
+                    transcribeAudioBtn.disabled = false;
+                    audioTranscriptionFileInput.disabled = false;
+                }
+            });
+        }
+
+        // --- 3D Viewer Feature Logic ---
         function init3DViewerInstance(canvas, container, statusElement, audioPlayerElement, audioControlsElement) {
             const scene = new THREE.Scene();
-            scene.background = null;
+            scene.background = null; // Transparent background by default
 
             const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 0, 5);
+            camera.position.set(0, 0, 5); // Initial camera position
 
             const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setClearAlpha(0);
+            renderer.setClearAlpha(0); // Ensure renderer background is transparent
 
             const controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
+            controls.enableDamping = true; // Smooth camera movement
             controls.dampingFactor = 0.25;
             controls.screenSpacePanning = false;
-            controls.maxPolarAngle = Math.PI / 2;
+            controls.maxPolarAngle = Math.PI / 2; // Prevent camera from going below ground
 
+            // Add lights to the scene
             const ambientLight = new THREE.AmbientLight(0xffffff, 2.5);
             scene.add(ambientLight);
 
@@ -1686,18 +2377,53 @@
             directionalLight.position.set(0, 5, 5).normalize();
             scene.add(directionalLight);
 
-            const pointLight = new THREE.PointLight(0x00FFFF, 2.0, 100);
+            const pointLight = new THREE.PointLight(0x00FFFF, 2.0, 100); // Neon blue point light
             pointLight.position.set(2, 2, 2);
             scene.add(pointLight);
 
             statusElement.classList.remove('hidden');
             statusElement.innerHTML = `<p>Upload a 3D model (.gltf, .glb)</p><p>Use mouse to interact</p>`;
             
+            // Audio player controls
             const playPauseButton = audioControlsElement.querySelector('[data-action="play-pause"]');
+            const addAudioButton = audioControlsElement.querySelector('[data-action="add-audio"]'); // New button reference
+            const mainPagePlayPauseBtn = document.getElementById('playPauseMusicBtn'); // Main page play/pause button
+
             if (playPauseButton) {
-                audioPlayerElement.addEventListener('play', () => { playPauseButton.textContent = '⏸'; });
-                audioPlayerElement.addEventListener('pause', () => { playPauseButton.textContent = '▶'; });
-                audioPlayerElement.addEventListener('ended', () => { playPauseButton.textContent = '▶'; });
+                audioPlayerElement.addEventListener('play', () => { 
+                    playPauseButton.textContent = '⏸'; 
+                    // Pause background music if 3D viewer audio starts
+                    if (backgroundMusicPlayer && !backgroundMusicPlayer.paused) {
+                        backgroundMusicPlayer.pause();
+                        isBackgroundMusicPlaying = true; // Mark as was playing
+                    }
+                    // Update main page player if it's the same audio
+                    if (backgroundMusicPlayer && backgroundMusicPlayer.src === audioPlayerElement.src) {
+                        mainPagePlayPauseBtn.textContent = '⏸';
+                    }
+                });
+                audioPlayerElement.addEventListener('pause', () => { 
+                    playPauseButton.textContent = '▶'; 
+                    // Resume background music if 3D viewer audio pauses and it was playing before
+                    if (backgroundMusicPlayer && isBackgroundMusicPlaying) {
+                        backgroundMusicPlayer.play().catch(e => console.error("Error resuming background music:", e));
+                    }
+                    // Update main page player if it's the same audio
+                    if (backgroundMusicPlayer && backgroundMusicPlayer.src === audioPlayerElement.src) {
+                        mainPagePlayPauseBtn.textContent = '▶';
+                    }
+                });
+                audioPlayerElement.addEventListener('ended', () => { 
+                    playPauseButton.textContent = '▶'; 
+                    // Resume background music if 3D viewer audio ends and it was playing before
+                    if (backgroundMusicPlayer && isBackgroundMusicPlaying) {
+                        backgroundMusicPlayer.play().catch(e => console.error("Error resuming background music:", e));
+                    }
+                    // Update main page player if it's the same audio
+                    if (backgroundMusicPlayer && backgroundMusicPlayer.src === audioPlayerElement.src) {
+                        mainPagePlayPauseBtn.textContent = '▶';
+                    }
+                });
                 
                 playPauseButton.addEventListener('click', () => {
                     if (audioPlayerElement.paused) {
@@ -1708,63 +2434,78 @@
                 });
             }
 
+            // New event listener for the add audio button
+            if (addAudioButton) {
+                addAudioButton.addEventListener('click', () => {
+                    // Trigger the hidden audio file input
+                    document.getElementById('modalAudioFileInput').click();
+                });
+            }
+
+            // Return the viewer instance object with all its properties
             return { 
                 scene, 
                 camera, 
                 renderer, 
                 controls, 
-                currentModel: null, 
-                mixer: null, 
-                clock: new THREE.Clock(), 
-                isCameraLocked: false,
-                autoRotate: true,
-                isBackgroundSolid: false,
-                isWireframe: false,
+                currentModel: null, // Currently loaded 3D model
+                mixer: null, // Animation mixer for GLTF animations
+                clock: new THREE.Clock(), // Clock for animation updates
+                isCameraLocked: false, // State for camera lock
+                autoRotate: true, // State for auto-rotation
+                isBackgroundSolid: false, // State for background color
+                isWireframe: false, // State for wireframe mode
+                // Store initial states for reset functionality
                 initialCameraPosition: camera.position.clone(),
                 initialControlsTarget: controls.target.clone(),
                 initialModelPosition: new THREE.Vector3(),
                 initialModelRotation: new THREE.Euler(),
                 initialModelScale: new THREE.Vector3(1,1,1),
-                audioPlayer: audioPlayerElement, 
-                audioControls: audioControlsElement,
-                hasAudioLoaded: false,
+                audioPlayer: audioPlayerElement, // Audio element
+                audioControls: audioControlsElement, // Audio controls container
+                hasAudioLoaded: false, // Flag if audio is loaded
             };
         }
 
+        // Handles window resizing for the 3D viewer
         function onWindowResize3D(camera, renderer, container) {
             camera.aspect = container.clientWidth / container.clientHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(container.clientWidth, container.clientHeight);
         }
 
+        // Animation loop for the 3D viewer
         function animate3D(viewerInstance) {
             if (!viewerInstance) return;
-            requestAnimationFrame(() => animate3D(viewerInstance));
+            requestAnimationFrame(() => animate3D(viewerInstance)); // Loop animation
 
-            const delta = viewerInstance.clock.getDelta();
+            const delta = viewerInstance.clock.getDelta(); // Get time delta for animations
 
             if (viewerInstance.mixer) {
-                viewerInstance.mixer.update(delta);
+                viewerInstance.mixer.update(delta); // Update model animations
             }
 
             if (viewerInstance.currentModel && viewerInstance.autoRotate) {
-                viewerInstance.currentModel.rotation.y += 0.015;
+                viewerInstance.currentModel.rotation.y += 0.015; // Auto-rotate model
             }
 
-            viewerInstance.controls.update();
-            viewerInstance.renderer.render(viewerInstance.scene, viewerInstance.camera);
+            viewerInstance.controls.update(); // Update OrbitControls
+            viewerInstance.renderer.render(viewerInstance.scene, viewerInstance.camera); // Render scene
         }
 
+        // Loads a 3D model into the viewer
         function loadModel(modelPath, viewerInstance, statusElement, controlsElement, fileInputLabelElement, audioControlsElement) {
             statusElement.classList.remove('hidden');
             statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>Loading 3D Model... </p>`;
             
+            // Hide controls and input label during loading
             if (fileInputLabelElement) fileInputLabelElement.classList.add('hidden');
             if (controlsElement) controlsElement.classList.add('hidden');
             if (audioControlsElement) audioControlsElement.classList.add('hidden');
 
             const loader = new THREE.GLTFLoader();
             loader.load(modelPath, (gltf) => {
+                // Remove previous model if any
                 if (viewerInstance.currentModel) {
                     viewerInstance.scene.remove(viewerInstance.currentModel);
                     if (viewerInstance.mixer) {
@@ -1775,12 +2516,14 @@
                 viewerInstance.currentModel = gltf.scene;
                 viewerInstance.scene.add(viewerInstance.currentModel);
 
+                // Reset model states
                 viewerInstance.isWireframe = false;
                 viewerInstance.isBackgroundSolid = false;
                 viewerInstance.renderer.setClearAlpha(0);
                 if(controlsElement) controlsElement.querySelector('[data-action="toggle-wireframe"]').textContent = 'Wireframe';
                 if(controlsElement) controlsElement.querySelector('[data-action="toggle-background"]').textContent = 'Toggle BG';
 
+                // Play animations if present
                 if (gltf.animations && gltf.animations.length) {
                     viewerInstance.mixer = new THREE.AnimationMixer(viewerInstance.currentModel);
                     gltf.animations.forEach((clip) => {
@@ -1788,39 +2531,45 @@
                     });
                 }
 
+                // Adjust camera to fit the loaded model
                 const box = new THREE.Box3().setFromObject(viewerInstance.currentModel);
                 const center = box.getCenter(new THREE.Vector3());
                 const size = box.getSize(new THREE.Vector3());
                 const maxDim = Math.max(size.x, size.y, size.z);
                 const fov = viewerInstance.camera.fov * (Math.PI / 180);
                 let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
-                cameraZ *= 1.5;
+                cameraZ *= 1.5; // Add some buffer
 
                 viewerInstance.camera.position.set(center.x, center.y, center.z + cameraZ);
                 viewerInstance.controls.target.set(center.x, center.y, center.z);
                 viewerInstance.controls.update();
 
+                // Store initial positions for reset
                 viewerInstance.initialCameraPosition.copy(viewerInstance.camera.position);
                 viewerInstance.initialControlsTarget.copy(viewerInstance.controls.target);
                 viewerInstance.initialModelPosition.copy(viewerInstance.currentModel.position);
                 viewerInstance.currentModel.rotation.copy(viewerInstance.initialModelRotation);
                 viewerInstance.currentModel.scale.copy(viewerInstance.initialModelScale);
 
-                statusElement.classList.add('hidden');
+                statusElement.classList.add('hidden'); // Hide loading status
+                // Show controls and input label
                 if (fileInputLabelElement) fileInputLabelElement.classList.remove('hidden');
                 if (controlsElement) controlsElement.classList.remove('hidden');
-                if (viewerInstance.hasAudioLoaded) {
+                if (viewerInstance.hasAudioLoaded) { // Only show audio controls if audio is loaded
                     audioControlsElement.classList.remove('hidden');
                 }
 
+                // Revoke Blob URL if used
                 if (modelPath.startsWith('blob:')) {
                     URL.revokeObjectURL(modelPath);
                 }
 
             }, (xhr) => {
+                // Update loading progress
                 const percent = (xhr.loaded / xhr.total * 100).toFixed(0);
                 statusElement.innerHTML = `<div class="loading-spinner mb-4"></div><p>Loading 3D Model... ${percent}%</p>`;
             }, (error) => {
+                // Show error message
                 statusElement.classList.remove('hidden');
                 statusElement.innerHTML = `<p class="text-red-500">Error loading model: ${error.message || 'Unknown error'}</p>`;
                 if (fileInputLabelElement) fileInputLabelElement.classList.remove('hidden');
@@ -1833,6 +2582,7 @@
             });
         }
 
+        // Sets up the resize handle for the 3D viewer container
         function setupResizeHandle3D(handle, container, camera, renderer) {
             let isResizing = false;
             let initialX, initialY, initialWidth, initialHeight;
@@ -1844,8 +2594,8 @@
                 initialWidth = container.offsetWidth;
                 initialHeight = container.offsetHeight;
 
-                document.body.style.userSelect = 'none';
-                document.body.style.cursor = 'nwse-resize';
+                document.body.style.userSelect = 'none'; // Prevent text selection during resize
+                document.body.style.cursor = 'nwse-resize'; // Change cursor
             });
 
             document.addEventListener('mousemove', (e) => {
@@ -1865,20 +2615,22 @@
                 container.style.width = `${newWidth}px`;
                 container.style.height = `${newHeight}px`;
 
-                onWindowResize3D(camera, renderer, container);
+                onWindowResize3D(camera, renderer, container); // Update renderer size
             });
 
             document.addEventListener('mouseup', () => {
                 isResizing = false;
-                document.body.style.userSelect = '';
-                document.body.style.cursor = '';
+                document.body.style.userSelect = ''; // Reset user select
+                document.body.style.cursor = ''; // Reset cursor
             });
         }
 
+        // Sets up controls for the 3D model (movement, rotation, etc.)
         function setupModelControls3D(controlsElement, viewerInstance, containerElement, fileInputLabelElement, uploadMenuElement) {
             const movementStep = 0.1;
             const scaleFactor = 1.05;
 
+            // Function to update visibility of controls/labels based on hover/menu state
             const updateOverlayVisibility = () => {
                 const isHovering = containerElement.matches(':hover');
                 const isMenuOpen = !uploadMenuElement.classList.contains('hidden');
@@ -1888,9 +2640,8 @@
                     if (viewerInstance.currentModel) {
                         controlsElement.classList.remove('hidden');
                     }
-                    if (viewerInstance.hasAudioLoaded) {
-                        viewerInstance.audioControls.classList.remove('hidden');
-                    }
+                    // Audio controls should also be visible when hovering or menu open
+                    viewerInstance.audioControls.classList.remove('hidden');
                 } else {
                     fileInputLabelElement.classList.add('hidden');
                     controlsElement.classList.add('hidden');
@@ -1898,9 +2649,11 @@
                 }
             };
 
+            // Event listeners for showing/hiding controls on hover
             containerElement.addEventListener('mouseenter', updateOverlayVisibility);
             containerElement.addEventListener('mouseleave', updateOverlayVisibility);
 
+            // Close upload menu if clicking outside
             document.addEventListener('click', (event) => {
                 if (!uploadMenuElement.contains(event.target) && event.target !== fileInputLabelElement) {
                     uploadMenuElement.classList.add('hidden');
@@ -1908,30 +2661,35 @@
                 }
             });
 
+            // Toggle upload menu on '+' button click
             fileInputLabelElement.addEventListener('click', (event) => {
-                event.stopPropagation();
+                event.stopPropagation(); // Prevent modal from closing
                 uploadMenuElement.classList.toggle('hidden');
                 updateOverlayVisibility();
             });
 
+            // Handle clicks within the upload menu
             uploadMenuElement.addEventListener('click', (event) => {
                 if (event.target.classList.contains('upload-menu-button')) {
                     const type = event.target.dataset.type;
-                    uploadMenuElement.classList.add('hidden');
+                    uploadMenuElement.classList.add('hidden'); // Hide menu
 
                     if (type === 'model') {
+                        // Trigger hidden model file input
                         fileInputLabelElement.closest('.model-viewer-container').querySelector('input[type="file"][accept=".gltf, .glb"]').click();
                     } else if (type === 'audio') {
+                        // Trigger hidden audio file input
                         fileInputLabelElement.closest('.model-viewer-container').querySelector('input[type="file"][accept=".mp3"]').click();
                     }
                     updateOverlayVisibility();
                 }
             });
 
+            // Event listeners for all model control buttons
             controlsElement.querySelectorAll('.model-control-button').forEach(button => {
                 button.addEventListener('click', () => {
                     const action = button.dataset.action;
-                    if (!viewerInstance.currentModel) return;
+                    if (!viewerInstance.currentModel) return; // Ensure a model is loaded
 
                     switch (action) {
                         case 'move-up':
@@ -1948,10 +2706,11 @@
                             break;
                         case 'toggle-lock':
                             viewerInstance.isCameraLocked = !viewerInstance.isCameraLocked;
-                            viewerInstance.controls.enabled = !viewerInstance.isCameraLocked;
+                            viewerInstance.controls.enabled = !viewerInstance.isCameraLocked; // Enable/disable OrbitControls
                             button.textContent = viewerInstance.isCameraLocked ? 'Unlock Cam' : 'Lock Cam';
                             break;
                         case 'reset-view':
+                            // Reset camera and model to initial positions/rotations/scales
                             viewerInstance.camera.position.copy(viewerInstance.initialCameraPosition);
                             viewerInstance.controls.target.copy(viewerInstance.initialControlsTarget);
                             viewerInstance.currentModel.position.copy(viewerInstance.initialModelPosition);
@@ -1959,13 +2718,12 @@
                             viewerInstance.currentModel.scale.copy(viewerInstance.initialModelScale);
                             viewerInstance.controls.update();
 
+                            // Reset other states
                             viewerInstance.autoRotate = true;
                             controlsElement.querySelector('[data-action="toggle-rotation"]').textContent = 'Auto-Rotate';
                             viewerInstance.isWireframe = false;
                             viewerInstance.currentModel.traverse((node) => {
-                                if (node.isMesh) {
-                                    node.material.wireframe = false;
-                                }
+                                if (node.isMesh) { node.material.wireframe = false; }
                             });
                             controlsElement.querySelector('[data-action="toggle-wireframe"]').textContent = 'Wireframe';
                             viewerInstance.isBackgroundSolid = false;
@@ -1985,10 +2743,10 @@
                         case 'toggle-background':
                             viewerInstance.isBackgroundSolid = !viewerInstance.isBackgroundSolid;
                             if (viewerInstance.isBackgroundSolid) {
-                                viewerInstance.renderer.setClearColor(0x333333, 1);
+                                viewerInstance.renderer.setClearColor(0x333333, 1); // Set solid background color
                                 button.textContent = 'Toggle BG (Solid)';
                             } else {
-                                viewerInstance.renderer.setClearAlpha(0);
+                                viewerInstance.renderer.setClearAlpha(0); // Set transparent background
                                 button.textContent = 'Toggle BG (Transparent)';
                             }
                             break;
@@ -1996,7 +2754,7 @@
                             viewerInstance.isWireframe = !viewerInstance.isWireframe;
                             viewerInstance.currentModel.traverse((node) => {
                                 if (node.isMesh) {
-                                    node.material.wireframe = viewerInstance.isWireframe;
+                                    node.material.wireframe = viewerInstance.isWireframe; // Toggle wireframe on all meshes
                                 }
                             });
                             button.textContent = viewerInstance.isWireframe ? 'Wireframe (On)' : 'Wireframe (Off)';
@@ -2005,8 +2763,8 @@
                             const canvas = viewerInstance.renderer.domElement;
                             const link = document.createElement('a');
                             link.download = 'model-screenshot.png';
-                            link.href = canvas.toDataURL('image/png');
-                            link.click();
+                            link.href = canvas.toDataURL('image/png'); // Get canvas content as PNG
+                            link.click(); // Trigger download
                             link.remove();
                             break;
                     }
@@ -2014,6 +2772,7 @@
             });
         }
 
+        // Initializes the 3D Viewer feature
         function init3DViewerFeature() {
             const modelContainer = document.getElementById('modalModelContainer');
             const modelCanvas = document.getElementById('modalModelCanvas');
@@ -2026,41 +2785,64 @@
             const audioFileInput = document.getElementById('modalAudioFileInput');
             const modelFileInputLabel = document.getElementById('modalModelFileInputLabel');
             const uploadMenu = document.getElementById('modalUploadMenu');
+            const mainPagePlayPauseBtn = document.getElementById('playPauseMusicBtn');
 
+
+            // Initialize the Three.js viewer instance
             modalViewerInstance = init3DViewerInstance(modelCanvas, modelContainer, modelStatus, primaryAudioPlayer, audioControls);
             
+            // Event listener for model file input
             modelFileInput.addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 if (file) {
                     loadModel(URL.createObjectURL(file), modalViewerInstance, modelStatus, modelControls, modelFileInputLabel, audioControls);
                 }
             });
+            // Event listener for audio file input
             audioFileInput.addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 if (file) {
                     const audioURL = URL.createObjectURL(file);
+                    
+                    // Set the source for both players
                     modalViewerInstance.audioPlayer.src = audioURL;
-                    modalViewerInstance.audioPlayer.play().catch(e => console.error("Audio playback error:", e));
-                    modalViewerInstance.hasAudioLoaded = true;
-                    audioControls.classList.remove('hidden');
+                    backgroundMusicPlayer.src = audioURL;
+
+                    // Play both players
+                    modalViewerInstance.audioPlayer.play().catch(e => console.error("3D Viewer Audio playback error:", e));
+                    backgroundMusicPlayer.play()
+                        .then(() => {
+                            mainPagePlayPauseBtn.textContent = '⏸';
+                            isBackgroundMusicPlaying = true;
+                            console.log("Background music playing from 3D viewer upload.");
+                        })
+                        .catch(error => {
+                            console.error("Background music playback error from 3D viewer upload:", error);
+                        });
+                    
+                    modalViewerInstance.hasAudioLoaded = true; // Set flag
+                    audioControls.classList.remove('hidden'); // Show audio controls
                 }
-                event.target.value = ''; 
+                event.target.value = ''; // Clear file input
             });
+            // Setup resize handle
             setupResizeHandle3D(resizeHandle, modelContainer, modalViewerInstance.camera, modalViewerInstance.renderer);
+            // Setup model controls
             setupModelControls3D(modelControls, modalViewerInstance, modelContainer, modelFileInputLabel, uploadMenu);
 
-            animate3D(modalViewerInstance);
+            animate3D(modalViewerInstance); // Start the animation loop
 
+            // Load a default model on initialization
             loadModel('https://imelijah88.github.io/Avneed/friendlyrobot.glb', modalViewerInstance, modelStatus, modelControls, modelFileInputLabel, audioControls);
         }
 
         // --- Floating Balls Animation Logic ---
-        const sectionHeader = document.getElementById('sectionHeader');
         const fixedHeaderContent = document.getElementById('fixedHeaderContent');
         const buttons = document.querySelectorAll('.sphere-button');
 
-        let buttonStates = [];
+        let buttonStates = []; // Stores state for each floating button
 
+        // Initializes the positions and velocities of the floating buttons
         function initFloatingBalls() {
             // Get computed styles for padding of the main black box (sectionHeader)
             const computedStyle = window.getComputedStyle(sectionHeader);
@@ -2073,19 +2855,17 @@
             const fixedHeaderRect = fixedHeaderContent.getBoundingClientRect();
             const sectionHeaderRect = sectionHeader.getBoundingClientRect();
 
-            // Calculate the effective top boundary for the balls
-            // This is the bottom of the fixedHeaderContent, relative to the sectionHeader's top
+            // Calculate the effective top boundary for the balls (below the fixed header content)
             const topBoundary = fixedHeaderRect.bottom - sectionHeaderRect.top + 10; // Add a small buffer
 
             // Calculate the overall boundaries of the sectionHeader for the balls
-            // Use a fixed size for calculation as sphere-button has fixed width/height
-            const buttonWidth = 60; // Now 60px
-            const buttonHeight = 60; // Now 60px
+            const buttonWidth = 90; // Use actual button width
+            const buttonHeight = 90; // Use actual button height
 
             const minX = paddingLeft;
             const maxX = sectionHeader.clientWidth - paddingRight - buttonWidth;
-            const minY = topBoundary; // Balls start moving from below the fixed header content
-            const maxY = sectionHeader.clientHeight - paddingBottom - buttonHeight;
+            const minY = topBoundary; 
+            const maxY = sectionHeader.clientHeight - paddingBottom - buttonHeight; // Use clientHeight for the current height of the container
 
             buttonStates = Array.from(buttons).map(button => {
                 let initialX = Math.random() * (maxX - minX) + minX;
@@ -2095,13 +2875,15 @@
                 initialX = Math.max(minX, Math.min(initialX, maxX));
                 initialY = Math.max(minY, Math.min(initialY, maxY));
 
-
+                // Random initial velocity
                 let vx = (Math.random() - 0.5) * 0.8; 
                 let vy = (Math.random() - 0.5) * 0.8; 
 
+                // Ensure minimum velocity to keep them moving
                 if (Math.abs(vx) < 0.1) vx = vx > 0 ? 0.1 : -0.1;
                 if (Math.abs(vy) < 0.1) vy = vy > 0 ? 0.1 : -0.1;
 
+                // Set initial CSS position
                 button.style.position = 'absolute';
                 button.style.left = '0px'; 
                 button.style.top = '0px';
@@ -2116,9 +2898,10 @@
                 };
             });
 
-            animateBalls();
+            animateBalls(); // Start the animation loop
         }
 
+        // Animation loop for floating balls
         function animateBalls() {
             // Recalculate bounds on each frame to handle window resizing dynamically
             const computedStyle = window.getComputedStyle(sectionHeader);
@@ -2129,23 +2912,22 @@
             const fixedHeaderRect = fixedHeaderContent.getBoundingClientRect();
             const sectionHeaderRect = sectionHeader.getBoundingClientRect();
 
-            const topBoundary = fixedHeaderRect.bottom - sectionHeaderRect.top + 10; // Adjusted top boundary
+            const topBoundary = fixedHeaderRect.bottom - sectionHeaderRect.top + 10; 
             
-            // Use fixed size for calculation
-            const buttonWidth = 60; 
-            const buttonHeight = 60; 
+            const buttonWidth = 90; 
+            const buttonHeight = 90; 
 
             const minX = paddingLeft;
             const maxX = sectionHeader.clientWidth - paddingRight - buttonWidth;
             const minY = topBoundary; 
-            const maxY = sectionHeader.clientHeight - paddingBottom - buttonHeight;
+            const maxY = sectionHeader.clientHeight - paddingBottom - buttonHeight; // Use clientHeight for the current height of the container
 
             buttonStates.forEach(ball => {
                 // Update position
                 ball.x += ball.vx;
                 ball.y += ball.vy;
 
-                // Collision detection and bounce
+                // Collision detection and bounce off boundaries
                 if (ball.x < minX) {
                     ball.x = minX;
                     ball.vx *= -1;
@@ -2166,25 +2948,28 @@
                 ball.element.style.transform = `translate(${ball.x}px, ${ball.y}px)`;
             });
 
-            requestAnimationFrame(animateBalls);
+            requestAnimationFrame(animateBalls); // Request next frame
         }
 
+        // --- Main DOM Content Loaded Listener ---
         document.addEventListener('DOMContentLoaded', () => {
             const toggleThemeBtn = document.getElementById('settingsBtn');
             const settingsMenu = document.getElementById('settingsMenu');
             let isSettingsMenuOpen = false;
 
+            // Toggle settings menu visibility
             toggleThemeBtn.addEventListener('click', (event) => {
-                event.stopPropagation();
+                event.stopPropagation(); // Prevent document click from closing it immediately
                 isSettingsMenuOpen = !isSettingsMenuOpen;
                 if (isSettingsMenuOpen) {
                     settingsMenu.classList.remove('hidden');
-                    updateLoginStatusInSettingsMenu(!!userId, auth?.currentUser); 
+                    updateLoginStatusInSettingsMenu(!!userId, auth?.currentUser); // Update login status when opening
                 } else {
                     settingsMenu.classList.add('hidden');
                 }
             });
 
+            // Close settings menu if clicking outside
             document.addEventListener('click', (event) => {
                 if (isSettingsMenuOpen && !settingsMenu.contains(event.target) && event.target !== toggleThemeBtn) {
                     settingsMenu.classList.add('hidden');
@@ -2192,28 +2977,42 @@
                 }
             });
 
+            // Theme switching logic
             settingsMenu.querySelectorAll('.settings-menu-button[data-theme]').forEach(button => {
                 button.addEventListener('click', () => {
                     const theme = button.dataset.theme;
-                    document.body.classList.remove('dark-theme', 'light-theme');
-                    document.body.classList.add(theme + '-theme');
-                    localStorage.setItem('theme', theme);
-                    settingsMenu.classList.add('hidden');
+                    document.body.classList.remove('dark-theme', 'light-theme'); // Remove existing themes
+                    document.body.classList.add(theme + '-theme'); // Add selected theme
+                    localStorage.setItem('theme', theme); // Save preference
+                    settingsMenu.classList.add('hidden'); // Hide menu
                     isSettingsMenuOpen = false;
                 });
             });
 
+            // Apply stored theme on load
             const storedTheme = localStorage.getItem('theme') || 'dark';
             document.body.classList.add(storedTheme + '-theme');
 
-            document.getElementById('openProjectNotesBtn').addEventListener('click', () => openModal('projectNotesContent'));
-            document.getElementById('openAvneedChatbotBtn').addEventListener('click', () => openModal('chatbotContent'));
-            document.getElementById('openImageGeneratorBtn').addEventListener('click', () => openModal('imageGeneratorContent'));
-            document.getElementById('open3DViewerBtn').addEventListener('click', () => openModal('threeDViewerContent'));
+            // Event listeners for opening AI feature content (using data-feature-id)
+            document.querySelectorAll('.sphere-button').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const featureId = event.currentTarget.dataset.featureId;
+                    if (featureId) {
+                        showFeatureContent(featureId);
+                    }
+                });
+            });
 
             // Initialize floating balls animation after DOM is ready
             initFloatingBalls();
-            window.addEventListener('resize', initFloatingBalls); // Re-initialize on resize to adjust bounds
+            // Re-initialize on resize to adjust bounds
+            window.addEventListener('resize', () => {
+                // Only re-initialize if no feature is active (to prevent re-randomizing positions when the header is expanded for a feature)
+                // When a feature is active, initFloatingBalls is called by showFeatureContent/closeFeatureContent
+                if (!activeFeatureId) {
+                    initFloatingBalls();
+                }
+            });
         });
     </script>
 </body>

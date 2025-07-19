@@ -234,8 +234,8 @@
             transition: transform 0.3s ease-in-out, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; /* Added transition for hover */
 
             /* Adjusted for smaller size */
-            width: 60px; 
-            height: 60px;
+            width: 80px; 
+            height: 80px;
             font-size: 0.7rem; 
             display: inline-flex; /* Changed to inline-flex */
             justify-content: center; /* Center content horizontally */
@@ -1102,7 +1102,7 @@
                     <div class="music-controls">
                         <audio id="backgroundMusicPlayer" loop>
                             <!-- Default background music. You can change this URL. -->
-                            <source src="https://imelijah88.github.io/Avneed/live1day.mp3" type="audio/mpeg">
+                            <source src="https://imelijah88.github.io/Avneed/audioAvneed.mp3" type="audio/mpeg">
                         </audio>
                         <button id="playPauseMusicBtn" aria-label="Play/Pause Background Music">▶</button>
                         <input type="range" id="musicVolumeSlider" min="0" max="1" step="0.01" value="0.5" aria-label="Music Volume">
@@ -1216,10 +1216,10 @@
             <div class="flex flex-row flex-wrap justify-center gap-4"> <!-- Added flex-wrap -->
                 <button id="imageGenGenerateBtn" class="ai-button flex-grow" aria-label="Generate Image">Generate Image</button> <!-- Added flex-grow -->
                 <select id="imageGenAspectRatio" class="ai-button bg-gray-800 flex-grow" aria-label="Image Aspect Ratio"> <!-- Added flex-grow -->
-                    <option value="1-1">1:1 (Square)</option>
-                    <option value="16-9">16:9 (Landscape)</option>
-                    <option value="4-3">4:3 (Traditional)</option>
-                    <option value="9-16">9:16 (Portrait)</option>
+                    <option value="1-1">1:1 </option>
+                    <option value="16-9">16:9 </option>
+                    <option value="4-3">4:3 </option>
+                    <option value="9-16">9:16 </option>
                 </select>
             </div>
         </div>

@@ -15,14 +15,14 @@
     <style>
         /* CSS Variables for Theming */
         :root {
-            --bg-primary: #333333;
+            --bg-primary: transparent; /* Changed to transparent to show background video */
             --bg-secondary: #1a1a2e;
             --bg-card: #121212;
             --input-bg: #1a1a1a;
 
-            --text-primary: #e2e8f0;
-            --text-secondary: #cbd5e1;
-            --text-light-gray: #a0aec0;
+            --text-primary: #f1cd04;
+            --text-secondary: hsl(176, 96%, 52%);
+            --text-light-gray: #5e6977;
 
             --border-color: #4a5568;
             --gradient-start: #0f172a;
@@ -41,12 +41,12 @@
 
         /* Light Theme Overrides */
         body.light-theme {
-            --bg-primary: #f0f2f5;
-            --bg-secondary: #ffffff;
+            --bg-primary: transparent; /* Changed to transparent to show background video */
+            --bg-secondary: #ebcc04d5;
             --bg-card: #e2e8f0;
             --input-bg: #ffffff;
 
-            --text-primary: #2d3748;
+            --text-primary: #29d1d6;
             --text-secondary: #4a5568;
             --text-light-gray: #718096;
 
@@ -65,7 +65,6 @@
         /* Global Body and Heading Styles */
         body {
             font-family: var(--font-body);
-            background-color: var(--bg-primary);
             color: var(--text-primary);
             transition: background-color 0.3s ease, color 0.3s ease;
             display: flex;
@@ -77,6 +76,8 @@
             gap: 2rem;
             line-height: 1.6;
             font-size: 1.05rem;
+            position: relative; /* Needed for video positioning */
+            background-color: #000; /* Fallback background color */
         }
         
         h1, h2, h3 {
@@ -84,12 +85,37 @@
             line-height: 1.2;
         }
 
+        /* Background Video Styles */
+        #background-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            background-size: cover;
+            object-fit: cover; /* Ensures the video covers the area without distortion */
+        }
+
+        /* Video Overlay for Readability */
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3); /* Semi-transparent dark overlay - adjusted opacity */
+            z-index: -1; /* Below content, above video */
+        }
+
         /* Neon Text and Gradient Backgrounds */
         .text-neon-blue { color: var(--color-neon-blue); }
         .gradient-bg { background: linear-gradient(to right top, var(--gradient-start), var(--gradient-mid), var(--gradient-end)); }
         
         .filter-drop-shadow-neon-blue {
-            filter: drop-shadow(0 0 5px var(--color-neon-blue)) drop-shadow(0 0 15px rgba(0, 255, 255, 0.5));
+            filter: drop-shadow(0 0 5px var(--color-neon-blue)) drop_shadow(0 0 15px rgba(0, 255, 255, 0.5));
         }
 
         .avneed-neon-text {
@@ -195,9 +221,7 @@
 
         /* Sphere Button Styles (Floating Buttons) */
         .sphere-button {
-            @apply w-15 h-15 rounded-full text-white font-bold text-base shadow-lg transition duration-300 ease-in-out transform hover:scale-110;
-            width: 90px; /* Adjusted size */
-            height: 90px; /* Adjusted size */
+            /* Removed w-15 h-15 from @apply as explicit width/height are used */
             border-radius: 9999px;
             background: #2d3748;
             border: 2px solid var(--border-color);
@@ -207,12 +231,24 @@
             font-family: var(--font-body);
             font-weight: 600;
             position: absolute; /* Crucial for independent movement */
-            font-size: 0.8rem; /* Adjusted font size for smaller buttons */
+            transition: transform 0.3s ease-in-out, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; /* Added transition for hover */
+
+            /* Adjusted for smaller size */
+            width: 60px; 
+            height: 60px;
+            font-size: 0.7rem; 
+            display: inline-flex; /* Changed to inline-flex */
+            justify-content: center; /* Center content horizontally */
+            align-items: center; /* Center content vertically */
+            text-align: center; /* Ensure text itself is centered within the flex item */
+            line-height: 1; /* Adjust line height for single line text */
+            padding: 0.2rem; /* Add some padding to prevent text from touching edges */
         }
         .sphere-button:hover {
             background: #374151;
             box-shadow: 0 0 25px 8px rgba(0, 255, 255, 0.7), 0 0 10px 2px rgba(0, 255, 255, 0.4); /* Neon blue hover */
             border-color: var(--color-neon-blue);
+            transform: scale(1.1); /* Hover scale effect */
         }
         .sphere-button.neon-hover:hover {
             background: var(--color-neon-blue);
@@ -589,14 +625,14 @@
         #chatbotHistory p.user-message {
             margin-left: auto;
             background-color: var(--color-neon-blue);
-            color: var(--bg-primary);
+            color: #000000; /* Changed to black for visibility */
             font-weight: 600;
             border-bottom-right-radius: 0.25rem;
         }
         #chatbotHistory p.ai-message {
             margin-right: auto;
             background-color: var(--color-accent-yellow);
-            color: var(--color-black);
+            color: #000000; /* Changed to black for visibility */
             border-bottom-left-radius: 0.25rem;
         }
 
@@ -905,8 +941,8 @@
                 font-size: 2.2rem;
             }
             .sphere-button {
-                width: 70px; /* Further adjusted for smaller screens */
-                height: 70px;
+                width: 60px; /* Adjusted size for smaller screens */
+                height: 60px;
                 font-size: 0.7rem;
             }
         }
@@ -967,75 +1003,49 @@
             box-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
         }
 
-        /* Full Screen Mode Styles */
-        body.full-screen-active {
+        /* Simulated Full Screen Mode Styles */
+        body.simulated-fullscreen-active {
             overflow: hidden; /* Prevent scrolling of the main page */
         }
 
-        body.full-screen-active #sectionHeader {
-            display: none; /* Hide the header in full screen */
+        body.simulated-fullscreen-active #sectionHeader {
+            display: none; /* Hide the header in simulated full screen */
         }
 
-        body.full-screen-active #featureDisplayArea {
+        /* This targets the feature content when simulated fullscreen is active */
+        body.simulated-fullscreen-active .ai-feature-content {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: 999; /* Below the settings/login modals, but above everything else */
-            margin: 0 !important; /* Override any margins */
-            padding: 0 !important; /* Override any padding */
-            background-color: var(--bg-primary); /* Ensure background is consistent */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Adjust the content inside the full-screen feature */
-        body.full-screen-active #featureDisplayArea > div { /* Target the cloned feature content */
-            width: 100%;
-            height: 100%;
-            max-width: 100%;
-            max-height: 100%;
-            border-radius: 0; /* Remove rounded corners in full screen */
-            padding: 1rem; /* Adjust padding for full screen */
-            box-shadow: none; /* Remove shadows in full screen */
+            max-width: 100vw; /* Ensure it takes full viewport width */
+            max-height: 100vh; /* Ensure it takes full viewport height */
+            border-radius: 0; /* Remove rounded corners in simulated full screen */
+            padding: 1rem; /* Adjust padding for simulated full screen */
+            box-shadow: none; /* Remove shadows in simulated full screen */
             overflow: auto; /* Allow internal scrolling if content is large */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
+            background-color: var(--bg-secondary); /* Ensure background is consistent */
+            z-index: 9999; /* Ensure it's on top */
+            margin: 0 !important; /* Override any margins */
         }
 
-        /* Repurpose modal-close-button for full screen exit */
-        body.full-screen-active .full-screen-toggle-button {
+        /* Hide the full-screen toggle button when in simulated fullscreen */
+        body.simulated-fullscreen-active .full-screen-toggle-button {
+            display: none;
+        }
+
+        /* The close button should remain visible and fixed in simulated full screen */
+        body.simulated-fullscreen-active .close-feature-button {
             position: fixed; /* Keep it fixed relative to viewport */
             top: 1rem;
             right: 1rem;
-            z-index: 1001;
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-        }
-        body.full-screen-active .full-screen-toggle-button:hover {
-            background: var(--color-neon-blue);
-            color: var(--bg-primary);
-            border-color: var(--color-neon-blue);
-            transform: scale(1.1);
+            z-index: 10000; /* Ensure it's above the simulated fullscreen content */
         }
 
-        /* Hide the music controls and settings button when in full screen */
-        body.full-screen-active .music-controls,
-        body.full-screen-active #settingsBtn {
+        /* Hide the music controls and settings button when in simulated full screen */
+        body.simulated-fullscreen-active .music-controls,
+        body.simulated-fullscreen-active #settingsBtn {
             display: none;
         }
 
@@ -1060,11 +1070,24 @@
                 min-height: 400px; /* Smaller height for mobile */
             }
         }
+
+        /* Custom class for transparent header background and no shadow */
+        .header-no-shadow {
+            box-shadow: none !important;
+        }
     </style>
 </head>
 <body>
+    <!-- Background Video -->
+    <video autoplay loop muted playsinline id="background-video">
+        <source src="https://imelijah88.github.io/Avneed/videoground.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <!-- Video Overlay for readability -->
+    <div class="video-overlay"></div>
+
     <section id="ai-features" class="pt-4 px-6 bg-transparent text-center flex flex-col items-center align-items-start min-h-screen relative perspective-1000 pb-20">
-        <div id="sectionHeader" class="bg-gray-950 text-white p-6 rounded-[2.5rem] shadow-lg w-full max-w-4xl relative flex flex-col flex-grow overflow-hidden">
+        <div id="sectionHeader" class="bg-transparent text-white p-6 rounded-[2.5rem] header-no-shadow w-full max-w-4xl relative flex flex-col flex-grow overflow-hidden">
             <!-- Fixed header content (logo, Avneed text, navigation) -->
             <div id="fixedHeaderContent" class="flex justify-between items-center z-10 relative">
                 <div class="flex items-center space-x-2">
@@ -1137,9 +1160,9 @@
         </h2>
         <div class="flex flex-col gap-4 mb-6 flex-grow">
             <textarea id="modalUserNotesInput" class="flex-grow input-field resize-none h-48" placeholder="Type your private project notes here..." aria-label="Your private project notes"></textarea>
-            <div class="flex gap-2">
-                <button id="modalSaveNotesBtn" class="ai-button flex-grow" disabled aria-label="Save Notes">Save Project Notes</button>
-                <label for="notesFileInput" class="ai-button flex-shrink-0 flex items-center justify-center cursor-pointer">Upload Notes</label>
+            <div class="flex flex-row flex-wrap justify-center gap-4"> <!-- Modified: Added flex-wrap and justify-center -->
+                <button id="modalSaveNotesBtn" class="ai-button w-1/2" disabled aria-label="Save Notes">Save Project Notes</button> <!-- Modified: Changed flex-grow to w-1/2 -->
+                <label for="notesFileInput" class="ai-button w-1/2 flex items-center justify-center cursor-pointer">Upload Notes</label> <!-- Modified: Changed flex-shrink-0 to w-1/2 -->
                 <input type="file" id="notesFileInput" accept=".txt" class="hidden-file-input">
             </div>
         </div>
@@ -1190,9 +1213,9 @@
         </h2>
         <div class="flex flex-col gap-4 mb-6">
             <textarea id="imageGenPromptInput" class="flex-grow input-field resize-none" placeholder="Describe the image you want to generate..." aria-label="Image prompt input"></textarea>
-            <div class="flex justify-center gap-4">
-                <button id="imageGenGenerateBtn" class="ai-button" aria-label="Generate Image">Generate Image</button>
-                <select id="imageGenAspectRatio" class="ai-button bg-gray-800" aria-label="Image Aspect Ratio">
+            <div class="flex flex-row flex-wrap justify-center gap-4"> <!-- Added flex-wrap -->
+                <button id="imageGenGenerateBtn" class="ai-button flex-grow" aria-label="Generate Image">Generate Image</button> <!-- Added flex-grow -->
+                <select id="imageGenAspectRatio" class="ai-button bg-gray-800 flex-grow" aria-label="Image Aspect Ratio"> <!-- Added flex-grow -->
                     <option value="1-1">1:1 (Square)</option>
                     <option value="16-9">16:9 (Landscape)</option>
                     <option value="4-3">4:3 (Traditional)</option>
@@ -1219,10 +1242,12 @@
             Avneed Analyze
         </h2>
         <div class="flex flex-col gap-4 mb-6">
-            <label for="imageAnalysisFileInput" class="ai-button flex-shrink-0 flex items-center justify-center cursor-pointer">Upload Image for Analysis</label>
-            <input type="file" id="imageAnalysisFileInput" accept="image/*" class="hidden-file-input">
             <textarea id="imageAnalysisPromptInput" class="flex-grow input-field resize-none" placeholder="Ask a question about the image, or leave blank for a general description..." aria-label="Image analysis prompt"></textarea>
-            <button id="imageAnalysisAnalyzeBtn" class="ai-button" disabled>Analyze Image</button>
+            <div class="flex flex-row flex-wrap justify-center gap-4"> <!-- New wrapper div for buttons -->
+                <label for="imageAnalysisFileInput" class="ai-button flex-grow flex items-center justify-center cursor-pointer">Upload Image for Analysis</label> <!-- Added flex-grow -->
+                <input type="file" id="imageAnalysisFileInput" accept="image/*" class="hidden-file-input">
+                <button id="imageAnalysisAnalyzeBtn" class="ai-button flex-grow" disabled>Analyze Image</button> <!-- Added flex-grow -->
+            </div>
         </div>
 
         <div id="imageAnalysisDisplayArea" class="image-frame-container aspect-1-1 relative mx-auto mt-8 hidden">
@@ -1245,9 +1270,11 @@
             Avneed Transcribe
         </h2>
         <div class="flex flex-col gap-4 mb-6">
-            <label for="audioTranscriptionFileInput" class="ai-button flex-shrink-0 flex items-center justify-center cursor-pointer">Upload Audio File (.mp3, .wav)</label>
-            <input type="file" id="audioTranscriptionFileInput" accept=".mp3, .wav" class="hidden-file-input">
-            <button id="transcribeAudioBtn" class="ai-button" disabled>Transcribe Audio</button>
+            <div class="flex flex-row flex-wrap justify-center gap-4"> <!-- New wrapper div for buttons -->
+                <label for="audioTranscriptionFileInput" class="ai-button flex-grow flex items-center justify-center cursor-pointer">Upload Audio File (.mp3, .wav)</label> <!-- Added flex-grow -->
+                <input type="file" id="audioTranscriptionFileInput" accept=".mp3, .wav" class="hidden-file-input">
+                <button id="transcribeAudioBtn" class="ai-button flex-grow" disabled>Transcribe Audio</button> <!-- Added flex-grow -->
+            </div>
         </div>
 
         <div id="audioTranscriptionLoadingIndicator" class="mt-2 text-center hidden" aria-live="polite" aria-busy="true">
@@ -1536,6 +1563,8 @@
             // Add full screen toggle button listener
             const fullScreenToggleBtn = clonedContent.querySelector('.full-screen-toggle-button');
             if (fullScreenToggleBtn) {
+                // Ensure the full screen toggle button is visible when a feature is opened
+                fullScreenToggleBtn.classList.remove('hidden');
                 fullScreenToggleBtn.addEventListener('click', toggleFullScreen);
             }
 
@@ -1568,16 +1597,16 @@
 
         // Function to close the currently displayed AI feature content
         function closeFeatureContent() {
+            // Ensure simulated fullscreen is exited if active
+            if (document.body.classList.contains('simulated-fullscreen-active')) {
+                document.body.classList.remove('simulated-fullscreen-active');
+            }
+
             featureDisplayArea.innerHTML = ''; // Clear the feature display area
             activeFeatureId = null; // Reset active feature
             sectionHeader.classList.remove('expanded-header'); // Shrink header back
             // Re-initialize floating balls to adjust to the original container size
             initFloatingBalls();
-
-            // Ensure full screen mode is exited if active
-            if (document.body.classList.contains('full-screen-active')) {
-                toggleFullScreen(); // This will remove the class and reset the button text
-            }
 
             // Resume background music if it was playing before the 3D viewer was active
             if (backgroundMusicPlayer && isBackgroundMusicPlaying) {
@@ -1586,26 +1615,39 @@
             }
         }
 
-        // Function to toggle full screen mode
+        // Function to toggle simulated full screen mode
         function toggleFullScreen() {
-            document.body.classList.toggle('full-screen-active');
-            const fullScreenToggleBtn = document.querySelector('.full-screen-toggle-button');
-            if (fullScreenToggleBtn) {
-                if (document.body.classList.contains('full-screen-active')) {
-                    fullScreenToggleBtn.textContent = ' shrink'; // Change icon for exit
-                    fullScreenToggleBtn.setAttribute('aria-label', 'Exit Full Screen');
-                } else {
-                    fullScreenToggleBtn.textContent = '⤢'; // Change icon for enter
-                    fullScreenToggleBtn.setAttribute('aria-label', 'Toggle Full Screen');
-                }
+            const activeFeatureContent = featureDisplayArea.querySelector('.ai-feature-content:not(.hidden)');
+            if (!activeFeatureContent) {
+                console.warn("No active feature content to make fullscreen.");
+                return;
             }
 
-            // Re-render 3D viewer on full screen toggle to adjust canvas size
-            if (activeFeatureId === 'threeDViewerContent' && modalViewerInstance) {
-                const modelContainer = document.getElementById('modalModelContainer');
-                onWindowResize3D(modalViewerInstance.camera, modalViewerInstance.renderer, modelContainer);
+            const fullScreenToggleBtn = activeFeatureContent.querySelector('.full-screen-toggle-button');
+
+            if (document.body.classList.contains('simulated-fullscreen-active')) {
+                // Exit simulated fullscreen
+                document.body.classList.remove('simulated-fullscreen-active');
+                if (fullScreenToggleBtn) {
+                    fullScreenToggleBtn.classList.remove('hidden'); // Show the fullscreen button
+                }
+                // When exiting fullscreen, the header should return to its expanded state
+                // and balls should restart animation within that header.
+                sectionHeader.classList.add('expanded-header'); // Ensure header is expanded
+                initFloatingBalls(); // Re-initialize balls for the header
+            } else {
+                // Enter simulated fullscreen
+                document.body.classList.add('simulated-fullscreen-active');
+                if (fullScreenToggleBtn) {
+                    fullScreenToggleBtn.classList.add('hidden'); // Hide the fullscreen button
+                }
+                // When entering fullscreen, the header is hidden by CSS, so balls are not visible.
             }
         }
+
+
+        // Removed the native fullscreenchange event listener as we are using simulated fullscreen.
+
 
         // Function to open the login options modal
         function openLoginModal() {
@@ -2635,12 +2677,19 @@
                 const isHovering = containerElement.matches(':hover');
                 const isMenuOpen = !uploadMenuElement.classList.contains('hidden');
 
-                if (isHovering || isMenuOpen) {
+                // Check if currently in simulated fullscreen mode
+                const isInSimulatedFullScreen = document.body.classList.contains('simulated-fullscreen-active');
+
+                if (isInSimulatedFullScreen) {
+                    // In simulated fullscreen, hide the file input label and model controls
+                    fileInputLabelElement.classList.add('hidden');
+                    controlsElement.classList.add('hidden');
+                    viewerInstance.audioControls.classList.add('hidden');
+                } else if (isHovering || isMenuOpen) {
                     fileInputLabelElement.classList.remove('hidden');
                     if (viewerInstance.currentModel) {
                         controlsElement.classList.remove('hidden');
                     }
-                    // Audio controls should also be visible when hovering or menu open
                     viewerInstance.audioControls.classList.remove('hidden');
                 } else {
                     fileInputLabelElement.classList.add('hidden');
@@ -2833,7 +2882,7 @@
             animate3D(modalViewerInstance); // Start the animation loop
 
             // Load a default model on initialization
-            loadModel('https://imelijah88.github.io/Avneed/friendlyrobot.glb', modalViewerInstance, modelStatus, modelControls, modelFileInputLabel, audioControls);
+            loadModel('https://imelijah88.github.io/Avneed/metalady.glb', modalViewerInstance, modelStatus, modelControls, modelFileInputLabel, audioControls);
         }
 
         // --- Floating Balls Animation Logic ---
@@ -2859,13 +2908,23 @@
             const topBoundary = fixedHeaderRect.bottom - sectionHeaderRect.top + 10; // Add a small buffer
 
             // Calculate the overall boundaries of the sectionHeader for the balls
-            const buttonWidth = 90; // Use actual button width
-            const buttonHeight = 90; // Use actual button height
+            const buttonWidth = 60; // Use actual button width
+            const buttonHeight = 60; // Use actual button height
 
             const minX = paddingLeft;
             const maxX = sectionHeader.clientWidth - paddingRight - buttonWidth;
             const minY = topBoundary; 
             const maxY = sectionHeader.clientHeight - paddingBottom - buttonHeight; // Use clientHeight for the current height of the container
+
+            console.log('--- Initializing Floating Balls ---');
+            console.log('sectionHeader clientWidth:', sectionHeader.clientWidth);
+            console.log('sectionHeader clientHeight:', sectionHeader.clientHeight);
+            console.log('fixedHeaderRect.bottom:', fixedHeaderRect.bottom);
+            console.log('sectionHeaderRect.top:', sectionHeaderRect.top);
+            console.log('topBoundary:', topBoundary);
+            console.log('minX:', minX, 'maxX:', maxX);
+            console.log('minY:', minY, 'maxY:', maxY);
+
 
             buttonStates = Array.from(buttons).map(button => {
                 let initialX = Math.random() * (maxX - minX) + minX;
@@ -2875,9 +2934,9 @@
                 initialX = Math.max(minX, Math.min(initialX, maxX));
                 initialY = Math.max(minY, Math.min(initialY, maxY));
 
-                // Random initial velocity
-                let vx = (Math.random() - 0.5) * 0.8; 
-                let vy = (Math.random() - 0.5) * 0.8; 
+                // Random initial velocity (increased multiplier for more noticeable movement)
+                let vx = (Math.random() - 0.5) * 2; 
+                let vy = (Math.random() - 0.5) * 2; 
 
                 // Ensure minimum velocity to keep them moving
                 if (Math.abs(vx) < 0.1) vx = vx > 0 ? 0.1 : -0.1;
@@ -2888,6 +2947,10 @@
                 button.style.left = '0px'; 
                 button.style.top = '0px';
                 button.style.transform = `translate(${initialX}px, ${initialY}px)`;
+
+                console.log(`Button ${button.id || button.textContent} initial pos: (${initialX.toFixed(2)}, ${initialY.toFixed(2)})`);
+                console.log(`Button ${button.id || button.textContent} initial vel: (${vx.toFixed(2)}, ${vy.toFixed(2)})`);
+
 
                 return {
                     element: button,
@@ -2914,9 +2977,9 @@
 
             const topBoundary = fixedHeaderRect.bottom - sectionHeaderRect.top + 10; 
             
-            const buttonWidth = 90; 
-            const buttonHeight = 90; 
-
+            const buttonWidth = 60; 
+            const buttonHeight = 60; 
+            
             const minX = paddingLeft;
             const maxX = sectionHeader.clientWidth - paddingRight - buttonWidth;
             const minY = topBoundary; 

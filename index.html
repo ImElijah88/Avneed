@@ -1096,7 +1096,7 @@
                 </div>
                 <nav class="flex items-center space-x-8 font-semibold">
                     <ul class="flex space-x-8">
-                        <li><a href="#ai-features" class="features-text hover:text-yellow-300 transition duration-300 transform hover:scale-105">Features</a></li>
+                        <li><a href="#ai-features" id="featuresLink" class="features-text hover:text-yellow-300 transition duration-300 transform hover:scale-105">Features</a></li>
                     </ul>
                     <!-- Global Music Controls -->
                     <div class="music-controls">
@@ -1216,10 +1216,10 @@
             <div class="flex flex-row flex-wrap justify-center gap-4"> <!-- Added flex-wrap -->
                 <button id="imageGenGenerateBtn" class="ai-button flex-grow" aria-label="Generate Image">Generate Image</button> <!-- Added flex-grow -->
                 <select id="imageGenAspectRatio" class="ai-button bg-gray-800 flex-grow" aria-label="Image Aspect Ratio"> <!-- Added flex-grow -->
-                    <option value="1-1">1:1 </option>
-                    <option value="16-9">16:9 </option>
-                    <option value="4-3">4:3 </option>
-                    <option value="9-16">9:16 </option>
+                    <option value="1-1">1:1 (Square)</option>
+                    <option value="16-9">16:9 (Landscape)</option>
+                    <option value="4-3">4:3 (Traditional)</option>
+                    <option value="9-16">9:16 (Portrait)</option>
                 </select>
             </div>
         </div>
@@ -2890,9 +2890,16 @@
         const buttons = document.querySelectorAll('.sphere-button');
 
         let buttonStates = []; // Stores state for each floating button
+        let animationFrameId = null; // To store the requestAnimationFrame ID
 
         // Initializes the positions and velocities of the floating buttons
         function initFloatingBalls() {
+            // Cancel any existing animation frame to prevent multiple loops
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+
             // Get computed styles for padding of the main black box (sectionHeader)
             const computedStyle = window.getComputedStyle(sectionHeader);
             const paddingTop = parseFloat(computedStyle.paddingTop);
@@ -2908,8 +2915,8 @@
             const topBoundary = fixedHeaderRect.bottom - sectionHeaderRect.top + 10; // Add a small buffer
 
             // Calculate the overall boundaries of the sectionHeader for the balls
-            const buttonWidth = 60; // Use actual button width
-            const buttonHeight = 60; // Use actual button height
+            const buttonWidth = 80; // Use actual button width
+            const buttonHeight = 80; // Use actual button height
 
             const minX = paddingLeft;
             const maxX = sectionHeader.clientWidth - paddingRight - buttonWidth;
@@ -2934,13 +2941,13 @@
                 initialX = Math.max(minX, Math.min(initialX, maxX));
                 initialY = Math.max(minY, Math.min(initialY, maxY));
 
-                // Random initial velocity (increased multiplier for more noticeable movement)
-                let vx = (Math.random() - 0.5) * 2; 
-                let vy = (Math.random() - 0.5) * 2; 
+                // Random initial velocity (reverted to original, slower multiplier)
+                let vx = (Math.random() - 0.5) * 0.5; // Original multiplier
+                let vy = (Math.random() - 0.5) * 0.5; // Original multiplier
 
                 // Ensure minimum velocity to keep them moving
-                if (Math.abs(vx) < 0.1) vx = vx > 0 ? 0.1 : -0.1;
-                if (Math.abs(vy) < 0.1) vy = vy > 0 ? 0.1 : -0.1;
+                if (Math.abs(vx) < 0.05) vx = vx > 0 ? 0.05 : -0.05; // Adjusted minimum velocity
+                if (Math.abs(vy) < 0.05) vy = vy > 0 ? 0.05 : -0.05; // Adjusted minimum velocity
 
                 // Set initial CSS position
                 button.style.position = 'absolute';
@@ -2977,8 +2984,8 @@
 
             const topBoundary = fixedHeaderRect.bottom - sectionHeaderRect.top + 10; 
             
-            const buttonWidth = 60; 
-            const buttonHeight = 60; 
+            const buttonWidth = 80; 
+            const buttonHeight = 80; 
             
             const minX = paddingLeft;
             const maxX = sectionHeader.clientWidth - paddingRight - buttonWidth;
@@ -3011,7 +3018,7 @@
                 ball.element.style.transform = `translate(${ball.x}px, ${ball.y}px)`;
             });
 
-            requestAnimationFrame(animateBalls); // Request next frame
+            animationFrameId = requestAnimationFrame(animateBalls); // Request next frame
         }
 
         // --- Main DOM Content Loaded Listener ---
@@ -3019,6 +3026,7 @@
             const toggleThemeBtn = document.getElementById('settingsBtn');
             const settingsMenu = document.getElementById('settingsMenu');
             let isSettingsMenuOpen = false;
+            const featuresLink = document.getElementById('featuresLink'); // Get the Features link
 
             // Toggle settings menu visibility
             toggleThemeBtn.addEventListener('click', (event) => {
@@ -3065,6 +3073,16 @@
                     }
                 });
             });
+
+            // Add event listener to the "Features" link to reset animation
+            if (featuresLink) {
+                featuresLink.addEventListener('click', (event) => {
+                    event.preventDefault(); // Prevent default anchor link behavior
+                    initFloatingBalls(); // Reset the floating balls animation
+                    // You might also want to scroll to the top of the features section if it's not already visible
+                    document.getElementById('ai-features').scrollIntoView({ behavior: 'smooth' });
+                });
+            }
 
             // Initialize floating balls animation after DOM is ready
             initFloatingBalls();
